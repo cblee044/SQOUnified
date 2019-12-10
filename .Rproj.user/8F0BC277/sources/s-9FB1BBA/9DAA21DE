@@ -1,0 +1,33 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1576018931733.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "9DAA21DE",
+    "lastKnownWriteTime" : 1576017191,
+    "last_content_update" : 1576018931733,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "C56C11B3",
+        "caption" : "infauna",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=infauna&cache_key=C56C11B3",
+        "displayedObservations" : 1779,
+        "environment" : "",
+        "expression" : "infauna",
+        "object" : "infauna",
+        "preview" : 0,
+        "totalObservations" : 1779,
+        "variables" : 24
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}
