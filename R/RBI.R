@@ -34,15 +34,6 @@ FROM [Ref - Taxonomic Info] RIGHT JOIN ([Data - Station Info] LEFT JOIN [Data - 
 GROUP BY [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Ref - Taxonomic Info].Phylum, [Data - Infauna Abundance].Exclude
 HAVING ((([Data - Station Info].B13_Stratum) Like "est*" Or ([Data - Station Info].B13_Stratum) Like "*bay*" Or ([Data - Station Info].B13_Stratum) Like "port*" Or ([Data - Station Info].B13_Stratum) Like "marina*") AND (([Ref - Taxonomic Info].Phylum)="Mollusca") AND (([Data - Infauna Abundance].Exclude)="no"));
 
-####################
-sqldf("select [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Ref - Taxonomic Info].Phylum, Count([Data - Infauna Abundance].Species) as NumOfMolluscTaxa
-from [Ref - Taxonomic Info] RIGHT JOIN ([Data - Station Info] LEFT JOIN [Data - Infauna Abundance] ON [Data - Station Info].StationID = [Data - Infauna Abundance].StationID) ON [Ref - Taxonomic Info].Taxon = [Data - Infauna Abundance].Species
-GROUP BY [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Ref - Taxonomic Info].Phylum, [Data - Infauna Abundance].Exclude
-HAVING ((([Data - Station Info].B13_Stratum) Like "est*" Or ([Data - Station Info].B13_Stratum) Like "*bay*" Or ([Data - Station Info].B13_Stratum) Like "port*" Or ([Data - Station Info].B13_Stratum) Like "marina*") AND (([Ref - Taxonomic Info].Phylum)="Mollusca") AND (([Data - Infauna Abundance].Exclude)="no"));
-
-      ")
-####################
-
 
 rbi_data <- grab %>%
   dplyr::filter(benthicinfauna == 'Yes') %>%
@@ -52,8 +43,8 @@ rbi_data <- grab %>%
   dplyr::inner_join(Taxonomic_Info, by = c('taxon' = 'Taxon')) %>%
   dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
   dplyr::add_count(taxon) %>%
-  dplyr::select('stationid','replicate','sampledate','latitude','longitude','taxon','abundance','salinity', 'stratum', 'Phylum', 'exclude', 'n') %>%
-  dplyr::group_by(stratum, stationid, replicate, Phylum) %>%
+  dplyr::select('stationid','replicate','sampledate','latitude','longitude','taxon','abundance','salinity', 'stratum', 'Phylum', 'Subphylum', 'exclude', 'n') %>%
+  dplyr::group_by(stratum, stationid, replicate) %>%
   dplyr::rename(species = taxon) %>%
   dplyr::rename(StationID = stationid, Replicate = replicate, SampleDate = sampledate, Latitude = latitude, Longitude = longitude, Species = species, Abundance = abundance, Salinity = salinity, B13_Stratum = stratum)
 
@@ -61,13 +52,14 @@ rbi_data <- grab %>%
 # need to verify this table with David
 # columns needed in RBI: B13_Stratum, StationID, Replicate, Phylum, NumofMolluscTaxa
 rbi2 <- rbi_data %>%
-  dplyr::rename(NumOfMolluscTaxa = n) %>%
   dplyr::filter(Phylum == "MOLLUSCA") %>%
-  dplyr::select(B13_Stratum, StationID, Replicate, Phylum, NumOfMolluscTaxa)
-
-# Looks like we need to go back and fix the columns
-# let's try to do an inner join (return only the the rows in which the left table have matching keys with the right table)
-
+  dplyr::group_by(B13_Stratum, StationID, Replicate, Phylum, n) %>%
+  dplyr::select(B13_Stratum, StationID, Replicate, Phylum, n) %>%
+  dplyr::group_by(B13_Stratum, StationID, Replicate, Phylum) %>%
+  dplyr::summarise(NumOfMolluscTaxa = sum(n))
+# Looks like we got the correct values. We just need to make sure that the values we are selecting are correct
+# There are two entries for one of the station ids (B18-10201) because there is a different taxa count for each
+# of the replicates (1 and 2). Ask if this is correct or whether we need to fix the query we're making.
 
 
 
@@ -77,6 +69,14 @@ FROM [Ref - Taxonomic Info] RIGHT JOIN ([Data - Station Info] LEFT JOIN [Data - 
 GROUP BY [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Ref - Taxonomic Info].Subphylum, [Data - Infauna Abundance].Exclude
 HAVING ((([Data - Station Info].B13_Stratum) Like "est*" Or ([Data - Station Info].B13_Stratum) Like "*bay*" Or ([Data - Station Info].B13_Stratum) Like "port*" Or ([Data - Station Info].B13_Stratum) Like "marina*") AND (([Ref - Taxonomic Info].Subphylum)="Crustacea") AND (([Data - Infauna Abundance].Exclude)="no"));
 
+rbi3 <- rbi_data %>%
+  dplyr::filter(Subphylum == "Crustacea") %>%
+  dplyr::select(B13_Stratum, StationID, Replicate, Subphylum, n) %>%
+  dplyr::group_by(B13_Stratum, StationID, Replicate, Subphylum) %>%
+  dplyr::summarise(NumOfCrustaceanTaxa = sum(n))
+
+# Same comment as above for rbi2 --> Looks correct but we need to get rid of the second replicate for B18-10201
+#save(rbi3, file = 'rbi3_data4rmRBI.Rdata')
 
 ### SQO RBI -4
 SELECT [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Ref - Taxonomic Info].Subphylum, Sum([Data - Infauna Abundance].Abundance) AS CrustaceanAbun
