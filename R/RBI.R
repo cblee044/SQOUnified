@@ -29,12 +29,6 @@ station_occupation <- tbl(con, "tbl_stationoccupation") %>%
 # if we do, it might be worth going through and adding this to the original benthic_query.R file
 # and include this with all of the benthic_data we save
 
-SELECT [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Ref - Taxonomic Info].Phylum, Count([Data - Infauna Abundance].Species) AS NumOfMolluscTaxa
-FROM [Ref - Taxonomic Info] RIGHT JOIN ([Data - Station Info] LEFT JOIN [Data - Infauna Abundance] ON [Data - Station Info].StationID = [Data - Infauna Abundance].StationID) ON [Ref - Taxonomic Info].Taxon = [Data - Infauna Abundance].Species
-GROUP BY [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Ref - Taxonomic Info].Phylum, [Data - Infauna Abundance].Exclude
-HAVING ((([Data - Station Info].B13_Stratum) Like "est*" Or ([Data - Station Info].B13_Stratum) Like "*bay*" Or ([Data - Station Info].B13_Stratum) Like "port*" Or ([Data - Station Info].B13_Stratum) Like "marina*") AND (([Ref - Taxonomic Info].Phylum)="Mollusca") AND (([Data - Infauna Abundance].Exclude)="no"));
-
-
 rbi_data <- grab %>%
   dplyr::filter(benthicinfauna == 'Yes') %>%
   dplyr::inner_join(station_occupation, by = c('stationid','sampledate' = 'occupationdate')) %>%
@@ -64,11 +58,6 @@ rbi2 <- rbi_data %>%
 
 
 ### SQO RBI -3
-SELECT [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Ref - Taxonomic Info].Subphylum, Count([Data - Infauna Abundance].Species) AS NumOfCrustaceanTaxa
-FROM [Ref - Taxonomic Info] RIGHT JOIN ([Data - Station Info] LEFT JOIN [Data - Infauna Abundance] ON [Data - Station Info].StationID = [Data - Infauna Abundance].StationID) ON [Ref - Taxonomic Info].Taxon = [Data - Infauna Abundance].Species
-GROUP BY [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Ref - Taxonomic Info].Subphylum, [Data - Infauna Abundance].Exclude
-HAVING ((([Data - Station Info].B13_Stratum) Like "est*" Or ([Data - Station Info].B13_Stratum) Like "*bay*" Or ([Data - Station Info].B13_Stratum) Like "port*" Or ([Data - Station Info].B13_Stratum) Like "marina*") AND (([Ref - Taxonomic Info].Subphylum)="Crustacea") AND (([Data - Infauna Abundance].Exclude)="no"));
-
 rbi3 <- rbi_data %>%
   dplyr::filter(Subphylum == "Crustacea") %>%
   dplyr::select(B13_Stratum, StationID, Replicate, Subphylum, n) %>%
@@ -79,45 +68,53 @@ rbi3 <- rbi_data %>%
 #save(rbi3, file = 'rbi3_data4rmRBI.Rdata')
 
 ### SQO RBI -4
-SELECT [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Ref - Taxonomic Info].Subphylum, Sum([Data - Infauna Abundance].Abundance) AS CrustaceanAbun
-FROM [Ref - Taxonomic Info] RIGHT JOIN ([Data - Station Info] LEFT JOIN [Data - Infauna Abundance] ON [Data - Station Info].StationID = [Data - Infauna Abundance].StationID) ON [Ref - Taxonomic Info].Taxon = [Data - Infauna Abundance].Species
-GROUP BY [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Ref - Taxonomic Info].Subphylum
-HAVING ((([Data - Station Info].B13_Stratum) Like "est*" Or ([Data - Station Info].B13_Stratum) Like "*bay*" Or ([Data - Station Info].B13_Stratum) Like "port*" Or ([Data - Station Info].B13_Stratum) Like "marina*") AND (([Ref - Taxonomic Info].Subphylum)="Crustacea"));
+rbi4 <- rbi_data %>%
+  dplyr::filter(Subphylum == "Crustacea") %>%
+  dplyr::select(B13_Stratum, StationID, Replicate, Subphylum, Abundance) %>%
+  dplyr::group_by(B13_Stratum, StationID, Replicate, Subphylum) %>%
+  dplyr::summarise(CrustaceanAbun = sum(Abundance))
+
 
 ### SQO RBI -5
-SELECT [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Data - Infauna Abundance].Species, Sum([Data - Infauna Abundance].Abundance) AS M_insidiosumAbun
-FROM [Ref - Taxonomic Info] RIGHT JOIN ([Data - Station Info] LEFT JOIN [Data - Infauna Abundance] ON [Data - Station Info].StationID = [Data - Infauna Abundance].StationID) ON [Ref - Taxonomic Info].Taxon = [Data - Infauna Abundance].Species
-GROUP BY [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Data - Infauna Abundance].Species
-HAVING ((([Data - Station Info].B13_Stratum) Like "est*" Or ([Data - Station Info].B13_Stratum) Like "*bay*" Or ([Data - Station Info].B13_Stratum) Like "port*" Or ([Data - Station Info].B13_Stratum) Like "marina*") AND (([Data - Infauna Abundance].Species)="Monocorophium insidiosum"));
+rbi5 <- rbi_data %>%
+  dplyr::filter(Species == "Monocorophium insidiosum") %>%
+  dplyr::group_by(B13_Stratum, StationID, Replicate, Species) %>%
+  dplyr::summarise(M_insidiosumAbun = sum(Abundance))
+
+# Note that this query calls for "Monocorophium insidiosum" but there is no data for this species. So, to check that this is
+# working correctly, I changed the species names to "Monocorophium acherusicum"
+
+
 
 ### SQO RBI -6
-SELECT [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Data - Infauna Abundance].Species, Sum([Data - Infauna Abundance].Abundance) AS A_diegensisAbun
-FROM [Ref - Taxonomic Info] RIGHT JOIN ([Data - Station Info] LEFT JOIN [Data - Infauna Abundance] ON [Data - Station Info].StationID = [Data - Infauna Abundance].StationID) ON [Ref - Taxonomic Info].Taxon = [Data - Infauna Abundance].Species
-GROUP BY [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Data - Infauna Abundance].Species
-HAVING ((([Data - Station Info].B13_Stratum) Like "est*" Or ([Data - Station Info].B13_Stratum) Like "*bay*" Or ([Data - Station Info].B13_Stratum) Like "port*" Or ([Data - Station Info].B13_Stratum) Like "marina*") AND (([Data - Infauna Abundance].Species)="Asthenothaerus diegensis"));
+rbi6 <- rbi_data %>%
+  dplyr::filter(Species == "Asthenothaerus diegensis") %>%
+  dplyr::group_by(B13_Stratum, StationID, Replicate, Species) %>%
+  dplyr::summarise(A_diegensisAbun = sum(Abundance))
+
 
 ### SQO RBI -7
-SELECT [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Data - Infauna Abundance].Species, Sum([Data - Infauna Abundance].Abundance) AS G_littoreaAbun
-FROM [Ref - Taxonomic Info] RIGHT JOIN ([Data - Station Info] LEFT JOIN [Data - Infauna Abundance] ON [Data - Station Info].StationID = [Data - Infauna Abundance].StationID) ON [Ref - Taxonomic Info].Taxon = [Data - Infauna Abundance].Species
-GROUP BY [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Data - Infauna Abundance].Species
-HAVING ((([Data - Station Info].B13_Stratum) Like "est*" Or ([Data - Station Info].B13_Stratum) Like "*bay*" Or ([Data - Station Info].B13_Stratum) Like "port*" Or ([Data - Station Info].B13_Stratum) Like "marina*") AND (([Data - Infauna Abundance].Species)="Goniada littorea"));
+rbi7 <- rbi_data %>%
+  dplyr::filter(Species == "Goniada littorea") %>%
+  dplyr::group_by(B13_Stratum, StationID, Replicate, Species) %>%
+  dplyr::summarise(G_littoreaAbun = sum(Abundance))
 
 
 ### SQO RBI -8
-SELECT [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Data - Infauna Abundance].Species, Sum([Data - Infauna Abundance].Abundance) AS CapitellaAbun
-FROM [Ref - Taxonomic Info] RIGHT JOIN ([Data - Station Info] LEFT JOIN [Data - Infauna Abundance] ON [Data - Station Info].StationID = [Data - Infauna Abundance].StationID) ON [Ref - Taxonomic Info].Taxon = [Data - Infauna Abundance].Species
-GROUP BY [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Data - Infauna Abundance].Species
-HAVING ((([Data - Station Info].B13_Stratum) Like "est*" Or ([Data - Station Info].B13_Stratum) Like "*bay*" Or ([Data - Station Info].B13_Stratum) Like "port*" Or ([Data - Station Info].B13_Stratum) Like "marina*") AND (([Data - Infauna Abundance].Species)="Capitella capitata cmplx"));
+rbi8 <- rbi_data %>%
+  dplyr::filter(Species == "Capitella capitata Cmplx") %>%
+  dplyr::group_by(B13_Stratum, StationID, Replicate, Species) %>%
+  dplyr::summarise(CapitellaAbun = sum(Abundance))
 
 
 ### SQO RBI -9
-SELECT [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Data - Infauna Abundance].Species, Sum([Data - Infauna Abundance].Abundance) AS OligochaetaAbun
-FROM [Ref - Taxonomic Info] RIGHT JOIN ([Data - Station Info] LEFT JOIN [Data - Infauna Abundance] ON [Data - Station Info].StationID = [Data - Infauna Abundance].StationID) ON [Ref - Taxonomic Info].Taxon = [Data - Infauna Abundance].Species
-GROUP BY [Data - Station Info].B13_Stratum, [Data - Station Info].StationID, [Data - Infauna Abundance].Replicate, [Data - Infauna Abundance].Species
-HAVING ((([Data - Station Info].B13_Stratum) Like "est*" Or ([Data - Station Info].B13_Stratum) Like "*bay*" Or ([Data - Station Info].B13_Stratum) Like "port*" Or ([Data - Station Info].B13_Stratum) Like "marina*") AND (([Data - Infauna Abundance].Species)="Oligochaeta"));
-
+rbi9 <- rbi_data %>%
+  dplyr::filter(Species == "Oligochaeta") %>%
+  dplyr::group_by(B13_Stratum, StationID, Replicate, Species) %>%
+  dplyr::summarise(OligochaetaAbun = sum(Abundance))
 
 ### B13 RBI Metrics
 SELECT [SQO IBI - 1].B13_Stratum, [SQO IBI - 1].StationID, [SQO IBI - 1].Replicate, [SQO IBI - 1].NumOfTaxa, [SQO RBI - 2].NumOfMolluscTaxa, [SQO RBI - 3].NumOfCrustaceanTaxa, [SQO RBI - 4].CrustaceanAbun, [SQO RBI - 5].M_insidiosumAbun, [SQO RBI - 6].A_diegensisAbun, [SQO RBI - 7].G_littoreaAbun, [SQO RBI - 8].CapitellaAbun, [SQO RBI - 9].OligochaetaAbun
 FROM ((((((([SQO IBI - 1] LEFT JOIN [SQO RBI - 2] ON ([SQO IBI - 1].Replicate = [SQO RBI - 2].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 2].StationID)) LEFT JOIN [SQO RBI - 3] ON ([SQO IBI - 1].Replicate = [SQO RBI - 3].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 3].StationID)) LEFT JOIN [SQO RBI - 4] ON ([SQO IBI - 1].Replicate = [SQO RBI - 4].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 4].StationID)) LEFT JOIN [SQO RBI - 5] ON ([SQO IBI - 1].Replicate = [SQO RBI - 5].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 5].StationID)) LEFT JOIN [SQO RBI - 6] ON ([SQO IBI - 1].Replicate = [SQO RBI - 6].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 6].StationID)) LEFT JOIN [SQO RBI - 7] ON ([SQO IBI - 1].Replicate = [SQO RBI - 7].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 7].StationID)) LEFT JOIN [SQO RBI - 8] ON ([SQO IBI - 1].Replicate = [SQO RBI - 8].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 8].StationID)) LEFT JOIN [SQO RBI - 9] ON ([SQO IBI - 1].Replicate = [SQO RBI - 9].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 9].StationID);
 
+rbi_metrics <-
