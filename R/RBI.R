@@ -10,7 +10,8 @@ library(sqldf)
 # Bring in our tables from the database
 infauna <- tbl(con, "tbl_infaunalabundance_initial") %>%
   as_tibble %>%
-  dplyr::filter(exclude == 'No')
+  dplyr::filter(exclude == 'No') %>%
+  dplyr::filter(replicate == 1)
 
 grab <- tbl(con, "tbl_grabevent") %>%
   as_tibble %>%
@@ -37,20 +38,24 @@ rbi_data <- grab %>%
   dplyr::inner_join(Taxonomic_Info, by = c('taxon' = 'Taxon')) %>%
   dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
   dplyr::add_count(taxon) %>%
-  dplyr::select('stationid','replicate','sampledate','latitude','longitude','taxon','abundance','salinity', 'stratum', 'Phylum', 'Subphylum', 'exclude', 'n') %>%
-  dplyr::group_by(stratum, stationid, replicate) %>%
+  dplyr::select('stationid','replicate','taxon','abundance','stratum', 'Phylum', 'Subphylum', 'n') %>%
+  dplyr::group_by(stratum, stationid, replicate, taxon, abundance, Phylum, Subphylum) %>%
+  dplyr::summarise(NumOfTaxa = sum(n)) %>%
   dplyr::rename(species = taxon) %>%
-  dplyr::rename(StationID = stationid, Replicate = replicate, SampleDate = sampledate, Latitude = latitude, Longitude = longitude, Species = species, Abundance = abundance, Salinity = salinity, B13_Stratum = stratum)
+  dplyr::rename(StationID = stationid, Replicate = replicate, Species = species, Abundance = abundance, B13_Stratum = stratum)
 
+ibi_data <- rbi_data %>%
+  group_by(B13_Stratum, StationID, Replicate) %>%
+  summarise(NumOfTaxa = sum(NumOfTaxa))
 
 # need to verify this table with David
 # columns needed in RBI: B13_Stratum, StationID, Replicate, Phylum, NumofMolluscTaxa
 rbi2 <- rbi_data %>%
   dplyr::filter(Phylum == "MOLLUSCA") %>%
-  dplyr::group_by(B13_Stratum, StationID, Replicate, Phylum, n) %>%
-  dplyr::select(B13_Stratum, StationID, Replicate, Phylum, n) %>%
+  dplyr::group_by(B13_Stratum, StationID, Replicate, Phylum, NumOfTaxa) %>%
+  dplyr::select(B13_Stratum, StationID, Replicate, Phylum, NumOfTaxa) %>%
   dplyr::group_by(B13_Stratum, StationID, Replicate, Phylum) %>%
-  dplyr::summarise(NumOfMolluscTaxa = sum(n))
+  dplyr::summarise(NumOfMolluscTaxa = sum(NumOfTaxa))
 # Looks like we got the correct values. We just need to make sure that the values we are selecting are correct
 # There are two entries for one of the station ids (B18-10201) because there is a different taxa count for each
 # of the replicates (1 and 2). Ask if this is correct or whether we need to fix the query we're making.
@@ -60,9 +65,9 @@ rbi2 <- rbi_data %>%
 ### SQO RBI -3
 rbi3 <- rbi_data %>%
   dplyr::filter(Subphylum == "Crustacea") %>%
-  dplyr::select(B13_Stratum, StationID, Replicate, Subphylum, n) %>%
   dplyr::group_by(B13_Stratum, StationID, Replicate, Subphylum) %>%
-  dplyr::summarise(NumOfCrustaceanTaxa = sum(n))
+  dplyr::select(B13_Stratum, StationID, Replicate, Subphylum, NumOfTaxa) %>%
+  dplyr::summarise(NumOfCrustaceanTaxa = sum(NumOfTaxa))
 
 # Same comment as above for rbi2 --> Looks correct but we need to get rid of the second replicate for B18-10201
 #save(rbi3, file = 'rbi3_data4rmRBI.Rdata')
@@ -70,8 +75,8 @@ rbi3 <- rbi_data %>%
 ### SQO RBI -4
 rbi4 <- rbi_data %>%
   dplyr::filter(Subphylum == "Crustacea") %>%
-  dplyr::select(B13_Stratum, StationID, Replicate, Subphylum, Abundance) %>%
   dplyr::group_by(B13_Stratum, StationID, Replicate, Subphylum) %>%
+  dplyr::select(B13_Stratum, StationID, Replicate, Subphylum, Abundance) %>%
   dplyr::summarise(CrustaceanAbun = sum(Abundance))
 
 
@@ -114,7 +119,14 @@ rbi9 <- rbi_data %>%
   dplyr::summarise(OligochaetaAbun = sum(Abundance))
 
 ### B13 RBI Metrics
-SELECT [SQO IBI - 1].B13_Stratum, [SQO IBI - 1].StationID, [SQO IBI - 1].Replicate, [SQO IBI - 1].NumOfTaxa, [SQO RBI - 2].NumOfMolluscTaxa, [SQO RBI - 3].NumOfCrustaceanTaxa, [SQO RBI - 4].CrustaceanAbun, [SQO RBI - 5].M_insidiosumAbun, [SQO RBI - 6].A_diegensisAbun, [SQO RBI - 7].G_littoreaAbun, [SQO RBI - 8].CapitellaAbun, [SQO RBI - 9].OligochaetaAbun
-FROM ((((((([SQO IBI - 1] LEFT JOIN [SQO RBI - 2] ON ([SQO IBI - 1].Replicate = [SQO RBI - 2].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 2].StationID)) LEFT JOIN [SQO RBI - 3] ON ([SQO IBI - 1].Replicate = [SQO RBI - 3].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 3].StationID)) LEFT JOIN [SQO RBI - 4] ON ([SQO IBI - 1].Replicate = [SQO RBI - 4].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 4].StationID)) LEFT JOIN [SQO RBI - 5] ON ([SQO IBI - 1].Replicate = [SQO RBI - 5].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 5].StationID)) LEFT JOIN [SQO RBI - 6] ON ([SQO IBI - 1].Replicate = [SQO RBI - 6].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 6].StationID)) LEFT JOIN [SQO RBI - 7] ON ([SQO IBI - 1].Replicate = [SQO RBI - 7].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 7].StationID)) LEFT JOIN [SQO RBI - 8] ON ([SQO IBI - 1].Replicate = [SQO RBI - 8].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 8].StationID)) LEFT JOIN [SQO RBI - 9] ON ([SQO IBI - 1].Replicate = [SQO RBI - 9].Replicate) AND ([SQO IBI - 1].StationID = [SQO RBI - 9].StationID);
-
-rbi_metrics <-
+# We are using a full join because if there are missing values, we might just get an empty data frame.
+rbi_metrics <- ibi_data %>%
+  dplyr::full_join(rbi2, by = c("B13_Stratum", "StationID", "Replicate")) %>%
+  dplyr::full_join(rbi3, by = c("B13_Stratum", "StationID", "Replicate")) %>%
+  dplyr::full_join(rbi4, by = c("B13_Stratum", "StationID", "Replicate")) %>%
+  dplyr::full_join(rbi5, by = c("B13_Stratum", "StationID", "Replicate")) %>%
+  dplyr::full_join(rbi6, by = c("B13_Stratum", "StationID", "Replicate")) %>%
+  dplyr::full_join(rbi7, by = c("B13_Stratum", "StationID", "Replicate")) %>%
+  dplyr::full_join(rbi8, by = c("B13_Stratum", "StationID", "Replicate")) %>%
+  dplyr::full_join(rbi9, by = c("B13_Stratum", "StationID", "Replicate")) %>%
+  dplyr::select(B13_Stratum, StationID, Replicate, NumOfTaxa, NumOfMolluscTaxa, NumOfCrustaceanTaxa, CrustaceanAbun, M_insidiosumAbun, A_diegensisAbun, G_littoreaAbun, CapitellaAbun, OligochaetaAbun)
