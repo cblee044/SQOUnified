@@ -32,13 +32,6 @@
 ##                                  NumOfCrustaceanTaxa -
 ##
 ##
-##          EG_File_Name - A quoted string with the name of the csv file with the suite of US Ecological Groups
-##                          assigned initially in Gillett et al. 2015. This EG file has multiple versions of the EG
-##                          values and a Yes/No designation if the fauna are Oligochaetes or not. The default file is
-##                          the Ref - EG Values 2018.csv file included with this code. Replace with other files as you
-##                          see fit, but make sure the file you use is in a similar format and uses the same column names.
-##                          Additionally, new taxa can be added at the bottom of the list with the EG values the user
-##                          feels appropriate, THOUGH THIS IS NOT RECOMMENDED
 ##
 ##
 ##
@@ -62,7 +55,6 @@ RBI <- function(BenthicData)
   require(sqldf)
 
   "benthic_data"
-  "EG_Ref"
   "Taxonomic_Info"
   # Relevant Queries
   # SQO RBI -2
@@ -95,7 +87,8 @@ RBI <- function(BenthicData)
     as_tibble %>%
     inner_join(assignment, by = 'stationid')
 
-
+# TODO --> Be sure to go back and update the benthic_query.R file so that we get the data included below. We need this
+# to run the RBI function. Other changes will also need to be included if other info is needed for IBI, BRI, and RIVPACS
   rbi_data <- grab %>%
     dplyr::filter(benthicinfauna == 'Yes') %>%
     dplyr::inner_join(station_occupation, by = c('stationid','sampledate' = 'occupationdate')) %>%

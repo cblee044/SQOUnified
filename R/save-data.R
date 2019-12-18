@@ -9,7 +9,8 @@ TidalFresh_Standards <- read_xlsx("Pelletier2018_Standards.xlsx", sheet = "Tidal
 EG_Ref <- read.csv("Ref - EG Values 2018.csv", stringsAsFactors = F, na.strings = "")
 # Taxonomic information (provided by Gillet)
 # TODO: check if there is a table that we should be querying in SCCWRP's database
-Taxonomic_Info <- read_xlsx("Ref - Final Taxonomic Info.xlsx", sheet = "Ref___Final_Taxonomic_Info")
+#Taxonomic_Info <- read_xlsx("Ref - Final Taxonomic Info.xlsx", sheet = "Ref___Final_Taxonomic_Info")
+Taxonomic_Info <- read_xlsx("Taxonomic_Info.xlsx", sheet = "Sheet1")
 
 save(Saline_Standards, file ='P:/PartTimers/JoanaPerdomo/Projects/SQOUnified/data/Saline_Standards.Rdata')
 save(TidalFresh_Standards, file ='P:/PartTimers/JoanaPerdomo/Projects/SQOUnified/data/TidalFresh_Standards.Rdata')
