@@ -20,6 +20,8 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
   if (SQO == "all"){
     mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
     rbi.scores <- RBI()
+    ibi.scores <- IBI()
+    bri.scores <- BRI()
     final.scores <- mambi.score # will add other scores to this data frame as they are computed
   } else {
     mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
@@ -31,7 +33,12 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
   # in the final csv file. For now, we just have the MAMBI score (see "else" condition above).
   # Maybe there's a better way to do this?
   ####
+  for (index in SQO)
+  {
+    if (index == "all"){
 
+    }
+  }
 
   # OUTPUT: Write an xlsx file to current working directory
   write.csv(mambi.score, file = "SQO-Unified.csv", row.names = FALSE)
