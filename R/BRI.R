@@ -1,4 +1,4 @@
-#' Compute the relative benthic index (RBI) score.
+#' Compute the benthic response index (BRI) score.
 #'
 #'
 #' @usage data(benthic_data)
