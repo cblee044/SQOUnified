@@ -1,8 +1,8 @@
-#' Compute the multivariate AMBI (M-AMBI) index score.
+#' Compute the Indec of Biotic Integrity (IBI) and IBI condition category.
 #'
-#' @param BenthicData a data frame with the following information with these headings:
+#' @param BenthicData a data frame with AT LEAST the following information with these headings:
 #'    \code{StationID} - an alpha-numeric identifier of the location;
-#'    \code{Replicat} - a numeric identifying the replicate number of samples taken at the location;
+#'    \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
 #'    \code{SampleDate} - the date of sample collection;
 #'    \code{Latitude} - latitude in decimal degrees;
 #'    \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
@@ -19,48 +19,7 @@
 #' MAMBI.DJG.alt(benthic_data, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="US_Gulf")
 
 ##########################################################################################################################
-## This is a function to calculate multivariate AMBI (M-AMBI) index scores following Pelletier et al. 2018
-## which is in turn built upon the work of Sigovini et al. 2013 and Muxica et al. 2007.  This is an alternate version that
-## allows for manipulation of the data within R before submitting it to the function in lieu of directly reading
-## in an excel file to the function. The function is designed for use in US estuarine waters and requires three arguments:
-##          BenthicData - A data file living in the R environment.
-##                        The data MUST contain the following information with these headings:
-##
-##                                  StationID - an alpha-numeric identifier of the location
-##                                  Replicate - a numeric identifying the replicate number of samples taken at the
-##                                              location
-##                                  SampleDate - the date of sample collection
-##                                  Latitude - latitude in decimal degrees
-##                                  Longitude - longitude in decimal degrees make sure there is a negative sign
-##                                              for the Western coordinates
-##                                  Species - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
-##                                            use sp only or just the Genus. If no animals were present in the sample
-##                                            use NoOrganismsPresent with 0 abundance
-##                                  Abundance - the number of each Species observed in a sample
-##                                  Salinity - the salinity observed at the location in PSU, ideally at time of sampling
-##
-##          EG_File_Name - A quoted string with the name of the csv file with the suite of US Ecological Groups
-##                          assigned initially in Gillett et al. 2015. This EG file has multiple versions of the EG
-##                          values and a Yes/No designation if the fauna are Oligochaetes or not. The default file is
-##                          the Ref - EG Values 2018.csv file included with this code. Replace with other files as you
-##                          see fit, but make sure the file you use is in a similar format and uses the same column names.
-##                          Additionally, new taxa can be added at the bottom of the list with the EG values the user
-##                          feels appropriate, THOUGH THIS IS NOT RECOMMENDED
-##
-##          EG_Scheme - A quoted string with the name of the EG Scheme to be used in the AMBI scoring. The default is
-##                      Hybrid, though one could use US (all coasts), Standard (Values from Angel Borja and colleagues),
-##                      US_East (US East Coast), US_Gulf (US Gulf of Mexico Coast), or US_West (US West Coast).
-##
-## Two additional files are also needed to run the script: Saline and Tidal freshwater good-bad standards for the M-AMBI
-## that are in the Pelletier2018_Standards.xlsx work book and included along with this code.
-##
-## For the function to run, the following packages NEED to be installed:  tidyverse, reshape2, vegan, and readxl.
-## Additionally the EQR.R function must also be installed and is included with this code.
-##
-## The output of the function will be a dataframe with StationID, Replicate, SampleDate, Latitude, Longitude,
-## SalZone (The Salinity Zone assigned by M-AMBI), AMBI_Score, S (Species Richness), H (Species Diversity),
-## Oligo_pct (Relative Abundance of Oligochaetes), MAMBI_Score, Orig_MAMBI_Condition, New_MAMBI_Condition,
-## Use_MAMBI (Can M-AMBI be applied?), Use_AMBI (Can AMBI be applied?), and YesEG (% of Abundance with a EG value)
+#
 ##########################################################################################################################
 
 IBI <- function(BenthicData)
@@ -169,14 +128,51 @@ IBI <- function(BenthicData)
     dplyr::mutate(PctSensTaxa = (SensTaxa/NumOfTaxa)*100) %>%
     dplyr::select(B13_Stratum, StationID, Replicate, PctSensTaxa)
 
-  ### B13 IBI Metrics
+  ### Reference ranges for IBI metrics in Southern California Marine Bays
+  ### [ Table 5.4 (p. 77, Technical Manual, 2014) ]
+  ibi_ref_ranges_table <- data.frame(ref_low = c(13, 2, 0, 19),
+                                     ref_high = c(99, 25, 59, 47.1))
+  row.names(ibi_ref_ranges_table) <- c("NumOfTaxa", "NumOfMolluscTaxa", "NotomastusAbun", "PctSensTaxa")
+
+
+  ### IBI category response ranges for Southern California Marine Bays
+  ### [ Table 5.5 (p. 77, Technical Manual, 2014) ]
+  ibi_category_response_table <- data.frame(ibi_score = as.factor(c(0, 1, 2, 3, 4)),
+                                            category = as.factor(c("Reference",
+                                                                   "Low Disturbance",
+                                                                   "Moderate Disturbance",
+                                                                   "High Disturbance",
+                                                                   "High Disturbance")),
+                                            category_score = as.factor(c(1, 2, 3, 4, 4)))
+
+  ### B13 IBI Metrics:
+  # We stitch together all the necessary IBI metrics to determine the IBI index.
+  # Each of the metrics is then compared to the tables listed above (Table 5.4 and Table 5.5) to determine the IBI score,
+  # the IBI Category, and IBI Category Score
   ibi_metrics <- ibi1 %>%
     dplyr::full_join(ibi2, by = c("B13_Stratum", "StationID", "Replicate")) %>%
     dplyr::full_join(ibi3_1, by = c("B13_Stratum", "StationID", "Replicate")) %>%
     dplyr::full_join(ibi3_2, by = c("B13_Stratum", "StationID", "Replicate")) %>%
     dplyr::full_join(ibi4_1, by = c("B13_Stratum", "StationID", "Replicate")) %>%
     dplyr::full_join(ibi4_2, by = c("B13_Stratum", "StationID", "Replicate")) %>%
-    dplyr::select(B13_Stratum, StationID, Replicate, NumOfTaxa, NumOfMolluscTaxa, NotomastusAbun, PctSensTaxa)
+    dplyr::select(B13_Stratum, StationID, Replicate, NumOfTaxa, NumOfMolluscTaxa, NotomastusAbun, PctSensTaxa) %>%
+    # We replace any NAs with 0 so that we can compare the values to the tables listed above
+    dplyr::mutate(NotomastusAbun = replace_na(NotomastusAbun, 0)) %>%
+    # The IBI score is set to zero before comparison the reference range.
+    dplyr::mutate(IBI_Score = 0) %>%
+    # For each metric that is out of the reference range (above or below), the IBI score goes up by one.
+    dplyr::mutate(IBI_Score = if_else((NumOfTaxa < ibi_ref_ranges_table["NumOfTaxa",]$ref_low  | NumOfTaxa > ibi_ref_ranges_table["NumOfTaxa",]$ref_high),
+                                      IBI_Score + 1, IBI_Score)) %>%
+    dplyr::mutate(IBI_Score = if_else((NumOfMolluscTaxa < ibi_ref_ranges_table["NumOfMolluscTaxa",]$ref_low  | NumOfMolluscTaxa > ibi_ref_ranges_table["NumOfMolluscTaxa",]$ref_high),
+                                      IBI_Score + 1, IBI_Score)) %>%
+    dplyr::mutate(IBI_Score = if_else((NotomastusAbun < ibi_ref_ranges_table["NotomastusAbun",]$ref_low  | NotomastusAbun > ibi_ref_ranges_table["NotomastusAbun",]$ref_high),
+                                      IBI_Score + 1, IBI_Score)) %>%
+    dplyr::mutate(IBI_Score = if_else((PctSensTaxa < ibi_ref_ranges_table["PctSensTaxa",]$ref_low  | PctSensTaxa > ibi_ref_ranges_table["PctSensTaxa",]$ref_high),
+                                      IBI_Score + 1, IBI_Score)) %>%
+    # The IBI score is then compared to condition category response ranges (Table 5.5) to determine the IBI category and category score.
+    dplyr::mutate(IBI_Category = case_when(IBI_Score == 0 ~ "Reference", IBI_Score == 1 ~ "Low Disturbance", IBI_Score == 2 ~ "Moderate Disturbance", (IBI_Score == 3 | IBI_Score == 4) ~ "High Disturbance")) %>%
+    dplyr::mutate(IBI_Category_Score = case_when(IBI_Score == 0 ~ 1, IBI_Score == 1 ~ 2, IBI_Score == 2 ~ 3, (IBI_Score == 3 | IBI_Score == 4) ~ 4))
+
 
 
   #write.csv(ibi_metrics, file = "data/ibi-metrics.csv", row.names = FALSE)
