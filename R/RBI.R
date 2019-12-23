@@ -178,6 +178,15 @@ RBI <- function(BenthicData)
     dplyr::full_join(rbi9, by = c("B13_Stratum", "StationID", "Replicate")) %>%
     dplyr::select(B13_Stratum, StationID, Replicate, NumOfTaxa, NumOfMolluscTaxa, NumOfCrustaceanTaxa, CrustaceanAbun, M_insidiosumAbun, A_diegensisAbun, G_littoreaAbun, CapitellaAbun, OligochaetaAbun)
 
+  ### RBI Category Thresholds for Southern California Marine Bays
+  RBI_category_thresholds <- data.frame(ref_low = c(0.27, 0.16, 0.08, 0.08),
+                                        ref_high = c(0.27, 0.27, 0.16, 0.08),
+                                        category = as.factor(c("Reference",
+                                                               "Low Disturbance",
+                                                               "Moderate Disturbance",
+                                                               "High Disturbance")),
+                                        category_score = c(1, 2, 3, 4))
+
   # Compute the RBI scores.
   # This was not included in the queries that D. Gillet listed. We went through the Technical Manual (p. 77-78)
   # to find the appropriate calculations.
@@ -200,7 +209,17 @@ RBI <- function(BenthicData)
     # PIT = Positive Indicator Taxa
     mutate(PIT = ( (M_insidiosumAbun)^(1/4) / (473)^(1/4) ) + ( (A_diegensisAbun)^(1/4) / (27)^(1/4) ) + ( (G_littoreaAbun)^(1/4) / (15)^(1/4) )) %>%
     mutate(Raw_RBI = TWV + NIT + (2 * PIT)) %>%
-    mutate(RBI_Score = (Raw_RBI - 0.03)/ 4.69)
+    dplyr::mutate(RBI_Score = (Raw_RBI - 0.03)/ 4.69) %>%
+    # RBI Categories based on RBI scores
+    dplyr::mutate(RBI_Category = case_when( (RBI_Score > 0.27) ~ "Reference",
+                                            (RBI_Score > 0.16 & RBI_Score <= 0.27) ~ "Low Disturbance",
+                                            (RBI_Score > 0.08 & RBI_Score <= 0.16) ~ "Moderate Disturbance",
+                                            (RBI_Score <= 0.08)  ~ "High Disturbance" )) %>%
+    # RBI Category Scores based on RBI scores
+    dplyr::mutate(RBI_Category_Score = case_when( (RBI_Category == "Reference") ~ 1,
+                                                  (RBI_Category == "Low Disturbance") ~ 2,
+                                                  (RBI_Category == "Moderate Disturbance") ~ 3,
+                                                  (RBI_Category == "High Disturbance") ~ 4))
 
 }
 
