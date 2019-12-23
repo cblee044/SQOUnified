@@ -1,13 +1,60 @@
 #' Compute the relative benthic index (RBI) score.
 #'
+#' The RBI is the weighted sum of: (a) four community metrics related to biodiversity (total number of taxa, number of crustacean taxa, abundance
+#' of crustacean individuals, and number of mollusc taxa), (b) abundances of three positive indicator taxa, and (c) the presence of two negative
+#' indicator species.
+#'
+#' The data needed to calculate the RBI are:
+#' (1) Total number of taxa,
+#' (2) Number of mollusc taxa,
+#' (3) Number of crustacean individuals,
+#' (4) Number of individuals of \emph{Monocorophium insidiosum},
+#' (5) Number of individuals of \emph{Asthenothaerus diegensis},
+#' (6) Number of individuals of \emph{Goniada littorea},
+#' (7) Whether the data has the presence of \emph{Capitella capitata} complex, and
+#' (8) Whether the data has the presence of Oligochaeta.
+#'
+#' To compute the RBI, the first step is to normalize the values for the benthic community metrics relative to maxima for the data used to develop
+#' the RBI for the Southern California Marine Bays habitat, to produce values relative to the maxima that are referred to as scaled values. The
+#' scaled value calculations use the following formulae:
+#'
+#' Total Number of Taxa / 99
+#' Number of Mollusc Taxa / 28
+#' Number of Crustacean Taxa / 29
+#'
+#'
+#' The next step is to calculate the Taxa Richness Weighted Value (TWV) from the scaled values by the equation:
+#'
+#' TWV = Scaled Total Number of Taxa + Scaled Number of Mollusc Taxa + Scaled Number of Crustacean Taxa + (0.25 * Scaled Abundance of Crustacea)
+#'
+#' Next, the value for the two negative indicator taxa (NIT) is calculated. The two negative indicator taxa are \emph{Capitella capitata} complex
+#' and Oligochaeta. For each of these taxa that are present, in any abundance, the NIT is decreased by 0.1. Therefore, if neither were found the
+#' NIT = 0, if both are found the NIT = -0.2.
+#'
+#' The next step is to calculate the value for the three positive indicator taxa (PIT).
 #'
 #' @usage data(benthic_data)
 #' @usage data(EG_Ref)
 #' @usage data(Taxonomic_Info)
 #'
+#' @param BenthiCData a data frame stored in the R environment. Note that this data frame MUST contain the following
+#'                    information with these headings:
+#'                         \code{StationID} - an alpha-numeric identifier of the location;
+#'                         \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
+#'                         \code{SampleDate} - the date of sample collection;
+#'                         \code{Latitude} - latitude in decimal degrees;
+#'                         \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
+#'                         \code{Taxon} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
+#'        use sp only or just the Genus. If no animals were present in the sample use
+#'        NoOrganismsPresent with 0 abundance;
+#'                         \code{Abundance} - the number of each Species observed in a sample;
+#'                         \code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling;
+#'                         \code{Stratum} - ;
+#'                         \code{Exclude} - ;
+#'
 #' @examples
-#' MAMBI.DJG.alt(benthic_data, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
-#' MAMBI.DJG.alt(benthic_data, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="US_Gulf")
+#' RBI(benthic_data)
+#' RBI(DB)
 
 ##########################################################################################################################
 ## This is a function to calculate relative benthic index (RBI). The RBI is the weighted sum of: 1) four community metrics
@@ -23,15 +70,13 @@
 ##                                  Latitude - latitude in decimal degrees
 ##                                  Longitude - longitude in decimal degrees make sure there is a negative sign
 ##                                              for the Western coordinates
-##                                  Species - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
+##                                  Taxon - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
 ##                                            use sp only or just the Genus. If no animals were present in the sample
 ##                                            use NoOrganismsPresent with 0 abundance
 ##                                  Abundance - the number of each Species observed in a sample
 ##                                  Salinity - the salinity observed at the location in PSU, ideally at time of sampling
-##                                  NumOfMolluscTaxa -
-##                                  NumOfCrustaceanTaxa -
-##
-##
+##                                  Stratum -
+##                                  Exclude -
 ##
 ##
 ##
