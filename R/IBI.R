@@ -1,5 +1,34 @@
 #' Compute the Indec of Biotic Integrity (IBI) and IBI condition category.
 #'
+#' The IBI compares the values of four different metrics to the ranges expected under reference conditions. Each metric
+#' that is outside of the reference range increases the IBI score by one. Therefore, if all four metrics were inside
+#' the reference range, the score would be 0. Conversely, if all four metrics were outside the reference range, the
+#' value would be 4.
+#'
+#' The data needed to calculate the IBI are:
+#' (1) the total number of taxa,
+#' (2) the total number of mollusc taxa,
+#' (3) the abundance of \emph{Notomastus} sp., and
+#' (4) the number of sensitive taxa.
+#'
+#' The total numnber of taxa, number of mollusc taxa, and abundance of \emph{Notomastus} sp. can be obtained directly
+#' from the data. The list of sensitive species should be based on the species list for Southern California Marine Bays
+#' and the percentage of sensitive taxa present is calulated as:
+#'
+#' \deqn{\% \textrm{sensitive taxa} = (\textrm{number of sensistive taxa} / \textrm{total number of taxa}) \times 100}
+#'
+#' The value for each metric is then compared to a reference range for that metric (Table 2).
+#' The IBI score is set to zero before comparison to the reference range. For each metric that is out of the reference
+#' range (above or below), the IBI score goes up by one.
+#'
+#' <Include Table 2>
+#'
+#' The IBI score is then compared to condition category thresholds (Table 3) in order to determine the IBI category and
+#' score.
+#'
+#' <Include Table 3>
+#'
+#'
 #' @param BenthicData a data frame with AT LEAST the following information with these headings:
 #'    \code{StationID} - an alpha-numeric identifier of the location;
 #'    \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
@@ -15,8 +44,7 @@
 #' @usage data(benthic_data)
 #'
 #' @examples
-#' MAMBI.DJG.alt(benthic_data, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
-#' MAMBI.DJG.alt(benthic_data, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="US_Gulf")
+#' IBI(BenthicData)
 
 ##########################################################################################################################
 #
