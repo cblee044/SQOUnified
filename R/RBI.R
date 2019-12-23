@@ -31,7 +31,27 @@
 #' and Oligochaeta. For each of these taxa that are present, in any abundance, the NIT is decreased by 0.1. Therefore, if neither were found the
 #' NIT = 0, if both are found the NIT = -0.2.
 #'
-#' The next step is to calculate the value for the three positive indicator taxa (PIT).
+#' The next step is to calculate the value for the three positive indicator taxa (PIT). The positive indicator taxa are \emp{Monocorophium insidiosum,
+#' Asthenothaerus diegensis}, and \emph{Goniada littorea}. First, the PIT value is calculated for each species using the following equations:
+#'
+#' \deqn{\frac{\sqrt[4]{Monocorophium~ insidiosum \textrm{abundance}}}{\sqrt[4]{473}}}
+#' \deqn{\frac{\sqrt[4]{Asthenothaerus~ diegensis \textrm{abundance}}}{\sqrt[4]{27}}}
+#' \deqn{\frac{\sqrt[4]{Goniada littorea~ \textrm{abundance}}}{\sqrt[4]{15}}}
+#'
+#' The three species PIT values are then summed to calculate the PIT value for the sample. If none of the three species is present, then the sample
+#' PIT = 0.
+#'
+#' The next step is to calculate the Raw RBI:
+#'
+#' \deqn{\textrm{Raw RBI} = \textrm{TWV + NIT + } (2 \times \textrm{PIT})}
+#'
+#' The final calculation is for the RBI score, normalizing the Raw RBI by the minimum and maximum Raw RBI values in the index development data:
+#'
+#' \deqn{\textrm{RBI Score} = (\textrm{Raw RBI} - 0.03)/4.69}
+#'
+#' The last step in the RBI process is to compare the RBI Score to a set of thresholds to determine the RBI category (Table 4).
+#'
+#' <Insert Table 4>
 #'
 #' @usage data(benthic_data)
 #' @usage data(EG_Ref)
