@@ -1,4 +1,44 @@
-#' Compute the benthic response index (BRI) score.
+#' Compute the benthic response index (BRI) score and BRI condition category.
+#'
+#' The BRI is the abundance weighted pollution tolerance score of the organisms present in a benthic sample. The higher
+#' the BRI score, the more degraded the benthic community represented by the sample.
+#'
+#' Two types of data are needed to calculate the BRI:
+#'
+#' (1) the abundance of each species and
+#' (2) its pollution tolerance score, P.
+#'
+#' The P values are available for most species present in the assemblage. Only species for which P values are avialable
+#' are used in the BRI calculations. P values showld be obtained for the appropriate habitat and from the most
+#' up-to-date list available.
+#'
+#' The first step in the BRI calculation is to compute the 4th root of the abundance of each taxon in the sample for
+#' which P values are available. The next step is to multiply the 4th root abundance value by the P value, for each
+#' taxon.
+#'
+#' Next, separately sum all of the 4th roots of the abundances and all of the products of the 4th roots of abundance
+#' and P values. Taxa that lack P values are not included in either sum. The next step is to calculate the BRI score
+#' as:
+#'
+#' \deqn{ \frac{\sum \left(\sqrt[p]{\textrm{Abundance}} \right) \times P}{\sum \sqrt[p]{\textrm{Abundance}}} }
+#'
+#' The last step is to compare the BRI score to the BRI threshold values in Table 5 to determine the BRI category and
+#' category score.
+#'
+#' <Table 5. To be included in R markdown file>
+#'
+#'
+#'
+#' @param BenthicData a data frame with the following headings
+#'
+#'    \code{StationID} - an alpha-numeric identifier of the location;
+#'    \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
+#'    \code{SampleDate} - the date of sample collection;
+#'    \code{Latitude} - latitude in decimal degrees;
+#'    \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
+#'    \code{Species} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
+#'        use sp only or just the Genus. If no animals were present in the sample use
+#'        NoOrganismsPresent with 0 abundance;
 #'
 #'
 #' @usage data(benthic_data)
@@ -17,6 +57,9 @@
 
 BRI <- function(BenthicData)
 {
+  require(tidyverse)
+  require(reshape2)
+  require(vegan)
   out <- BenthicData %>%
   dplyr::left_join(Taxonomic_Info, by = c('taxon' = 'Taxon')) %>%
   dplyr::right_join(assignment, by = 'stationid') %>%
@@ -40,7 +83,21 @@ BRI <- function(BenthicData)
   ) %>%
   dplyr::summarize(
     BRI_Score = sum(tolerance_score, na.rm = T) / sum(fourthroot_abun, na.rm = T)
-  )
+  ) %>%
+    # Output the BRI category given the BRI score and the thresholds for Southern California Marine Bays
+    dplyr::mutate(
+      BRI_Category = case_when( (BRI_Score < 39.96) ~ "Reference",
+                                (BRI_Score >= 39.96 & BRI_Score < 49.15) ~ "Low Disturbance",
+                                (BRI_Score >= 49.15 & BRI_Score < 73.27) ~ "Moderate Disturbance",
+                                (BRI_Score >= 73.27) ~ "High Disturbance"
+    )) %>%
+    # Output the BRI category score given the category for thresholds for Southern CA Marine Bays
+    dplyr::mutate(
+      BRI_Category_Score = case_when( (BRI_Category == "Reference") ~ 1,
+                                      (BRI_Category == "Low Disturbance") ~ 2,
+                                      (BRI_Categpry == "Moderate Disturbance") ~ 3,
+                                      (BRI_Category == "High Disturbance") ~ 4 )
+    )
 
   return(out)
 }
