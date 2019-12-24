@@ -22,10 +22,17 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
     rbi.scores <- RBI(DB)
     ibi.scores <- IBI(DB)
     bri.scores <- BRI(DB)
-    final.scores <- mambi.score # will add other scores to this data frame as they are computed
+    final.scores <- mambi.score %>%
+      dplyr::full_join(rbi.scores, by = c("StationID", "Replicate")) %>%
+      dplyr::full_join(ibi.scores, by = c("StationID", "Replicate")) %>%
+      dplyr::full_join(bri.scores, by = c("StationID", "Replicate")) # will add other scores to this data frame as they are computed
   } else {
     mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
-    final.scores <- mambi.score # will add other scores to this data frame as they are computed
+    final.scores <- mambi.score %>%
+      dplyr::left_join(rbi.scores, by = c("StationID", "Replicate")) %>%
+      dplyr::left_join(ibi.scores, by = c("StationID", "Replicate")) %>%
+      dplyr::left_join(bri.scores, by = c("StationID", "Replicate"))
+    # will add other scores to this data frame as they are computed
   }
 
   ####
@@ -41,11 +48,13 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
       ibi.scores <- IBI(DB)
       bri.scores <- BRI(DB)
       final.scores <- mambi.score %>%
-        dplyr::left_join(rbi.scores, by = c("SampleID", "StationID", "Replicate")) %>%
-        dplyr::left_join(ibi.scores, by = c("SampleID", "StationID", "Replicate")) %>%
-        dplyr::left_join(bri.scores, by = c("SampleID", "StationID", "Replicate")) %>%
+        dplyr::left_join(rbi.scores, by = c("StationID", "Replicate")) %>%
+        dplyr::left_join(ibi.scores, by = c("StationID", "Replicate")) %>%
+        dplyr::left_join(bri.scores, by = c("StationID", "Replicate")) %>%
         # only select the final scores to be written to return to user
-        dplyr::select()
+        dplyr::select("StationID", "Replicate", "SampleDate", "MAMBI_Score", "Orig_MAMBI_Condition", "New_MAMBI_Condition",
+                      "RBI_Score", "RBI_Category", "RBI_Category_Score", "IBI_Score", "IBI_Category", "IBI_Category_Score",
+                      "BRI_Score", "BRI_Category", "BRI_Category_Score")
     } else {
       for (item in SQO)
       {
@@ -72,6 +81,8 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
   }
 
   # OUTPUT: Write an xlsx file to current working directory
-  write.csv(mambi.score, file = "SQO-Unified.csv", row.names = FALSE)
+
+  write.csv(final.scores, file = "SQO-Unified.csv", row.names = FALSE)
+  return(final.scores)
   }
 }
