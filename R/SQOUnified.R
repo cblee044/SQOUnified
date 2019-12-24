@@ -19,9 +19,9 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
   # Compute ALL SQO scores
   if (SQO == "all"){
     mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
-    rbi.scores <- RBI()
-    ibi.scores <- IBI()
-    bri.scores <- BRI()
+    rbi.scores <- RBI(DB)
+    ibi.scores <- IBI(DB)
+    bri.scores <- BRI(DB)
     final.scores <- mambi.score # will add other scores to this data frame as they are computed
   } else {
     mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
@@ -35,11 +35,43 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
   ####
   for (index in SQO)
   {
-    if (index == "all"){
-
-    }
+    if (SQO == "all"){
+      mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
+      rbi.scores <- RBI(DB)
+      ibi.scores <- IBI(DB)
+      bri.scores <- BRI(DB)
+      final.scores <- mambi.score %>%
+        dplyr::left_join(rbi.scores, by = c("SampleID", "StationID", "Replicate")) %>%
+        dplyr::left_join(ibi.scores, by = c("SampleID", "StationID", "Replicate")) %>%
+        dplyr::left_join(bri.scores, by = c("SampleID", "StationID", "Replicate")) %>%
+        # only select the final scores to be written to return to user
+        dplyr::select()
+    } else {
+      for (item in SQO)
+      {
+        if(item == "MAMBI") {
+          mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
+        }
+        else if(item == "RBI"){
+          rbi.scores <- RBI(DB)
+        }
+        else if(item == "IBI"){
+          ibi.scores <- IBI(DB)
+        }
+        else if(item == "BRI"){
+          bri.scores <- BRI(DB)
+        }
+        else if(item == "RIVPACS"){
+          rivpacs = RIVPACS(DB)
+        }
+        else {
+          # Add a check in chkinp. This is just for testing right now.
+          print("Not a valid SQO score that can be computed.")
+        }
+      }
   }
 
   # OUTPUT: Write an xlsx file to current working directory
   write.csv(mambi.score, file = "SQO-Unified.csv", row.names = FALSE)
+  }
 }
