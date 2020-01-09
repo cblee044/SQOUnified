@@ -5,7 +5,7 @@
 #' @param SQO A list of the type of SQO scores that we want to compute
 #'     (e.g., \code{c("MAMBI", "RBI")}).
 #'     The default is \code{"all"}, meaning that all scores will be computed.
-#' @usage data(benthic_data)
+#' @usage data(DB)
 #' @examples
 #' SQOUnified(DB = benthic_data, SQO = "all")
 #' SQOUnified(DB = benthic_data, SQO = "MAMBI")
@@ -52,9 +52,8 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
         dplyr::left_join(ibi.scores, by = c("StationID", "Replicate")) %>%
         dplyr::left_join(bri.scores, by = c("StationID", "Replicate")) %>%
         # only select the final scores to be written to return to user
-        dplyr::select("StationID", "Replicate", "SampleDate", "MAMBI_Score", "Orig_MAMBI_Condition", "New_MAMBI_Condition",
-                      "RBI_Score", "RBI_Category", "RBI_Category_Score", "IBI_Score", "IBI_Category", "IBI_Category_Score",
-                      "BRI_Score", "BRI_Category", "BRI_Category_Score")
+        dplyr::select("StationID", "Replicate", "SampleDate", "Index",
+                      "Score", "Category", "Category_Score", "Orig_MAMBI_Condition", "New_MAMBI_Condition")
     } else {
       for (item in SQO)
       {

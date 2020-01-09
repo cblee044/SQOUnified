@@ -67,34 +67,34 @@ BRI <- function(BenthicData)
   # I actually found that it didn't appear to make a difference
   #dplyr::group_by(stratum, stationid, replicate, taxon, abundance, `B-CodeScore`) %>%
   #dplyr::filter(B13_Stratum %in% c("Estuaries", "Marinas", "Bays", "Ports")) %>%
-  dplyr::filter(!is.na(`B-CodeScore`)) %>%
+  dplyr::filter(!is.na(B.Code)) %>%
   dplyr:: rename(B13_Stratum = Stratum) %>%
-  dplyr::select(B13_Stratum, StationID, Replicate, Species, Abundance, `B-CodeScore`)  %>%
+  dplyr::select(B13_Stratum, StationID, Replicate, Species, Abundance, B.Code)  %>%
   # End of BRI - 1 query. Begin BRI - 2 query
   dplyr::mutate(
     fourthroot_abun = Abundance ** 0.25,
-    tolerance_score = fourthroot_abun * `B-CodeScore`
+    tolerance_score = fourthroot_abun * B.Code
   ) %>%
   # End of BRI - 2. Begin BRI - 3
   dplyr::group_by(
     B13_Stratum, StationID, Replicate
   ) %>%
   dplyr::summarize(
-    BRI_Score = sum(tolerance_score, na.rm = T) / sum(fourthroot_abun, na.rm = T)
+    Score = sum(tolerance_score, na.rm = T) / sum(fourthroot_abun, na.rm = T)
   ) %>%
     # Output the BRI category given the BRI score and the thresholds for Southern California Marine Bays
     dplyr::mutate(
-      BRI_Category = case_when( (BRI_Score < 39.96) ~ "Reference",
-                                (BRI_Score >= 39.96 & BRI_Score < 49.15) ~ "Low Disturbance",
-                                (BRI_Score >= 49.15 & BRI_Score < 73.27) ~ "Moderate Disturbance",
-                                (BRI_Score >= 73.27) ~ "High Disturbance"
+      Category = case_when( (Score < 39.96) ~ "Reference",
+                                (Score >= 39.96 & Score < 49.15) ~ "Low Disturbance",
+                                (Score >= 49.15 & Score < 73.27) ~ "Moderate Disturbance",
+                                (Score >= 73.27) ~ "High Disturbance"
     )) %>%
     # Output the BRI category score given the category for thresholds for Southern CA Marine Bays
     dplyr::mutate(
-      BRI_Category_Score = case_when( (BRI_Category == "Reference") ~ 1,
-                                      (BRI_Category == "Low Disturbance") ~ 2,
-                                      (BRI_Category == "Moderate Disturbance") ~ 3,
-                                      (BRI_Category == "High Disturbance") ~ 4 )
+      Category_Score = case_when( (Category == "Reference") ~ 1,
+                                      (Category == "Low Disturbance") ~ 2,
+                                      (Category == "Moderate Disturbance") ~ 3,
+                                      (Category == "High Disturbance") ~ 4 )
     )
 
   return(out)

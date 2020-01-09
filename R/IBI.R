@@ -61,7 +61,7 @@ IBI <- function(BenthicData)
     inner_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
     dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
     dplyr::add_count(Species) %>%
-    dplyr::select('StationID','Replicate','Species','Abundance','Stratum', 'Phylum', 'Subphylum', 'IBISensitive', 'n') %>%
+    dplyr::select('StationID','Replicate','Species','Abundance','Stratum', 'Phylum', 'Subphylum', 'IBI.Sensitive.Taxa', 'n') %>%
     dplyr::group_by(Stratum, StationID, Replicate, Species, Abundance, Phylum, Subphylum) %>%
     dplyr::rename(NumOfTaxa = n) %>%
     dplyr::rename(B13_Stratum = Stratum)
@@ -97,11 +97,11 @@ IBI <- function(BenthicData)
 
   ### SQO IBI - 4 - 1
   ibi4_1 <- ibi_data %>%
-    dplyr::filter(IBISensitive == "TRUE") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, IBISensitive, Abundance) %>%
+    dplyr::filter(IBI.Sensitive.Taxa == "TRUE") %>%
+    dplyr::group_by(B13_Stratum, StationID, Replicate, IBI.Sensitive.Taxa, Abundance) %>%
     dplyr::add_count(Abundance) %>%
     dplyr::rename(SensTaxa = n) %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, IBISensitive) %>%
+    dplyr::group_by(B13_Stratum, StationID, Replicate, IBI.Sensitive.Taxa) %>%
     dplyr::summarise(SensTaxa = sum(SensTaxa))
 
 
@@ -142,19 +142,20 @@ IBI <- function(BenthicData)
     # We replace any NAs with 0 so that we can compare the values to the tables listed above
     dplyr::mutate(NotomastusAbun = replace_na(NotomastusAbun, 0)) %>%
     # The IBI score is set to zero before comparison the reference range.
-    dplyr::mutate(IBI_Score = 0) %>%
+    dplyr::mutate(Score = 0) %>%
     # For each metric that is out of the reference range (above or below), the IBI score goes up by one.
-    dplyr::mutate(IBI_Score = if_else((NumOfTaxa < ibi_ref_ranges_table["NumOfTaxa",]$ref_low  | NumOfTaxa > ibi_ref_ranges_table["NumOfTaxa",]$ref_high),
-                                      IBI_Score + 1, IBI_Score)) %>%
-    dplyr::mutate(IBI_Score = if_else((NumOfMolluscTaxa < ibi_ref_ranges_table["NumOfMolluscTaxa",]$ref_low  | NumOfMolluscTaxa > ibi_ref_ranges_table["NumOfMolluscTaxa",]$ref_high),
-                                      IBI_Score + 1, IBI_Score)) %>%
-    dplyr::mutate(IBI_Score = if_else((NotomastusAbun < ibi_ref_ranges_table["NotomastusAbun",]$ref_low  | NotomastusAbun > ibi_ref_ranges_table["NotomastusAbun",]$ref_high),
-                                      IBI_Score + 1, IBI_Score)) %>%
-    dplyr::mutate(IBI_Score = if_else((PctSensTaxa < ibi_ref_ranges_table["PctSensTaxa",]$ref_low  | PctSensTaxa > ibi_ref_ranges_table["PctSensTaxa",]$ref_high),
-                                      IBI_Score + 1, IBI_Score)) %>%
+    dplyr::mutate(Score = if_else((NumOfTaxa < ibi_ref_ranges_table["NumOfTaxa",]$ref_low  | NumOfTaxa > ibi_ref_ranges_table["NumOfTaxa",]$ref_high),
+                                      Score + 1, Score)) %>%
+    dplyr::mutate(Score = if_else((NumOfMolluscTaxa < ibi_ref_ranges_table["NumOfMolluscTaxa",]$ref_low  | NumOfMolluscTaxa > ibi_ref_ranges_table["NumOfMolluscTaxa",]$ref_high),
+                                      Score + 1, Score)) %>%
+    dplyr::mutate(Score = if_else((NotomastusAbun < ibi_ref_ranges_table["NotomastusAbun",]$ref_low  | NotomastusAbun > ibi_ref_ranges_table["NotomastusAbun",]$ref_high),
+                                      Score + 1, Score)) %>%
+    dplyr::mutate(Score = if_else((PctSensTaxa < ibi_ref_ranges_table["PctSensTaxa",]$ref_low  | PctSensTaxa > ibi_ref_ranges_table["PctSensTaxa",]$ref_high),
+                                      Score + 1, Score)) %>%
     # The IBI score is then compared to condition category response ranges (Table 5.5) to determine the IBI category and category score.
-    dplyr::mutate(IBI_Category = case_when(IBI_Score == 0 ~ "Reference", IBI_Score == 1 ~ "Low Disturbance", IBI_Score == 2 ~ "Moderate Disturbance", (IBI_Score == 3 | IBI_Score == 4) ~ "High Disturbance")) %>%
-    dplyr::mutate(IBI_Category_Score = case_when(IBI_Score == 0 ~ 1, IBI_Score == 1 ~ 2, IBI_Score == 2 ~ 3, (IBI_Score == 3 | IBI_Score == 4) ~ 4))
+    dplyr::mutate(Category = case_when(Score == 0 ~ "Reference", Score == 1 ~ "Low Disturbance", Score == 2 ~ "Moderate Disturbance", (Score == 3 | Score == 4) ~ "High Disturbance")) %>%
+    dplyr::mutate(Category_Score = case_when(Score == 0 ~ 1, Score == 1 ~ 2, Score == 2 ~ 3, (Score == 3 | Score == 4) ~ 4)) %>%
+    dplyr::mutate(Index = "IBI")
 
 
 

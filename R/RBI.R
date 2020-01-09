@@ -232,17 +232,17 @@ RBI <- function(BenthicData)
     # PIT = Positive Indicator Taxa
     mutate(PIT = ( (M_insidiosumAbun)^(1/4) / (473)^(1/4) ) + ( (A_diegensisAbun)^(1/4) / (27)^(1/4) ) + ( (G_littoreaAbun)^(1/4) / (15)^(1/4) )) %>%
     mutate(Raw_RBI = TWV + NIT + (2 * PIT)) %>%
-    dplyr::mutate(RBI_Score = (Raw_RBI - 0.03)/ 4.69) %>%
+    dplyr::mutate(Score = (Raw_RBI - 0.03)/ 4.69) %>%
     # RBI Categories based on RBI scores
-    dplyr::mutate(RBI_Category = case_when( (RBI_Score > 0.27) ~ "Reference",
-                                            (RBI_Score > 0.16 & RBI_Score <= 0.27) ~ "Low Disturbance",
-                                            (RBI_Score > 0.08 & RBI_Score <= 0.16) ~ "Moderate Disturbance",
-                                            (RBI_Score <= 0.08)  ~ "High Disturbance" )) %>%
+    dplyr::mutate(Category = case_when( (Score > 0.27) ~ "Reference",
+                                            (Score > 0.16 & Score <= 0.27) ~ "Low Disturbance",
+                                            (Score > 0.08 & Score <= 0.16) ~ "Moderate Disturbance",
+                                            (Score <= 0.08)  ~ "High Disturbance" )) %>%
     # RBI Category Scores based on RBI scores
-    dplyr::mutate(RBI_Category_Score = case_when( (RBI_Category == "Reference") ~ 1,
-                                                  (RBI_Category == "Low Disturbance") ~ 2,
-                                                  (RBI_Category == "Moderate Disturbance") ~ 3,
-                                                  (RBI_Category == "High Disturbance") ~ 4))
+    dplyr::mutate(Category_Score = case_when( (Category == "Reference") ~ 1,
+                                                  (Category == "Low Disturbance") ~ 2,
+                                                  (Category == "Moderate Disturbance") ~ 3,
+                                                  (Category == "High Disturbance") ~ 4))
 
 }
 
