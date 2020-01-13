@@ -23,9 +23,12 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
     ibi.scores <- IBI(DB)
     bri.scores <- BRI(DB)
     final.scores <- mambi.score %>%
-      dplyr::full_join(rbi.scores, by = c("StationID", "Replicate")) %>%
-      dplyr::full_join(ibi.scores, by = c("StationID", "Replicate")) %>%
-      dplyr::full_join(bri.scores, by = c("StationID", "Replicate")) # will add other scores to this data frame as they are computed
+      dplyr::full_join(bri.scores) %>%
+      dplyr::full_join(rbi.scores) %>%
+      dplyr::full_join(ibi.scores) %>% # will add other scores to this data frame as they are computed
+      dplyr::select("StationID", "Replicate", "SampleDate", "B13_Stratum", "Index", "Score",
+                    "Category", "Category_Score", "MAMBI_Score", "New_MAMBI_Condition",
+                    "Use_AMBI", "Use_MAMBI", "YesEG")
   } else {
     mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
     final.scores <- mambi.score %>%
@@ -42,18 +45,21 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
   ####
   for (index in SQO)
   {
+    final.scores <- data.frame(matrix(vector(), 0, 3),
+                               dimnames = list(c(), c("Date", "File", "User")),
+                               stringsAsFactors = F)
     if (SQO == "all"){
       mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
       rbi.scores <- RBI(DB)
       ibi.scores <- IBI(DB)
       bri.scores <- BRI(DB)
       final.scores <- mambi.score %>%
-        dplyr::left_join(rbi.scores, by = c("StationID", "Replicate")) %>%
-        dplyr::left_join(ibi.scores, by = c("StationID", "Replicate")) %>%
-        dplyr::left_join(bri.scores, by = c("StationID", "Replicate")) %>%
-        # only select the final scores to be written to return to user
-        dplyr::select("StationID", "Replicate", "SampleDate", "Index",
-                      "Score", "Category", "Category_Score", "Orig_MAMBI_Condition", "New_MAMBI_Condition")
+        dplyr::full_join(bri.scores) %>%
+        dplyr::full_join(rbi.scores) %>%
+        dplyr::full_join(ibi.scores) %>% # will add other scores to this data frame as they are computed
+        dplyr::select("StationID", "Replicate", "SampleDate", "B13_Stratum", "Index", "Score",
+                      "Category", "Category_Score", "MAMBI_Score", "New_MAMBI_Condition",
+                      "Use_AMBI", "Use_MAMBI", "YesEG")
     } else {
       for (item in SQO)
       {
@@ -69,9 +75,9 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
         else if(item == "BRI"){
           bri.scores <- BRI(DB)
         }
-        else if(item == "RIVPACS"){
-          rivpacs = RIVPACS(DB)
-        }
+        #else if(item == "RIVPACS"){
+         # rivpacs = RIVPACS(DB)
+        #}
         else {
           # Add a check in chkinp. This is just for testing right now.
           print("Not a valid SQO score that can be computed.")

@@ -52,12 +52,12 @@
 "Taxonomic_Info"
 
 
-BRI <- function(BenthicData)
+BRI <- function(DB = benthic_data)
 {
   require(tidyverse)
   require(reshape2)
   require(vegan)
-  out <- BenthicData %>%
+  out <- DB %>%
   dplyr::left_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
   #dplyr::right_join(assignment, by = 'stationid') %>%
   # I assume that the next line is something they had in there as a method of removing duplicates
@@ -95,7 +95,8 @@ BRI <- function(BenthicData)
                                       (Category == "Low Disturbance") ~ 2,
                                       (Category == "Moderate Disturbance") ~ 3,
                                       (Category == "High Disturbance") ~ 4 )
-    )
+    ) %>%
+    dplyr::mutate(Index = "BRI")
 
   return(out)
 }

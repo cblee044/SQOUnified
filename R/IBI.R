@@ -1,4 +1,4 @@
-#' Compute the Indec of Biotic Integrity (IBI) and IBI condition category.
+#' Compute the Index of Biotic Integrity (IBI) and IBI condition category.
 #'
 #' The IBI compares the values of four different metrics to the ranges expected under reference conditions. Each metric
 #' that is outside of the reference range increases the IBI score by one. Therefore, if all four metrics were inside
@@ -50,14 +50,14 @@
 #
 ##########################################################################################################################
 
-IBI <- function(BenthicData)
+IBI <- function(DB = benthic_data)
 {
   require(tidyverse)
 
   "Taxonomic_Info"
 
   # Prepare the given data frame so that we can compute the RBI score and categories
-  ibi_data <- BenthicData %>%
+  ibi_data <- DB %>%
     inner_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
     dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
     dplyr::add_count(Species) %>%
@@ -97,7 +97,7 @@ IBI <- function(BenthicData)
 
   ### SQO IBI - 4 - 1
   ibi4_1 <- ibi_data %>%
-    dplyr::filter(IBI.Sensitive.Taxa == "TRUE") %>%
+    dplyr::filter(IBI.Sensitive.Taxa != 0) %>%
     dplyr::group_by(B13_Stratum, StationID, Replicate, IBI.Sensitive.Taxa, Abundance) %>%
     dplyr::add_count(Abundance) %>%
     dplyr::rename(SensTaxa = n) %>%

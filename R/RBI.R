@@ -110,14 +110,14 @@
 ##########################################################################################################################
 
 
-RBI <- function(BenthicData)
+RBI <- function(DB = benthic_data)
 {
   require(tidyverse)
 
   "Taxonomic_Info"
 
   # Prepare the given data frame so that we can compute the RBI score and categories
-  rbi_data <- BenthicData %>%
+  rbi_data <- DB %>%
     inner_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
     dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
     dplyr::add_count(Species) %>%
@@ -242,7 +242,8 @@ RBI <- function(BenthicData)
     dplyr::mutate(Category_Score = case_when( (Category == "Reference") ~ 1,
                                                   (Category == "Low Disturbance") ~ 2,
                                                   (Category == "Moderate Disturbance") ~ 3,
-                                                  (Category == "High Disturbance") ~ 4))
+                                                  (Category == "High Disturbance") ~ 4)) %>%
+    dplyr::mutate(Index = "RBI")
 
 }
 

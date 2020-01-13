@@ -255,7 +255,8 @@ MAMBI<-function(BenthicData, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Sc
       left_join(.,AMBI.applicability[,c(1,2,3,5,6)], by=c("StationID", "Replicate", "SampleDate")) %>%
       left_join(MAMBI.applicability,.,by=c("StationID", "Replicate", "SampleDate")) %>%
       select(1:3,5:10,14,11:13,4,16,15) %>%
-      bind_rows(.,azoic.samples)
+      bind_rows(.,azoic.samples) %>%
+      mutate(Index = "M-AMBI")
   }
 
 }
