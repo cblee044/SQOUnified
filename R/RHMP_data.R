@@ -12,3 +12,4 @@ DB = test %>%
 
 # Run the SQOUnified code to get the calculated benthic indices
 
+mambi.scores <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
