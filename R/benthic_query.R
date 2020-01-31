@@ -101,7 +101,7 @@ benthic_query <- function()
   #mutate(EG_Test=ifelse(is.na(EG),"NoEG", "YesEG"))
 
   save(benthic_data, file = "data/benthic_data.Rdata")
-  #write.csv(benthic_data, file = "data/benthic_data.csv", row.names = FALSE)
+  write.csv(benthic_data, file = "data/benthic_data.csv", row.names = FALSE)
 
 
 }
