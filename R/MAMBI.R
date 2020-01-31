@@ -87,7 +87,7 @@ MAMBI<-function(BenthicData, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Sc
   require(vegan)
   require(readxl)
   #source("EQR.R")
-  "EG_Ref"
+  #"EG_Ref"
   "benthic_data"
   "Saline_Standards"
   "TidalFresh_Standards"
@@ -106,8 +106,9 @@ MAMBI<-function(BenthicData, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Sc
 
 
 
-  EG_Ref <- EG_Ref %>% select(.,Taxon, Exclude, EG=EG_Scheme) %>% mutate(EG=(ifelse(Taxon=="Oligochaeta", "V", EG)))
-  #EG_Ref<-read.csv(EG_File_Name, stringsAsFactors = F, na.strings = "") %>% select(.,Taxon, Exclude, EG=EG_Scheme) %>% mutate(EG=(ifelse(Taxon=="Oligochaeta", "V", EG)))
+  EG_Ref<-read.csv(EG_File_Name, stringsAsFactors = F, na.strings = "") %>% select(.,Taxon, Exclude, EG=EG_Scheme) %>% mutate(EG=(ifelse(Taxon=="Oligochaeta", "V", EG)))
+  #EG_Ref <- EG_Ref %>% select(.,Taxon, Exclude, EG=EG_Scheme) %>% mutate(EG=(ifelse(Taxon=="Oligochaeta", "V", EG)))
+
 
   azoic.samples<-Input_File.0 %>% filter(Taxon=="No Organisms Present") %>%
     select(StationID, Replicate, SampleDate, Latitude, Longitude, SalZone) %>% mutate(AMBI_Score=7, S=0, H=0, Oligo_pct=0, MAMBI_Score=0, Orig_MAMBI_Condition="Bad", New_MAMBI_Condition="High Disturbance", Use_MAMBI="Yes", Use_AMBI="Yes - Azoic",YesEG=NA)
