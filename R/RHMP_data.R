@@ -14,5 +14,8 @@ save(DB, file = "data/rhmp_data.Rdata")
 write.csv(benthic_data, file = "data/rhmp_data.csv", row.names = FALSE)
 
 # Run the SQOUnified code to get the calculated benthic indices
-
-mambi.scores <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
+# NOTE: We don't have RIVPACS score in yet, so this is NOT the final scores.
+library(devtools)
+install()
+library(SQOUnified)
+final <- SQOUnified(DB, SQO = "all")

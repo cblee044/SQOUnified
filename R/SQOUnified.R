@@ -18,17 +18,22 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
 
   # Compute ALL SQO scores
   if (SQO == "all"){
-    mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
+    mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid") %>%
+      dplyr::mutate(Score = MAMBI_Score, Category = New_MAMBI_Condition)
     rbi.scores <- RBI(DB)
     ibi.scores <- IBI(DB)
     bri.scores <- BRI(DB)
+    # We need to incorporate RIVPACS. Once we have this we will take the median of RIVPACS, IBI, BRI, RBI and report back one overall score (MBI?)
+    # Once this is done, we will add this to the final output.
+    # For RIVPACS, we're simply going to write a wrapper function and add this to SQOUnified.
+    # If you run into problems, call D. Gillet to get more clarifaction.
     final.scores <- mambi.score %>%
       dplyr::full_join(bri.scores) %>%
       dplyr::full_join(rbi.scores) %>%
       dplyr::full_join(ibi.scores) %>% # will add other scores to this data frame as they are computed
       dplyr::select("StationID", "Replicate", "SampleDate", "B13_Stratum", "Index", "Score",
-                    "Category", "Category_Score", "MAMBI_Score", "New_MAMBI_Condition",
-                    "Use_AMBI", "Use_MAMBI", "YesEG")
+                    "Category", "Category_Score",
+                    "Use_AMBI", "Use_MAMBI")
   } else {
     mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
     final.scores <- mambi.score %>%
