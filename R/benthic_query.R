@@ -74,7 +74,7 @@ benthic_query <- function()
 
   # Bring in our tables from the database
   infauna <- tbl(con, "tbl_infaunalabundance_initial") %>% as_tibble
-  save(infauna, file = 'infauna_data.Rdata')
+  save(infauna, file = 'data/infauna_data.Rdata')
 
   grab <- tbl(con, "tbl_grabevent") %>%
     as_tibble %>%
@@ -100,7 +100,7 @@ benthic_query <- function()
 
   #mutate(EG_Test=ifelse(is.na(EG),"NoEG", "YesEG"))
 
-  #save(benthic_data, file = "benthic_data.Rdata")
+  save(benthic_data, file = "data/benthic_data.Rdata")
   #write.csv(benthic_data, file = "data/benthic_data.csv", row.names = FALSE)
 
 

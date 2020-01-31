@@ -7,8 +7,11 @@ rhmp = read.csv("RHMP_data.csv", fileEncoding="UTF-8-BOM", header = FALSE)
 rhmp = as.character(rhmp$V1)
 
 # filter the data base qeuery by the RHMP stations of interest
-DB = test %>%
+DB = benthic_data %>%
   dplyr::filter(StationID %in% rhmp)
+
+save(DB, file = "data/rhmp_data.Rdata")
+write.csv(benthic_data, file = "data/rhmp_data.csv", row.names = FALSE)
 
 # Run the SQOUnified code to get the calculated benthic indices
 
