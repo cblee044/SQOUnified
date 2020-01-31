@@ -8,7 +8,7 @@ EG_Ref <- read.csv("data/Ref - EG Values 2018.csv", stringsAsFactors = F, na.str
 # Taxonomic information (provided by Gillet)
 Taxonomic_Info <- read.csv("data/Master - Taxonomic Info 1-2-20 for Robert.csv")
 
-save(Saline_Standards, file ='P:/PartTimers/JoanaPerdomo/Projects/SQOUnified/data/Saline_Standards.Rdata')
-save(TidalFresh_Standards, file ='P:/PartTimers/JoanaPerdomo/Projects/SQOUnified/data/TidalFresh_Standards.Rdata')
-save(EG_Ref, file = 'P:/PartTimers/JoanaPerdomo/Projects/SQOUnified/data/EG_Ref.Rdata')
-save(Taxonomic_Info, file = 'P:/PartTimers/JoanaPerdomo/Projects/SQOUnified/data/Taxonomic_Info.Rdata')
+save(Saline_Standards, file ='data/Saline_Standards.Rdata')
+save(TidalFresh_Standards, file ='data/TidalFresh_Standards.Rdata')
+save(EG_Ref, file = 'data/EG_Ref.Rdata')
+save(Taxonomic_Info, file = 'data/Taxonomic_Info.Rdata')
