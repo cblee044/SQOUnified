@@ -39,7 +39,8 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
     final.scores <- mambi.score %>%
       dplyr::left_join(rbi.scores, by = c("StationID", "Replicate")) %>%
       dplyr::left_join(ibi.scores, by = c("StationID", "Replicate")) %>%
-      dplyr::left_join(bri.scores, by = c("StationID", "Replicate"))
+      dplyr::left_join(bri.scores, by = c("StationID", "Replicate")) %>%
+      dplyr::group_by(StationID, SampleDate, Replicate)
     # will add other scores to this data frame as they are computed
   }
 

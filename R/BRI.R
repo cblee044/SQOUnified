@@ -69,7 +69,7 @@ BRI <- function(DB = benthic_data)
   #dplyr::filter(B13_Stratum %in% c("Estuaries", "Marinas", "Bays", "Ports")) %>%
   dplyr::filter(!is.na(B.Code)) %>%
   dplyr:: rename(B13_Stratum = Stratum) %>%
-  dplyr::select(B13_Stratum, StationID, Replicate, Species, Abundance, B.Code)  %>%
+  dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, Species, Abundance, B.Code)  %>%
   # End of BRI - 1 query. Begin BRI - 2 query
   dplyr::mutate(
     fourthroot_abun = Abundance ** 0.25,
