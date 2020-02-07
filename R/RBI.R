@@ -121,13 +121,13 @@ RBI <- function(DB = benthic_data)
     inner_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
     dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
     dplyr::add_count(Species) %>%
-    dplyr::select('StationID','Replicate','Species','Abundance','Stratum', 'Phylum', 'Subphylum', 'n') %>%
-    dplyr::group_by(Stratum, StationID, Replicate, Species, Abundance, Phylum, Subphylum) %>%
+    dplyr::select('StationID','SampleDate', 'Replicate','Species','Abundance','Stratum', 'Phylum', 'Subphylum', 'n') %>%
+    dplyr::group_by(Stratum, StationID, Replicate, SampleDate, Species, Abundance, Phylum, Subphylum) %>%
     dplyr::rename(NumOfTaxa = n) %>%
     dplyr::rename(B13_Stratum = Stratum)
 
   ibi_data <- rbi_data %>%
-    group_by(B13_Stratum, StationID, Replicate) %>%
+    group_by(B13_Stratum, SampleDate, StationID, Replicate) %>%
     summarise(NumOfTaxa = sum(NumOfTaxa))
 
   # columns needed in RBI: B13_Stratum, StationID, Replicate, Phylum, NumofMolluscTaxa
@@ -150,7 +150,7 @@ RBI <- function(DB = benthic_data)
   rbi4 <- rbi_data %>%
     dplyr::filter(Subphylum == "Crustacea") %>%
     dplyr::group_by(B13_Stratum, StationID, Replicate, Subphylum) %>%
-    dplyr::select(B13_Stratum, StationID, Replicate, Subphylum, Abundance) %>%
+    dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, Subphylum, Abundance) %>%
     dplyr::summarise(CrustaceanAbun = sum(Abundance))
 
 
@@ -199,7 +199,7 @@ RBI <- function(DB = benthic_data)
     dplyr::full_join(rbi7, by = c("B13_Stratum", "StationID", "Replicate")) %>%
     dplyr::full_join(rbi8, by = c("B13_Stratum", "StationID", "Replicate")) %>%
     dplyr::full_join(rbi9, by = c("B13_Stratum", "StationID", "Replicate")) %>%
-    dplyr::select(B13_Stratum, StationID, Replicate, NumOfTaxa, NumOfMolluscTaxa, NumOfCrustaceanTaxa, CrustaceanAbun, M_insidiosumAbun, A_diegensisAbun, G_littoreaAbun, CapitellaAbun, OligochaetaAbun)
+    dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa, NumOfMolluscTaxa, NumOfCrustaceanTaxa, CrustaceanAbun, M_insidiosumAbun, A_diegensisAbun, G_littoreaAbun, CapitellaAbun, OligochaetaAbun)
 
   ### RBI Category Thresholds for Southern California Marine Bays
   RBI_category_thresholds <- data.frame(ref_low = c(0.27, 0.16, 0.08, 0.08),

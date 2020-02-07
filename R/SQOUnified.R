@@ -19,7 +19,8 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
   # Compute ALL SQO scores
   if (SQO == "all"){
     mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid") %>%
-      dplyr::mutate(Score = MAMBI_Score, Category = New_MAMBI_Condition)
+      dplyr::mutate(Score = MAMBI_Score, Category = New_MAMBI_Condition) %>%
+      dplyr::mutate(Category_Score = case_when(Category == "Reference" ~ 1, Category == "Low Disturbance" ~ 2, Category == "Moderate Disturbance" ~ 3, Category == "High Disturbance" ~ 4))
     rbi.scores <- RBI(DB)
     ibi.scores <- IBI(DB)
     bri.scores <- BRI(DB)
@@ -32,8 +33,7 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
       dplyr::full_join(rbi.scores) %>%
       dplyr::full_join(ibi.scores) %>% # will add other scores to this data frame as they are computed
       dplyr::select("StationID", "Replicate", "SampleDate", "B13_Stratum", "Index", "Score",
-                    "Category", "Category_Score",
-                    "Use_AMBI", "Use_MAMBI")
+                    "Category", "Category_Score", "Use_MAMBI")
   } else {
     mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
     final.scores <- mambi.score %>%
