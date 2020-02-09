@@ -244,7 +244,7 @@ MAMBI<-function(BenthicData, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Sc
     Overall.Results<-bind_rows(saline.mambi, TF.mambi) %>%  bind_rows(.,no.SalZone.data) %>%
       left_join(.,AMBI.applicability[,c(1,2,3,5,6)], by=c("StationID", "Replicate", "SampleDate")) %>%
       left_join(MAMBI.applicability,.,by=c("StationID", "Replicate", "SampleDate")) %>%
-      select(1:3,5:14,4,16,15) %>%
+      select(1:3,5:14,4,16,15, SampleDate) %>%
       bind_rows(.,azoic.samples)
   }
 
@@ -255,7 +255,7 @@ MAMBI<-function(BenthicData, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Sc
       mutate(Oligo_pct=NA) %>%
       left_join(.,AMBI.applicability[,c(1,2,3,5,6)], by=c("StationID", "Replicate", "SampleDate")) %>%
       left_join(MAMBI.applicability,.,by=c("StationID", "Replicate", "SampleDate")) %>%
-      select(1:3,5:10,14,11:13,4,16,15) %>%
+      select(1:3,5:10,14,11:13,4,16,15, SampleDate) %>%
       bind_rows(.,azoic.samples) %>%
       mutate(Index = "M-AMBI")
   }

@@ -77,7 +77,7 @@ BRI <- function(DB = benthic_data)
   ) %>%
   # End of BRI - 2. Begin BRI - 3
   dplyr::group_by(
-    B13_Stratum, StationID, Replicate
+    B13_Stratum, StationID, SampleDate, Replicate
   ) %>%
   dplyr::summarize(
     Score = sum(tolerance_score, na.rm = T) / sum(fourthroot_abun, na.rm = T)
