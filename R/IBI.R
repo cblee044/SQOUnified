@@ -69,8 +69,8 @@ IBI <- function(DB = benthic_data)
   ### SQO IBI - 1
   # columns needed in RBI: B13_Stratum, StationID, Replicate, Phylum, NumofTaxa
   ibi1 <- ibi_data %>%
-    group_by(B13_Stratum, StationID, SampleDate, Replicate) %>%
-    summarise(NumOfTaxa = sum(NumOfTaxa))
+    dplyr::group_by(B13_Stratum, StationID, SampleDate, Replicate) %>%
+    dplyr::summarise(NumOfTaxa = sum(NumOfTaxa))
 
 
   ### SQO IBI - 2
