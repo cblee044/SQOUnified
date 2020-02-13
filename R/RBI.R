@@ -127,8 +127,8 @@ RBI <- function(DB = benthic_data)
     dplyr::rename(B13_Stratum = Stratum)
 
   ibi_data <- rbi_data %>%
-    group_by(B13_Stratum, SampleDate, StationID, Replicate) %>%
-    summarise(NumOfTaxa = sum(NumOfTaxa))
+    dplyr::group_by(B13_Stratum, SampleDate, StationID, Replicate) %>%
+    dplyr::summarise(NumOfTaxa = sum(NumOfTaxa))
 
   # columns needed in RBI: B13_Stratum, StationID, Replicate, Phylum, NumofMolluscTaxa
   rbi2 <- rbi_data %>%
