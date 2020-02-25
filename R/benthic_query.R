@@ -74,7 +74,7 @@ benthic_query <- function()
 
   # Bring in our tables from the database
   infauna <- tbl(con, "tbl_infaunalabundance_initial") %>% as_tibble
-  save(infauna, file = 'data/infauna_data.Rdata')
+  save(station_occupation, file = 'data/station_occupation_data.Rdata')
 
   grab <- tbl(con, "tbl_grabevent") %>%
     as_tibble %>%

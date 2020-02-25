@@ -109,10 +109,11 @@ MAMBI<-function(BenthicData, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Sc
   EG_Ref<-read.csv(EG_File_Name, stringsAsFactors = F, na.strings = "") %>% select(.,Taxon, Exclude, EG=EG_Scheme) %>% mutate(EG=(ifelse(Taxon=="Oligochaeta", "V", EG)))
   #EG_Ref <- EG_Ref %>% select(.,Taxon, Exclude, EG=EG_Scheme) %>% mutate(EG=(ifelse(Taxon=="Oligochaeta", "V", EG)))
 
-
+  #TODO: Need to fix these lines!!!
   azoic.samples<-Input_File.0 %>% dplyr::filter(Taxon=="No Organisms Present") %>%
-    dplyr::select(StationID, Replicate, SampleDate, Latitude, Longitude, SalZone, Stratum) %>%
-    dplyr::mutate(if(empty(azoic.samples != TRUE)) {AMBI_Score = 7  & S=0 & H=0 & Oligo_pct=0 & MAMBI_Score=0 & Orig_MAMBI_Condition="Bad" & New_MAMBI_Condition="High Disturbance" & Use_MAMBI="Yes" & Use_AMBI="Yes - Azoic" & YesEG=NA})
+    dplyr::select(StationID, Replicate, SampleDate, Latitude, Longitude, SalZone, Stratum)
+
+  azoic.samples <- dplyr::mutate(if(is.empty(azoic.samples != TRUE)) {AMBI_Score = 7  & S=0 & H=0 & Oligo_pct=0 & MAMBI_Score=0 & Orig_MAMBI_Condition="Bad" & New_MAMBI_Condition="High Disturbance" & Use_MAMBI="Yes" & Use_AMBI="Yes - Azoic" & YesEG=NA})
 
   Input_File<-Input_File.0 %>% dplyr::filter(Taxon!= "No Organisms Present")
 

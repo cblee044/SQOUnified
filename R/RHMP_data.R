@@ -19,3 +19,26 @@ library(devtools)
 install()
 library(SQOUnified)
 final <- SQOUnified(DB, SQO = "all")
+
+DB_infauna = infauna %>% dplyr::rename(StationID = stationid) %>%
+  dplyr::filter(StationID %in% rhmp)
+
+DB_assignment = assignment %>% dplyr::rename(StationID = stationid) %>%
+  dplyr::filter(StationID %in% rhmp)
+
+DB_grab = grab %>% dplyr::rename(StationID = stationid) %>%
+  dplyr::filter(StationID %in% rhmp)
+
+DB_station_occupation = station_occupation %>% dplyr::rename(StationID = stationid) %>%
+  dplyr::filter(StationID %in% rhmp)
+
+
+DB_rhmp <- DB_grab %>%
+  dplyr::inner_join(DB_station_occupation, by = c('StationID','sampledate' = 'occupationdate')) %>%
+  dplyr::inner_join(DB_infauna, by = c('StationID','sampledate')) %>%
+  dplyr::select('StationID','replicate','sampledate','latitude','longitude','taxon','abundance','salinity', 'stratum', 'exclude') %>%
+  dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
+  dplyr::rename(species = taxon) %>%
+  dplyr::rename(Replicate = replicate, SampleDate = sampledate, Latitude = latitude, Longitude = longitude, Species = species, Abundance = abundance, Salinity = salinity, Stratum = stratum, Exclude = exclude)
+
+save(DB_rhmp, file = "data/rhmp_data.RData")
