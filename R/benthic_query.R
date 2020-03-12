@@ -51,6 +51,7 @@
 #           Salinity -
 #           Stratum -
 #           Exclude -
+#           SampleDepth -
 #
 ################################################################################################################
 
@@ -93,10 +94,10 @@ benthic_query <- function()
     dplyr::filter(benthicinfauna == 'Yes') %>%
     dplyr::inner_join(station_occupation, by = c('stationid','sampledate' = 'occupationdate')) %>%
     dplyr::inner_join(infauna, by = c('stationid','sampledate')) %>%
-    dplyr::select('stationid','replicate','sampledate','latitude','longitude','taxon','abundance','salinity', 'stratum', 'exclude') %>%
+    dplyr::select('stationid','replicate','sampledate','latitude','longitude', 'stationwaterdepth', 'taxon','abundance','salinity', 'stratum', 'exclude') %>%
     dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
     dplyr::rename(species = taxon) %>%
-    dplyr::rename(StationID = stationid, Replicate = replicate, SampleDate = sampledate, Latitude = latitude, Longitude = longitude, Species = species, Abundance = abundance, Salinity = salinity, Stratum = stratum, Exclude = exclude)
+    dplyr::rename(StationID = stationid, Replicate = replicate, SampleDate = sampledate, Latitude = latitude, Longitude = longitude, SampleDepth = stationwaterdepth, Species = species, Abundance = abundance, Salinity = salinity, Stratum = stratum, Exclude = exclude)
 
   #mutate(EG_Test=ifelse(is.na(EG),"NoEG", "YesEG"))
 
