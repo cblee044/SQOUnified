@@ -40,7 +40,9 @@ RIVPACS_wrapper <- function(DB, station){
 
 scb.station <- station[toupper(station$HabitatCode) == "C", ]
 
-sfb.station <- station[toupper(station$HabitatCode) == "D", ]
+#########################
+# At this point of the SQOUnified package, we are only working with SoCal data so we don't need sfb
+#sfb.station <- station[toupper(station$HabitatCode) == "D", ]
 
 # If data exists for habitat, format data.
 
