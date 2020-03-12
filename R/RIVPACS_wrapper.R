@@ -37,8 +37,9 @@ RIVPACS_wrapper <- function(DB, station){
 #########################
 
 # Split to SoCal and SFBay.
+## We are only working with SoCal data so we don't need to do this!
 
-scb.station <- station[toupper(station$HabitatCode) == "C", ]
+#scb.station <- station[toupper(station$HabitatCode) == "C", ]
 
 #########################
 # At this point of the SQOUnified package, we are only working with SoCal data so we don't need sfb
@@ -46,7 +47,7 @@ scb.station <- station[toupper(station$HabitatCode) == "C", ]
 
 # If data exists for habitat, format data.
 
-if(nrow(scb.station) > 0) {
+#if(nrow(scb.station) > 0) {
 
   scb.predictors <- data.frame(Latitude = scb.station$Latitude,
                                Longitude = scb.station$Longitude,
@@ -78,42 +79,9 @@ if(nrow(scb.station) > 0) {
   socal <- SoCalRivpacs(observed.predictors = scb.predictors, observed.taxa = scb.taxa)
 
   # Create the HTML files displaying the output.
-  HtmlOutput(rivpacs = socal, timestamp = ts, user.filename = uf, path = "/var/www/sqo/files/")
+  #########################
+  ## We do not want HTML outputs!
+  # HtmlOutput(rivpacs = socal, timestamp = ts, user.filename = uf, path = "/var/www/sqo/files/")
 
-}
-
-if(nrow(sfb.station) > 0) {
-
-  sfb.predictors <- data.frame(SampleDepth = sfb.station$SampleDepth,
-                               Hab_G = rep(0, times = nrow(sfb.station)),
-                               Longitude = sfb.station$Longitude)
-
-  row.names(sfb.predictors) <- sfb.station$StationID
-
-  sfb.predictors <- as.matrix(sfb.predictors)
-
-  sfb.taxa <- benthic[benthic$StationID %in% sfb.station$StationID, ]
-
-  sfb.taxa$Taxa <- gsub(" ", "_", sfb.taxa$Taxa, fixed = TRUE)
-  sfb.taxa$Taxa <- gsub("(", "_", sfb.taxa$Taxa, fixed = TRUE)
-  sfb.taxa$Taxa <- gsub(")", "_", sfb.taxa$Taxa, fixed = TRUE)
-
-  sfb.taxa <- reshape(data = sfb.taxa, v.names = "Abundance", timevar = "Taxa",
-                      idvar = "StationID", direction = "wide")
-
-  row.names(sfb.taxa) <- sfb.taxa$StationID
-
-  sfb.taxa <- sfb.taxa[, -1]
-
-  colnames(sfb.taxa) <- gsub("Abundance.", "", colnames(sfb.taxa))
-
-  # Replace NAs with zero.
-  sfb.taxa[is.na(sfb.taxa)] <- 0
-
-  # RIVPACS calculations. By default the functions use the example user data.
-  sfbay <- SFBayRivpacs(observed.predictors = sfb.predictors, observed.taxa = sfb.taxa)
-
-  # Create the HTML files displaying the output.
-  HtmlOutput(rivpacs = sfbay, timestamp = ts, user.filename = uf, path = "/var/www/sqo/files/")
-
-}
+#}
+#}
