@@ -3,7 +3,7 @@ ConvertSFBayFiles <- function() {
   # ----- Reference Files -----
 
   # Observed presence/absence (1/0) at reference sites for all taxa. Remove
-  # Group and Site colums, and convert to presence/absence (0/1).
+  # Group and Site columns, and convert to presence/absence (0/1).
   sfbay.reference.taxa <- read.table("SFBayReferenceTaxa.txt", header = TRUE, stringsAsFactors = FALSE)
   sfbay.reference.taxa <- sfbay.reference.taxa[, !names(sfbay.reference.taxa) %in% c("Group", "Site")]
   sfbay.reference.taxa[sfbay.reference.taxa > 1] <- 1
