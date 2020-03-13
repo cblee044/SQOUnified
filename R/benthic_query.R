@@ -75,19 +75,22 @@ benthic_query <- function()
 
   # Bring in our tables from the database
   infauna <- tbl(con, "tbl_infaunalabundance_initial") %>% as_tibble
-  save(station_occupation, file = 'data/station_occupation_data.Rdata')
+  save(infauna, file = 'data/infauna_data.Rdata')
 
   grab <- tbl(con, "tbl_grabevent") %>%
     as_tibble %>%
     dplyr::filter(grabeventnumber == 1)
+  save(grab, file = 'data/grab_data.Rdata')
 
   assignment <- tbl(con, "field_assignment_table") %>%
     as_tibble %>%
-    dplyr::filter(stratum == "Bays" | stratum == "Ports" | stratum == "Estuaries" | stratum == "Brackish Estuaries")
+    dplyr::filter(stratum == "Bays" | stratum == "Ports" | stratum == "Estuaries" | stratum == "Brackish Estuaries" | stratum == "Marinas")
+  save(assignment, file = 'data/assignment_data.Rdata')
 
   station_occupation <- tbl(con, "tbl_stationoccupation") %>%
     as_tibble %>%
     inner_join(assignment, by = 'stationid')
+  save(station_occupation, file = 'data/station_occupation_data.Rdata')
 
   # Create the dataset needed to compute all the SQO benthic indices
   benthic_data <- grab %>%
