@@ -26,7 +26,7 @@
     host = "192.168.1.16",
     dbname = 'bight2018',
     user = 'b18read',
-    password = '1969$Harbor' # if we post to github, we might want to do rstudioapi::askForPassword()
+    rstudioapi::askForPassword()
   )
 
   # Bring in our tables from the database
