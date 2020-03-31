@@ -34,7 +34,7 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
       dplyr::full_join(rbi.scores) %>%
       dplyr::full_join(ibi.scores) %>% # will add other scores to this data frame as they are computed
       dplyr::select("StationID", "Replicate", "SampleDate", "B13_Stratum", "Index", "Score",
-                    "Category", "Category_Score", "Use_MAMBI") %>%
+                    "Category", "Category_Score", "Use_MAMBI")
       dplyr::arrange(StationID, SampleDate, Replicate)
   } else {
     mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")

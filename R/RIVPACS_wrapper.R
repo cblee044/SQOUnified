@@ -59,9 +59,15 @@ RIVPACS_wrapper <- function(DB){
   # RIVPACS calculations. By default the functions use the example user data.
   socal <- SoCalRivpacs(observed.predictors = scb.predictors, observed.taxa = scb.taxa)
 
+  DB <- DB %>%
+    dplyr::rename(B13_Stratum = Stratum) %>%
+    dplyr::select(StationID, Replicate, SampleDate, B13_Stratum) %>%
+    dplyr::distinct()
+
   rivpacs.score <- socal$oe.table %>%
     dplyr::select(stations, O.over.E) %>%
     dplyr::rename(StationID = stations, Score = O.over.E) %>%
+    dplyr::full_join(DB) %>%
     dplyr::mutate(Index = "RIVPACS") %>%
     dplyr::mutate(Category = case_when((Score > 0.90 | Score < 1.10) ~ "Reference",
                                        ((Score > 0.74 & Score <= 0.90) | Score >= 1.10 & Score < 1.26) ~ "Low Disturbance",
@@ -71,6 +77,8 @@ RIVPACS_wrapper <- function(DB){
                                              Category == "Low Disturbance" ~ 2,
                                              Category == "Moderate Disturbance" ~ 3,
                                              Category == "High Disturbance" ~ 4))
+
+
 
   return(rivpacs.score)
 }
