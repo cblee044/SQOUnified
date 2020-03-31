@@ -2,7 +2,7 @@
 #'
 #' @param BenthicData a data frame with the following information with these headings:
 #'    \code{StationID} - an alpha-numeric identifier of the location;
-#'    \code{Replicat} - a numeric identifying the replicate number of samples taken at the location;
+#'    \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
 #'    \code{SampleDate} - the date of sample collection;
 #'    \code{Latitude} - latitude in decimal degrees;
 #'    \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
@@ -11,6 +11,7 @@
 #'        NoOrganismsPresent with 0 abundance;
 #'    \code{Abundance} - the number of each Species observed in a sample;
 #'    \code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling.
+#'    \code{SampleDepth} -
 
   require(DBI) # needed to connect to database
   require(dbplyr) # needed to connect to database
