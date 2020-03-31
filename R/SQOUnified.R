@@ -25,7 +25,7 @@ SQOUnified <- function(DB = benthic_data, SQO = "all"){
     rbi.scores <- RBI(DB)
     ibi.scores <- IBI(DB)
     bri.scores <- BRI(DB)
-    # We need to incorporate RIVPACS. Once we have this we will take the median of RIVPACS, IBI, BRI, RBI and report back one overall score (MBI?)
+    rivpacs.score <- RIVPACS_wrapper(DB)
     # Once this is done, we will add this to the final output.
     # For RIVPACS, we're simply going to write a wrapper function and add this to SQOUnified.
     # If you run into problems, call D. Gillet to get more clarifaction.
