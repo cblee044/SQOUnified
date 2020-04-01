@@ -14,6 +14,7 @@
 #' (7) Whether the data has the presence of \emph{Capitella capitata} complex, and
 #' (8) Whether the data has the presence of Oligochaeta.
 #'
+
 #' To compute the RBI, the first step is to normalize the values for the benthic community metrics relative to maxima for the data used to develop
 #' the RBI for the Southern California Marine Bays habitat, to produce values relative to the maxima that are referred to as scaled values. The
 #' scaled value calculations use the following formulae:
