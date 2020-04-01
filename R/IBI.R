@@ -109,6 +109,7 @@ IBI <- function(DB = benthic_data)
   ibi4_2 <- ibi1 %>%
     dplyr::inner_join(ibi4_1, by = c("B13_Stratum", "StationID", "SampleDate", "Replicate")) %>%
     dplyr::mutate(PctSensTaxa = (SensTaxa/NumOfTaxa)*100) %>%
+    dplyr::mutate(PctSensTaxa = replace_na(PctSensTaxa, 0))%>%
     dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, PctSensTaxa)
 
   ### Reference ranges for IBI metrics in Southern California Marine Bays
@@ -141,6 +142,7 @@ IBI <- function(DB = benthic_data)
     dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa, NumOfMolluscTaxa, NotomastusAbun, PctSensTaxa) %>%
     # We replace any NAs with 0 so that we can compare the values to the tables listed above
     dplyr::mutate(NotomastusAbun = replace_na(NotomastusAbun, 0)) %>%
+    dplyr::mutate(PctSensTaxa = replace_na(PctSensTaxa, 0))%>%
     # The IBI score is set to zero before comparison the reference range.
     dplyr::mutate(Score = 0) %>%
     # For each metric that is out of the reference range (above or below), the IBI score goes up by one.
@@ -155,7 +157,8 @@ IBI <- function(DB = benthic_data)
     # The IBI score is then compared to condition category response ranges (Table 5.5) to determine the IBI category and category score.
     dplyr::mutate(Category = case_when(Score == 0 ~ "Reference", Score == 1 ~ "Low Disturbance", Score == 2 ~ "Moderate Disturbance", (Score == 3 | Score == 4) ~ "High Disturbance")) %>%
     dplyr::mutate(Category_Score = case_when(Score == 0 ~ 1, Score == 1 ~ 2, Score == 2 ~ 3, (Score == 3 | Score == 4) ~ 4)) %>%
-    dplyr::mutate(Index = "IBI")
+    dplyr::mutate(Index = "IBI") %>%
+    dplyr::distinct()
 
 
 

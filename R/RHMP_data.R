@@ -1,6 +1,22 @@
-# create a vector with all the RHMP stations of interest
-# Note: We pasted the stations into a text file and created a csv.
-#       This csv file is what is read in.
+#' create a vector with all the RHMP stations of interest
+#' Note: We pasted the stations into a text file and created a csv.
+#'
+#' @param BenthicData a data frame with the following information with these headings:
+#'    \code{StationID} - an alpha-numeric identifier of the location;
+#'    \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
+#'    \code{SampleDate} - the date of sample collection;
+#'    \code{Latitude} - latitude in decimal degrees;
+#'    \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
+#'    \code{Species} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
+#'        use sp only or just the Genus. If no animals were present in the sample use
+#'        NoOrganismsPresent with 0 abundance;
+#'    \code{Abundance} - the number of each Species observed in a sample;
+#'    \code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling.
+#'
+#' @usage data(benthic_data)
+#'
+require(tidyverse)
+load("data/benthic_data.Rdata")
 rhmp = read.csv("RHMP_data.csv", fileEncoding="UTF-8-BOM", header = FALSE)
 
 # stations are read in as factors. We coerce them into characters.
