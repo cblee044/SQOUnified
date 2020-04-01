@@ -1,87 +1,84 @@
 # This script is going to be a wrapper function for the RIVPACS scripts to be implemented into
 # SQOUnified package.
 
-RIVPACS_wrapper <- function(DB, station){
+RIVPACS_wrapper <- function(DB){
 
-  socalrivpacs_output <- SoCalRivpacs(Pcutoff = 0.5,
-                                      reference.groups = socal.reference.groups,
-                                      observed.predictors = socal.example.habitat,
-                                      reference.taxa = socal.reference.taxa,
-                                      group.means = socal.reference.group.means,
-                                      reference.cov = socal.reference.covariance,
-                                      observed.taxa = socal.example.taxa)
-  # Note that the default settings for the SoCalRivpacs() function are the examples included in the
-  # original package.
-  # TODO: Joana -- Be sure to include these examples in the SQOUnified package or we might get errors.
+  # Split to SoCal and SFBay.
+  ## We are only working with SoCal data so we don't need to do this!
 
+  #scb.station <- station[toupper(station$HabitatCode) == "C", ]
 
-}
+  #########################
+  # At this point of the SQOUnified package, we are only working with SoCal data so we don't need sfb
+  #sfb.station <- station[toupper(station$HabitatCode) == "D", ]
 
-# Rscript SccwrpRivpacs_script.R 1359585702 user.filename
+  # If data exists for habitat, format data.
 
-#########################
-## We will not be loading in this package. Instead, we will include the functions in the SQOUnified
-## package and call them directly using this script.
-#library(SccwrpRivpacs)
-#########################
-#rm(list = ls())
+  #if(nrow(scb.station) > 0) {
 
-#ts <- commandArgs(TRUE)[1] # timestamp
-#uf <- commandArgs(TRUE)[2] # user file name
+  scb.predictors <- data.frame(Latitude = DB$Latitude,
+                               Longitude = DB$Longitude,
+                               SampleDepth = DB$SampleDepth) %>%
+    dplyr::distinct()
 
-# Read in user files.
-#########################
-## We will not to read in these files because we will already have them loaded.
-#station <- read.csv(paste("/var/www/sqo/files/", ts, ".station.csv", sep = ""), stringsAsFactors = FALSE)
-#benthic <- read.csv(paste("/var/www/sqo/files/", ts, ".benthic.csv", sep = ""), stringsAsFactors = FALSE)
-#########################
+  DB <- DB %>% dplyr::rename(Taxa = Species)
 
-# Split to SoCal and SFBay.
-## We are only working with SoCal data so we don't need to do this!
+  scb.taxa <- DB %>% dplyr::select(StationID, Latitude, Longitude, SampleDepth) %>%
+    dplyr::distinct()
 
-#scb.station <- station[toupper(station$HabitatCode) == "C", ]
-
-#########################
-# At this point of the SQOUnified package, we are only working with SoCal data so we don't need sfb
-#sfb.station <- station[toupper(station$HabitatCode) == "D", ]
-
-# If data exists for habitat, format data.
-
-#if(nrow(scb.station) > 0) {
-
-  scb.predictors <- data.frame(Latitude = scb.station$Latitude,
-                               Longitude = scb.station$Longitude,
-                               SampleDepth = scb.station$SampleDepth)
-
-  row.names(scb.predictors) <- scb.station$StationID
+  row.names(scb.predictors) <- scb.taxa$StationID
 
   scb.predictors <- as.matrix(scb.predictors)
 
-  scb.taxa <- benthic[benthic$StationID %in% scb.station$StationID, ]
+  # Don't need this line because all needed info is in DB data frame
+  # and we're only doing SCB data, so no need to classify them
+  #scb.taxa <- DB[DB$StationID %in% scb.station$StationID, ]
+  scb.taxa <- DB %>%
+    dplyr::filter(Replicate == 1) %>%
+    dplyr::select(StationID, Taxa, Abundance) %>%
+    dplyr::distinct()
 
   scb.taxa$Taxa <- gsub(" ", "_", scb.taxa$Taxa, fixed = TRUE)
   scb.taxa$Taxa <- gsub("(", "_", scb.taxa$Taxa, fixed = TRUE)
   scb.taxa$Taxa <- gsub(")", "_", scb.taxa$Taxa, fixed = TRUE)
 
-  scb.taxa <- reshape(data = scb.taxa, v.names = "Abundance", timevar = "Taxa",
-                      idvar = "StationID", direction = "wide")
-
-  row.names(scb.taxa) <- scb.taxa$StationID
+  scb.taxa <- scb.taxa %>%
+    tidyr::pivot_wider(id_cols = "StationID", names_from = "Taxa",
+                       values_from = "Abundance", values_fn = list(Abundance = list))
+  scb.taxa <- as.data.frame(scb.taxa)
 
   scb.taxa <- scb.taxa[, -1]
 
   colnames(scb.taxa) <- gsub("Abundance.", "", colnames(scb.taxa))
 
   # Replace NAs with zero.
-  scb.taxa[is.na(scb.taxa)] <- 0
+  scb.taxa[scb.taxa == "NULL"] <- 0
+  scb.taxa = as.data.frame(lapply(scb.taxa, as.numeric))
+  row.names(scb.taxa) <- row.names(scb.predictors)
 
   # RIVPACS calculations. By default the functions use the example user data.
   socal <- SoCalRivpacs(observed.predictors = scb.predictors, observed.taxa = scb.taxa)
 
-  # Create the HTML files displaying the output.
-  #########################
-  ## We do not want HTML outputs!
-  # HtmlOutput(rivpacs = socal, timestamp = ts, user.filename = uf, path = "/var/www/sqo/files/")
+  DB <- DB %>%
+    dplyr::rename(B13_Stratum = Stratum) %>%
+    dplyr::select(StationID, Replicate, SampleDate, B13_Stratum) %>%
+    dplyr::distinct()
 
-#}
-#}
+  rivpacs.score <- socal$oe.table %>%
+    dplyr::select(stations, O.over.E) %>%
+    dplyr::rename(StationID = stations, Score = O.over.E) %>%
+    dplyr::full_join(DB) %>%
+    dplyr::mutate(Index = "RIVPACS") %>%
+    dplyr::mutate(Category = case_when((Score > 0.90 | Score < 1.10) ~ "Reference",
+                                       ((Score > 0.74 & Score <= 0.90) | Score >= 1.10 & Score < 1.26) ~ "Low Disturbance",
+                                       ((Score > 0.32 & Score <= 0.74) | (Score >= 1.26)) ~ "Moderate Disturbance",
+                                       (Score <= 0.32) ~ "High Disturbance")) %>%
+    dplyr::mutate(Category_Score = case_when(Category == "Reference" ~ 1,
+                                             Category == "Low Disturbance" ~ 2,
+                                             Category == "Moderate Disturbance" ~ 3,
+                                             Category == "High Disturbance" ~ 4))
+
+
+
+  return(rivpacs.score)
+}

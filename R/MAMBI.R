@@ -113,7 +113,10 @@ MAMBI<-function(BenthicData, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Sc
   azoic.samples<-Input_File.0 %>% dplyr::filter(Taxon=="No Organisms Present") %>%
     dplyr::select(StationID, Replicate, SampleDate, Latitude, Longitude, SalZone, Stratum)
 
-  azoic.samples <- dplyr::mutate(if(is.empty(azoic.samples != TRUE)) {AMBI_Score = 7  & S=0 & H=0 & Oligo_pct=0 & MAMBI_Score=0 & Orig_MAMBI_Condition="Bad" & New_MAMBI_Condition="High Disturbance" & Use_MAMBI="Yes" & Use_AMBI="Yes - Azoic" & YesEG=NA})
+
+  #azoic.samples <- if(dim(azoic.samples)[1] == 0){StationID = 1 & Replicate = 1}
+  #  dplyr::mutate(StationID = case_when(dim(StationID) == dim(NA) ~ NA))
+  #  dplyr::mutate(if(dim(azoic.samples)[1] == 0){AMBI_Score = 7  & S=0 & H=0 & Oligo_pct=0 & MAMBI_Score=0 & Orig_MAMBI_Condition="Bad" & New_MAMBI_Condition="High Disturbance" & Use_MAMBI="Yes" & Use_AMBI="Yes - Azoic" & YesEG=NA})
 
   Input_File<-Input_File.0 %>% dplyr::filter(Taxon!= "No Organisms Present")
 
