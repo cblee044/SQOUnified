@@ -25,7 +25,7 @@
 
 # ------------ LRM --------------
 # uncomment to make it a function again
-chem_lrm <- function(chemdata) {
+lrm <- function(chemdata) {
 
   # Take the Log10 of the chemistry concentration.
   chemdata <- chemdata %>%
@@ -77,7 +77,7 @@ chem_lrm <- function(chemdata) {
 
 
 # ------------ CSI (Chemical Score Index) --------------
-chem_csi <- function(chemdata) {
+csi <- function(chemdata) {
 
 # Combine CSI Weight values with data based on the compound. Exclued compounds not in CSI calculation.
   chemdata_csi <- csi_weight %>% left_join(chemdata, by = "AnalyteName")
