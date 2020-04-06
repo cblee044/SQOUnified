@@ -2,7 +2,7 @@
 % Please edit documentation in R/IBI.R
 \name{IBI}
 \alias{IBI}
-\title{Compute the Indec of Biotic Integrity (IBI) and IBI condition category.}
+\title{Compute the Index of Biotic Integrity (IBI) and IBI condition category.}
 \usage{
 data(benthic_data)
 }

@@ -29,9 +29,11 @@
 #'
 #' @examples tox.sqo(toxresults,controls)
 #'
+
 #' @export
 "tox_categories"
 
+#' @export
 tox.sqo <- function(toxresults, controls) {
   tox_nonintegrated <- toxresults %>%
     inner_join(
