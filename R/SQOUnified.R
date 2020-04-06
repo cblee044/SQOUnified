@@ -1,4 +1,3 @@
-"benthic_data"
 #' Compute the SQO index scores.
 #'
 #' @param DB A data file string name that we want to compute SQO scores for.

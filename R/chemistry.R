@@ -22,7 +22,7 @@
 # ------------ LRM --------------
 # uncomment to make it a function again
 
-lrm <- function(chemdata) {
+LRM <- function(chemdata) {
   "lrm_table"
 
   # Take the Log10 of the chemistry concentration.
@@ -76,7 +76,7 @@ lrm <- function(chemdata) {
 
 # ------------ CSI (Chemical Score Index) --------------
 #' @export
-csi <- function(chemdata) {
+CSI <- function(chemdata) {
   "csi_weight"
 
 # Combine CSI Weight values with data based on the compound. Exclued compounds not in CSI calculation.
@@ -146,8 +146,8 @@ csi <- function(chemdata) {
 #' @export
 chem.sqo <- function(chemdata) {
 
-  chemdata_lrm <- lrm(chemdata)
-  chemdata_csi <- csi(chemdata)
+  chemdata_lrm <- LRM(chemdata)
+  chemdata_csi <- CSI(chemdata)
 
   # We should probably put some checks on the input data here
   # if it doesn't meet requirements, call stop function
