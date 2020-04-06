@@ -23,9 +23,9 @@
   # Create connection to the database
   con <- DBI::dbConnect(
     PostgreSQL(),
-    host = "192.168.1.16",
-    dbname = 'bight2018',
-    user = 'b18read',
+    host = rstudioapi::showPrompt("username", "Please enter the hostname of IP address of the database"),
+    dbname = rstudioapi::showPrompt("dbname", "Please enter the name of the database"),
+    user = rstudioapi::showPrompt("username", "Please enter the username for the database"),
     rstudioapi::askForPassword()
   )
 
