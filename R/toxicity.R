@@ -29,12 +29,10 @@
 #'
 #' @examples tox.sqo(toxresults,controls)
 #'
-
 #' @export
-"tox_categories"
 
-#' @export
 tox.sqo <- function(toxresults, controls) {
+  "tox_categories"
   tox_nonintegrated <- toxresults %>%
     inner_join(
       controls,
@@ -143,7 +141,7 @@ tox.sqo <- function(toxresults, controls) {
         TRUE ~ NA_character_
       ),
       `Category Score` = Score,
-      Index = "Integrated Tox"
+      Index = "SQO-TLOE"
     ) %>%
     select(StationID, Index, Score, Category, `Category Score`)
 

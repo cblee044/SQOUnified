@@ -2,11 +2,8 @@
 
 export(chem.sqo)
 export(csi)
-export(csi_weight)
 export(lrm)
-export(lrm_table)
 export(tox.sqo)
-export(tox_categories)
 import(dplyr)
 importFrom(dplyr,arrange)
 importFrom(dplyr,case_when)

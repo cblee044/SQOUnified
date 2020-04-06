@@ -17,18 +17,13 @@
 #' @usage data(csi_weight)
 #'
 #' @importFrom dplyr mutate group_by ungroup arrange select rename left_join case_when summarize summarise
-
-
 #' @export
-"lrm_table"
-
-#' @export
-"csi_weight"
 
 # ------------ LRM --------------
 # uncomment to make it a function again
-#' @export
+
 lrm <- function(chemdata) {
+  "lrm_table"
 
   # Take the Log10 of the chemistry concentration.
   chemdata <- chemdata %>%
@@ -52,17 +47,17 @@ lrm <- function(chemdata) {
     mutate(
       # Page 34 of Technical Manual
       `Category Score` = case_when(
-        lrm_p_max < 0.33 ~ 1,
-        (lrm_p_max >= 0.33) & (lrm_p_max <= 0.49) ~ 2,
-        (lrm_p_max > 0.49) & (lrm_p_max <= 0.66) ~ 3,
-        lrm_p_max > 0.66 ~ 4,
+        Score < 0.33 ~ 1,
+        Score >= 0.33 & Score <= 0.49 ~ 2,
+        Score > 0.49 & Score <= 0.66 ~ 3,
+        Score > 0.66 ~ 4,
         TRUE ~ NA_real_
       ),
       Category = case_when(
-        p_category_value == 1 ~ "Minimal Exposure",
-        p_category_value == 2 ~ "Low Exposure",
-        p_category_value == 3 ~ "Moderate Exposure",
-        p_category_value == 4 ~ "High Exposure",
+        `Category Score` == 1 ~ "Minimal Exposure",
+        `Category Score` == 2 ~ "Low Exposure",
+        `Category Score` == 3 ~ "Moderate Exposure",
+        `Category Score` == 4 ~ "High Exposure",
         TRUE ~ NA_character_
       )
     ) %>%
@@ -82,6 +77,7 @@ lrm <- function(chemdata) {
 # ------------ CSI (Chemical Score Index) --------------
 #' @export
 csi <- function(chemdata) {
+  "csi_weight"
 
 # Combine CSI Weight values with data based on the compound. Exclued compounds not in CSI calculation.
   chemdata_csi <- csi_weight %>% left_join(chemdata, by = "AnalyteName")
@@ -148,7 +144,10 @@ csi <- function(chemdata) {
 
 # ------------ Integrated Score --------------
 #' @export
-chem.sqo <- function(chemdata_lrm, chemdata_csi) {
+chem.sqo <- function(chemdata) {
+
+  chemdata_lrm <- lrm(chemdata)
+  chemdata_csi <- csi(chemdata)
 
   # We should probably put some checks on the input data here
   # if it doesn't meet requirements, call stop function
