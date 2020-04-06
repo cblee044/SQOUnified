@@ -1,3 +1,4 @@
+'
 SoCalRivpacs <- function(Pcutoff = 0.5,
                          reference.groups = socal.reference.groups,
                          observed.predictors = socal.example.habitat,
@@ -183,3 +184,4 @@ SoCalRivpacs <- function(Pcutoff = 0.5,
                   region = "scb")
 
 }
+'

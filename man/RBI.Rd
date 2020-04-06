@@ -9,6 +9,8 @@ data(benthic_data)
 data(EG_Ref)
 
 data(Taxonomic_Info)
+
+data(Taxonomic_Info)
 }
 \arguments{
 \item{BenthiCData}{a data frame stored in the R environment. Note that this data frame MUST contain the following
@@ -59,7 +61,7 @@ Next, the value for the two negative indicator taxa (NIT) is calculated. The two
 and Oligochaeta. For each of these taxa that are present, in any abundance, the NIT is decreased by 0.1. Therefore, if neither were found the
 NIT = 0, if both are found the NIT = -0.2.
 
-The next step is to calculate the value for the three positive indicator taxa (PIT). The positive indicator taxa are \emp{Monocorophium insidiosum,
+The next step is to calculate the value for the three positive indicator taxa (PIT). The positive indicator taxa are \emph{Monocorophium insidiosum,
 Asthenothaerus diegensis}, and \emph{Goniada littorea}. First, the PIT value is calculated for each species using the following equations:
 
 \deqn{\frac{\sqrt[4]{Monocorophium~ insidiosum \textrm{abundance}}}{\sqrt[4]{473}}}

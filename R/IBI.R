@@ -41,77 +41,80 @@
 #'    \code{Abundance} - the number of each Species observed in a sample;
 #'    \code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling.
 #'
-#' @usage data(benthic_data)
+#' @usage
+#' data(benthic_data)
+#' data(Taxonomic_Info)
 #'
 #' @examples
 #' IBI(BenthicData)
-#' @export
+#'
+#' @import dplyr
+"Taxonomic_Info"
+
 
 ##########################################################################################################################
 #
 ##########################################################################################################################
-
+#' @export
 IBI <- function(DB = benthic_data)
 {
-  require(tidyverse)
 
-  "Taxonomic_Info"
 
   # Prepare the given data frame so that we can compute the RBI score and categories
   ibi_data <- DB %>%
     inner_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
-    dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
-    dplyr::add_count(Species) %>%
-    dplyr::select('StationID','SampleDate', 'Replicate','Species','Abundance','Stratum', 'Phylum', 'Subphylum', 'IBI.Sensitive.Taxa', 'n') %>%
-    dplyr::group_by(Stratum, StationID, SampleDate, Replicate, Species, Abundance, Phylum, Subphylum) %>%
-    dplyr::rename(NumOfTaxa = n) %>%
-    dplyr::rename(B13_Stratum = Stratum)
+    mutate_if(is.numeric, list(~na_if(., -88))) %>%
+    add_count(Species) %>%
+    select('StationID','SampleDate', 'Replicate','Species','Abundance','Stratum', 'Phylum', 'Subphylum', 'IBI.Sensitive.Taxa', 'n') %>%
+    group_by(Stratum, StationID, SampleDate, Replicate, Species, Abundance, Phylum, Subphylum) %>%
+    rename(NumOfTaxa = n) %>%
+    rename(B13_Stratum = Stratum)
 
   ### SQO IBI - 1
   # columns needed in RBI: B13_Stratum, StationID, Replicate, Phylum, NumofTaxa
   ibi1 <- ibi_data %>%
-    dplyr::group_by(B13_Stratum, StationID, SampleDate, Replicate) %>%
-    dplyr::summarise(NumOfTaxa = sum(NumOfTaxa))
+    group_by(B13_Stratum, StationID, SampleDate, Replicate) %>%
+    summarise(NumOfTaxa = sum(NumOfTaxa))
 
 
   ### SQO IBI - 2
   ibi2 <- ibi_data %>%
-    dplyr::filter(Phylum == "MOLLUSCA") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, Phylum, NumOfTaxa) %>%
-    dplyr::select(B13_Stratum, SampleDate, StationID, Replicate, Phylum, NumOfTaxa) %>%
-    dplyr::group_by(B13_Stratum, StationID, SampleDate, Replicate, Phylum) %>%
-    dplyr::summarise(NumOfMolluscTaxa = sum(NumOfTaxa))
+    filter(Phylum == "MOLLUSCA") %>%
+    group_by(B13_Stratum, StationID, Replicate, Phylum, NumOfTaxa) %>%
+    select(B13_Stratum, SampleDate, StationID, Replicate, Phylum, NumOfTaxa) %>%
+    group_by(B13_Stratum, StationID, SampleDate, Replicate, Phylum) %>%
+    summarise(NumOfMolluscTaxa = sum(NumOfTaxa))
 
 
   ### SQO RBI - 3 - 1
   ibi3_1 <- ibi_data %>%
-    dplyr::filter(grepl("Notomastus", Species)) %>%
-    dplyr::group_by(B13_Stratum, StationID, SampleDate, Replicate, Species, Abundance) %>%
-    dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, Species, Abundance)
+    filter(grepl("Notomastus", Species)) %>%
+    group_by(B13_Stratum, StationID, SampleDate, Replicate, Species, Abundance) %>%
+    select(B13_Stratum, StationID, SampleDate, Replicate, Species, Abundance)
 
 
   ### SQO IBI - 3 - 2
   ibi3_2 <- ibi3_1 %>%
-    dplyr::group_by(B13_Stratum, StationID, SampleDate, Replicate) %>%
-    dplyr::summarise(NotomastusAbun = sum(Abundance))
+    group_by(B13_Stratum, StationID, SampleDate, Replicate) %>%
+    summarise(NotomastusAbun = sum(Abundance))
 
 
   ### SQO IBI - 4 - 1
   ibi4_1 <- ibi_data %>%
-    dplyr::filter(IBI.Sensitive.Taxa != 0) %>%
-    dplyr::group_by(B13_Stratum, StationID, SampleDate, Replicate, IBI.Sensitive.Taxa, Abundance) %>%
-    dplyr::add_count(Abundance) %>%
-    dplyr::rename(SensTaxa = n) %>%
-    dplyr::group_by(B13_Stratum, StationID, SampleDate, Replicate, IBI.Sensitive.Taxa) %>%
-    dplyr::summarise(SensTaxa = sum(SensTaxa))
+    filter(IBI.Sensitive.Taxa != 0) %>%
+    group_by(B13_Stratum, StationID, SampleDate, Replicate, IBI.Sensitive.Taxa, Abundance) %>%
+    add_count(Abundance) %>%
+    rename(SensTaxa = n) %>%
+    group_by(B13_Stratum, StationID, SampleDate, Replicate, IBI.Sensitive.Taxa) %>%
+    summarise(SensTaxa = sum(SensTaxa))
 
 
   ### SQO IBI - 4 - 2
   ibi4_2 <- ibi1 %>%
-    dplyr::inner_join(ibi4_1, by = c("B13_Stratum", "StationID", "SampleDate", "Replicate")) %>%
-    dplyr::mutate(PctSensTaxa = (SensTaxa/NumOfTaxa)*100) %>%
-    dplyr::mutate(PctSensTaxa = replace_na(PctSensTaxa, 0))%>%
-    dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, PctSensTaxa)
+    inner_join(ibi4_1, by = c("B13_Stratum", "StationID", "SampleDate", "Replicate")) %>%
+    mutate(PctSensTaxa = (SensTaxa/NumOfTaxa)*100) %>%
+    mutate(PctSensTaxa = replace_na(PctSensTaxa, 0))%>%
+    select(B13_Stratum, StationID, SampleDate, Replicate, PctSensTaxa)
 
   ### Reference ranges for IBI metrics in Southern California Marine Bays
   ### [ Table 5.4 (p. 77, Technical Manual, 2014) ]
@@ -135,33 +138,33 @@ IBI <- function(DB = benthic_data)
   # Each of the metrics is then compared to the tables listed above (Table 5.4 and Table 5.5) to determine the IBI score,
   # the IBI Category, and IBI Category Score
   ibi_metrics <- ibi1 %>%
-    dplyr::full_join(ibi2, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
-    dplyr::full_join(ibi3_1, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
-    dplyr::full_join(ibi3_2, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
-    dplyr::full_join(ibi4_1, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
-    dplyr::full_join(ibi4_2, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
-    dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa, NumOfMolluscTaxa, NotomastusAbun, PctSensTaxa) %>%
+    full_join(ibi2, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
+    full_join(ibi3_1, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
+    full_join(ibi3_2, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
+    full_join(ibi4_1, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
+    full_join(ibi4_2, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
+    select(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa, NumOfMolluscTaxa, NotomastusAbun, PctSensTaxa) %>%
     # We replace any NAs with 0 so that we can compare the values to the tables listed above
-    dplyr::mutate(NotomastusAbun = replace_na(NotomastusAbun, 0)) %>%
-    dplyr::mutate(PctSensTaxa = replace_na(PctSensTaxa, 0))%>%
+    mutate(NotomastusAbun = replace_na(NotomastusAbun, 0)) %>%
+    mutate(PctSensTaxa = replace_na(PctSensTaxa, 0))%>%
     # The IBI score is set to zero before comparison the reference range.
-    dplyr::mutate(Score = 0) %>%
+    mutate(Score = 0) %>%
     # For each metric that is out of the reference range (above or below), the IBI score goes up by one.
-    dplyr::mutate(Score = if_else((NumOfTaxa < ibi_ref_ranges_table["NumOfTaxa",]$ref_low  | NumOfTaxa > ibi_ref_ranges_table["NumOfTaxa",]$ref_high),
+    mutate(Score = if_else((NumOfTaxa < ibi_ref_ranges_table["NumOfTaxa",]$ref_low  | NumOfTaxa > ibi_ref_ranges_table["NumOfTaxa",]$ref_high),
                                       Score + 1, Score)) %>%
-    dplyr::mutate(Score = if_else((NumOfMolluscTaxa < ibi_ref_ranges_table["NumOfMolluscTaxa",]$ref_low  | NumOfMolluscTaxa > ibi_ref_ranges_table["NumOfMolluscTaxa",]$ref_high),
+    mutate(Score = if_else((NumOfMolluscTaxa < ibi_ref_ranges_table["NumOfMolluscTaxa",]$ref_low  | NumOfMolluscTaxa > ibi_ref_ranges_table["NumOfMolluscTaxa",]$ref_high),
                                       Score + 1, Score)) %>%
-    dplyr::mutate(Score = if_else((NotomastusAbun < ibi_ref_ranges_table["NotomastusAbun",]$ref_low  | NotomastusAbun > ibi_ref_ranges_table["NotomastusAbun",]$ref_high),
+    mutate(Score = if_else((NotomastusAbun < ibi_ref_ranges_table["NotomastusAbun",]$ref_low  | NotomastusAbun > ibi_ref_ranges_table["NotomastusAbun",]$ref_high),
                                       Score + 1, Score)) %>%
-    dplyr::mutate(Score = if_else((PctSensTaxa < ibi_ref_ranges_table["PctSensTaxa",]$ref_low  | PctSensTaxa > ibi_ref_ranges_table["PctSensTaxa",]$ref_high),
+    mutate(Score = if_else((PctSensTaxa < ibi_ref_ranges_table["PctSensTaxa",]$ref_low  | PctSensTaxa > ibi_ref_ranges_table["PctSensTaxa",]$ref_high),
                                       Score + 1, Score)) %>%
     # The IBI score is then compared to condition category response ranges (Table 5.5) to determine the IBI category and category score.
-    dplyr::mutate(Category = case_when(Score == 0 ~ "Reference", Score == 1 ~ "Low Disturbance", Score == 2 ~ "Moderate Disturbance", (Score == 3 | Score == 4) ~ "High Disturbance")) %>%
-    dplyr::mutate(Category_Score = case_when(Score == 0 ~ 1, Score == 1 ~ 2, Score == 2 ~ 3, (Score == 3 | Score == 4) ~ 4)) %>%
-    dplyr::mutate(Index = "IBI") %>%
-    dplyr::distinct()
+    mutate(Category = case_when(Score == 0 ~ "Reference", Score == 1 ~ "Low Disturbance", Score == 2 ~ "Moderate Disturbance", (Score == 3 | Score == 4) ~ "High Disturbance")) %>%
+    mutate(`Category Score` = case_when(Score == 0 ~ 1, Score == 1 ~ 2, Score == 2 ~ 3, (Score == 3 | Score == 4) ~ 4)) %>%
+    mutate(Index = "IBI") %>%
+    distinct()
 
-
+    return(ibi_metrics)
 
   #write.csv(ibi_metrics, file = "data/ibi-metrics.csv", row.names = FALSE)
 

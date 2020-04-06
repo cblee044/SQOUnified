@@ -72,6 +72,13 @@
 #'                         \code{Stratum} - ;
 #'                         \code{Exclude} - ;
 #'
+#' @usage data(Taxonomic_Info)
+#'
+#' @import dplyr
+#' @importFrom tidyr replace_na
+#'
+#' @export
+#'
 #' @examples
 #' RBI(benthic_data)
 #' RBI(DB)
@@ -112,9 +119,7 @@
 
 RBI <- function(DB = benthic_data)
 {
-  require(tidyverse)
 
-  "Taxonomic_Info"
 
   # Prepare the given data frame so that we can compute the RBI score and categories
   rbi_data <- DB %>%
@@ -218,12 +223,16 @@ RBI <- function(DB = benthic_data)
     mutate(scaled_NumMolluscTaxa = NumOfMolluscTaxa/28) %>%
     mutate(scaled_NumCrustaceanTaxa = NumOfCrustaceanTaxa/29) %>%
     mutate(scaled_CrustaceanAbun = CrustaceanAbun/1693) %>%
-    mutate(scaled_NumTaxa = replace_na(scaled_NumTaxa, 0), scaled_NumMolluscTaxa = replace_na(scaled_NumMolluscTaxa, 0), scaled_NumCrustaceanTaxa = replace_na(scaled_NumCrustaceanTaxa, 0), scaled_CrustaceanAbun = replace_na(scaled_CrustaceanAbun, 0)) %>%
+    mutate(
+      scaled_NumTaxa = replace_na(scaled_NumTaxa, 0),
+      scaled_NumMolluscTaxa = replace_na(scaled_NumMolluscTaxa, 0),
+      scaled_NumCrustaceanTaxa = replace_na(scaled_NumCrustaceanTaxa, 0),
+      scaled_CrustaceanAbun = replace_na(scaled_CrustaceanAbun, 0)) %>%
     # TWV = Taxa Richness Weighted Value
     mutate(TWV = scaled_NumTaxa + scaled_NumMolluscTaxa + scaled_NumCrustaceanTaxa + (0.25 * scaled_CrustaceanAbun)) %>%
     # NIT = Negative Indicator Taxa
-    mutate(NIT =
-             case_when(
+    mutate(
+      NIT = case_when(
                !is.na(CapitellaAbun) & !is.na(OligochaetaAbun) ~ -0.2,
                !is.na(CapitellaAbun) | !is.na(OligochaetaAbun) ~ -0.1,
                is.na(CapitellaAbun) & is.na(OligochaetaAbun) ~ 0
@@ -244,6 +253,8 @@ RBI <- function(DB = benthic_data)
                                                   (Category == "Moderate Disturbance") ~ 3,
                                                   (Category == "High Disturbance") ~ 4)) %>%
     dplyr::mutate(Index = "RBI")
+
+    return(rbi_scores)
 
 }
 

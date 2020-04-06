@@ -40,6 +40,11 @@
 #'        use sp only or just the Genus. If no animals were present in the sample use
 #'        NoOrganismsPresent with 0 abundance;
 #'
+#' @import vegan
+#' @import reshape2
+#' @importFrom dplyr left_join filter rename select mutate group_by summarize summarise case_when
+#'
+#' @export
 #'
 #' @usage data(benthic_data)
 #' @usage data(EG_Ref)
@@ -49,16 +54,14 @@
 #' @examples
 #'
 #'
-"Taxonomic_Info"
 
 
 BRI <- function(DB = benthic_data)
 {
-  require(tidyverse)
-  require(reshape2)
-  require(vegan)
+  "Taxonomic_Info"
+
   out <- DB %>%
-  dplyr::left_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
+  left_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
   #dplyr::right_join(assignment, by = 'stationid') %>%
   # I assume that the next line is something they had in there as a method of removing duplicates
   # for this reason, this next line will likely be eliminated.
@@ -67,31 +70,31 @@ BRI <- function(DB = benthic_data)
   # I actually found that it didn't appear to make a difference
   #dplyr::group_by(stratum, stationid, replicate, taxon, abundance, `B-CodeScore`) %>%
   #dplyr::filter(B13_Stratum %in% c("Estuaries", "Marinas", "Bays", "Ports")) %>%
-  dplyr::filter(!is.na(B.Code)) %>%
-  dplyr:: rename(B13_Stratum = Stratum) %>%
-  dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, Species, Abundance, B.Code)  %>%
+  filter(!is.na(B.Code)) %>%
+  rename(B13_Stratum = Stratum) %>%
+  select(B13_Stratum, StationID, SampleDate, Replicate, Species, Abundance, B.Code)  %>%
   # End of BRI - 1 query. Begin BRI - 2 query
-  dplyr::mutate(
+  mutate(
     fourthroot_abun = Abundance ** 0.25,
     tolerance_score = fourthroot_abun * B.Code
   ) %>%
   # End of BRI - 2. Begin BRI - 3
-  dplyr::group_by(
+  group_by(
     B13_Stratum, StationID, SampleDate, Replicate
   ) %>%
-  dplyr::summarize(
+  summarize(
     Score = sum(tolerance_score, na.rm = T) / sum(fourthroot_abun, na.rm = T)
   ) %>%
     # Output the BRI category given the BRI score and the thresholds for Southern California Marine Bays
-    dplyr::mutate(
+    mutate(
       Category = case_when( (Score < 39.96) ~ "Reference",
                                 (Score >= 39.96 & Score < 49.15) ~ "Low Disturbance",
                                 (Score >= 49.15 & Score < 73.27) ~ "Moderate Disturbance",
                                 (Score >= 73.27) ~ "High Disturbance"
     )) %>%
     # Output the BRI category score given the category for thresholds for Southern CA Marine Bays
-    dplyr::mutate(
-      Category_Score = case_when( (Category == "Reference") ~ 1,
+    mutate(
+      `Category Score` = case_when( (Category == "Reference") ~ 1,
                                       (Category == "Low Disturbance") ~ 2,
                                       (Category == "Moderate Disturbance") ~ 3,
                                       (Category == "High Disturbance") ~ 4 )
