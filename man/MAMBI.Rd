@@ -25,16 +25,16 @@ data(TidalFresh_Standards)
 \code{Abundance} - the number of each Species observed in a sample;
 \code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling.}
 
+\item{EG_Scheme}{A quoted string with the name of the EG Scheme to be used in the AMBI scoring. The default is
+Hybrid, though one could use US (all coasts), Standard (Values from Angel Borja and colleagues),
+US_East (US East Coast), US_Gulf (US Gulf of Mexico Coast), or US_West (US West Coast).}
+
 \item{EG_File_Name}{A quoted string with the name of the csv file with the suite of US Ecological Groups assigned
 initially in Gillett et al. 2015. This EG file has multiple versions of the EG values and a Yes/No designation
 if the fauna are Oligochaetes or not. The default file is the Ref - EG Values 2018.csv file included with this
 code. Replace with other files as you see fit, but make sure the file you use is in a similar format and uses
 the same column names. Additionally, new taxa can be added at the bottom of the list with the EG values the user
 feels appropriate, THOUGH THIS IS NOT RECOMMENDED}
-
-\item{EG_Scheme}{A quoted string with the name of the EG Scheme to be used in the AMBI scoring. The default is
-Hybrid, though one could use US (all coasts), Standard (Values from Angel Borja and colleagues),
-US_East (US East Coast), US_Gulf (US Gulf of Mexico Coast), or US_West (US West Coast).}
 }
 \description{
 Compute the multivariate AMBI (M-AMBI) index score.
@@ -42,4 +42,5 @@ Compute the multivariate AMBI (M-AMBI) index score.
 \examples{
 MAMBI.DJG.alt(benthic_data, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
 MAMBI.DJG.alt(benthic_data, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="US_Gulf")
+
 }

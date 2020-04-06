@@ -29,6 +29,11 @@
 #' @examples
 #' MAMBI.DJG.alt(benthic_data, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
 #' MAMBI.DJG.alt(benthic_data, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="US_Gulf")
+#'
+#' @import stringr
+#' @import reshape2
+#' @import vegan
+#' @import readxl
 
 ##########################################################################################################################
 ## This is a function to calculate multivariate AMBI (M-AMBI) index scores following Pelletier et al. 2018
@@ -79,19 +84,10 @@
 
 
 
-
+#' @export
 MAMBI<-function(BenthicData, EG_Ref = EG_Ref, EG_Scheme="Hybrid")
 {
-  require(tidyverse)
-  require(reshape2)
-  require(vegan)
-  require(readxl)
-  #source("EQR.R")
   "EG_Ref"
-  "benthic_data"
-  "Saline_Standards"
-  "TidalFresh_Standards"
-
   #Saline_Standards <- saline_standards
   #TidalFresh_Standards <- tidalFresh_Standards
   #Saline_Standards<-read_xlsx("data/Pelletier2018_Standards.xlsx", sheet = "Saline Sites")# Good-Bad Benchmarks following Pelletier et al. 2018
