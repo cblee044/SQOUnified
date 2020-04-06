@@ -17,14 +17,17 @@
 #' @usage data(csi_weight)
 #'
 #' @importFrom dplyr mutate group_by ungroup arrange select rename left_join case_when summarize summarise
-#'
+
+
 #' @export
-#'
 "lrm_table"
+
+#' @export
 "csi_weight"
 
 # ------------ LRM --------------
 # uncomment to make it a function again
+#' @export
 lrm <- function(chemdata) {
 
   # Take the Log10 of the chemistry concentration.
@@ -77,6 +80,7 @@ lrm <- function(chemdata) {
 
 
 # ------------ CSI (Chemical Score Index) --------------
+#' @export
 csi <- function(chemdata) {
 
 # Combine CSI Weight values with data based on the compound. Exclued compounds not in CSI calculation.
@@ -143,7 +147,8 @@ csi <- function(chemdata) {
 }
 
 # ------------ Integrated Score --------------
-chem_integrated <- function(chemdata_lrm, chemdata_csi) {
+#' @export
+chem.sqo <- function(chemdata_lrm, chemdata_csi) {
 
   # We should probably put some checks on the input data here
   # if it doesn't meet requirements, call stop function
