@@ -4,7 +4,7 @@
 \alias{SQOUnified}
 \title{Compute the SQO index scores.}
 \usage{
-data(benthic_data)
+data(DB)
 }
 \arguments{
 \item{DB}{A data file string name that we want to compute SQO scores for.}

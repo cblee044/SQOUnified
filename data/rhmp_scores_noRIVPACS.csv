@@ -1,0 +1,301 @@
+"StationID","Replicate","SampleDate","B13_Stratum","Index","Score","Category","Category_Score","Use_MAMBI"
+"B18-10015",1,2018-07-12,"Bays","M-AMBI",0.569,"Low Disturbance",2,"Yes"
+"B18-10015",1,2018-07-12,"Bays","BRI",32.9385347291851,"Reference",1,NA
+"B18-10015",1,2018-07-12,"Bays","RBI",1.17073793991794,"Reference",1,NA
+"B18-10015",1,2018-07-12,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10016",1,2018-07-12,"Bays","M-AMBI",0.888,"Reference",1,"Yes"
+"B18-10016",1,2018-07-12,"Bays","BRI",28.8761293914015,"Reference",1,NA
+"B18-10016",1,2018-07-12,"Bays","RBI",4.83332998588105,"Reference",1,NA
+"B18-10016",1,2018-07-12,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10017",1,2018-07-13,"Bays","M-AMBI",1.035,"Reference",1,"Yes"
+"B18-10017",1,2018-07-13,"Bays","BRI",38.0642499319075,"Reference",1,NA
+"B18-10017",1,2018-07-13,"Bays","RBI",8.91062269727753,"Reference",1,NA
+"B18-10017",1,2018-07-13,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10019",1,2018-07-13,"Bays","M-AMBI",1.032,"Reference",1,"Yes"
+"B18-10019",1,2018-07-13,"Bays","BRI",25.5514994856002,"Reference",1,NA
+"B18-10019",1,2018-07-13,"Bays","RBI",6.12255417099172,"Reference",1,NA
+"B18-10019",1,2018-07-13,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10020",1,2018-07-12,"Bays","M-AMBI",0.745,"Reference",1,"Yes"
+"B18-10020",1,2018-07-12,"Bays","BRI",12.9553630293186,"Reference",1,NA
+"B18-10020",1,2018-07-12,"Bays","RBI",0.664867070453279,"Reference",1,NA
+"B18-10020",1,2018-07-12,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10022",1,2018-07-18,"Bays","M-AMBI",0.732,"Reference",1,"Yes"
+"B18-10022",1,2018-07-18,"Bays","BRI",19.3854988979682,"Reference",1,NA
+"B18-10022",1,2018-07-18,"Bays","RBI",4.81828913891899,"Reference",1,NA
+"B18-10022",1,2018-07-18,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10023",1,2018-07-16,"Bays","M-AMBI",0.891,"Reference",1,"Yes"
+"B18-10023",1,2018-07-16,"Bays","BRI",17.4338118564999,"Reference",1,NA
+"B18-10023",1,2018-07-16,"Bays","RBI",3.53207760116907,"Reference",1,NA
+"B18-10023",1,2018-07-16,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10024",1,2018-07-19,"Bays","M-AMBI",0.861,"Reference",1,"Yes"
+"B18-10024",1,2018-07-19,"Bays","BRI",20.2453747389861,"Reference",1,NA
+"B18-10024",1,2018-07-19,"Bays","RBI",4.64275008175772,"Reference",1,NA
+"B18-10024",1,2018-07-19,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10029",1,2018-07-19,"Bays","M-AMBI",0.653,"Reference",1,"Yes"
+"B18-10029",1,2018-07-19,"Bays","BRI",39.8037574551227,"Reference",1,NA
+"B18-10029",1,2018-07-19,"Bays","RBI",2.44625352662564,"Reference",1,NA
+"B18-10029",1,2018-07-19,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10030",1,2018-07-16,"Bays","M-AMBI",0.934,"Reference",1,"Yes"
+"B18-10030",1,2018-07-16,"Bays","BRI",16.0102058712429,"Reference",1,NA
+"B18-10030",1,2018-07-16,"Bays","RBI",1.91875174436635,"Reference",1,NA
+"B18-10030",1,2018-07-16,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10031",1,2018-07-20,"Bays","M-AMBI",0.827,"Reference",1,"Yes"
+"B18-10031",1,2018-07-20,"Bays","BRI",34.71569728223,"Reference",1,NA
+"B18-10031",1,2018-07-20,"Bays","RBI",4.06042857259662,"Reference",1,NA
+"B18-10031",1,2018-07-20,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10032",1,2018-07-20,"Bays","M-AMBI",0.798,"Reference",1,"Yes"
+"B18-10032",1,2018-07-20,"Bays","BRI",30.3160881495075,"Reference",1,NA
+"B18-10032",1,2018-07-20,"Bays","RBI",4.4581250455465,"Reference",1,NA
+"B18-10032",1,2018-07-20,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10034",1,2018-07-30,"Bays","M-AMBI",0.77,"Reference",1,"Yes"
+"B18-10034",1,2018-07-30,"Bays","BRI",41.1489815209365,"Low Disturbance",2,NA
+"B18-10034",1,2018-07-30,"Bays","RBI",5.51700471998305,"Reference",1,NA
+"B18-10034",1,2018-07-30,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10035",1,2018-07-30,"Bays","M-AMBI",0.69,"Reference",1,"Yes"
+"B18-10035",1,2018-07-30,"Bays","BRI",37.3696485441615,"Reference",1,NA
+"B18-10035",1,2018-07-30,"Bays","RBI",3.57116489162884,"Reference",1,NA
+"B18-10035",1,2018-07-30,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10036",1,2018-07-30,"Bays","M-AMBI",0.704,"Reference",1,"Yes"
+"B18-10036",1,2018-07-30,"Bays","BRI",39.3686862744584,"Reference",1,NA
+"B18-10036",1,2018-07-30,"Bays","RBI",3.41724701870821,"Reference",1,NA
+"B18-10036",1,2018-07-30,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10037",1,2018-07-31,"Bays","M-AMBI",0.71,"Reference",1,"Yes"
+"B18-10037",1,2018-07-31,"Bays","BRI",50.8550174072126,"Moderate Disturbance",3,NA
+"B18-10037",1,2018-07-31,"Bays","RBI",2.53283426776264,"Reference",1,NA
+"B18-10037",1,2018-07-31,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10038",1,2018-07-31,"Bays","M-AMBI",0.786,"Reference",1,"Yes"
+"B18-10038",1,2018-07-31,"Bays","BRI",26.4845873439645,"Reference",1,NA
+"B18-10038",1,2018-07-31,"Bays","RBI",4.92210712264808,"Reference",1,NA
+"B18-10038",1,2018-07-31,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10039",1,2018-07-30,"Bays","M-AMBI",0.54,"Low Disturbance",2,"Yes"
+"B18-10039",1,2018-07-30,"Bays","BRI",56.6796954970884,"Moderate Disturbance",3,NA
+"B18-10039",1,2018-07-30,"Bays","RBI",2.29453492039922,"Reference",1,NA
+"B18-10039",1,2018-07-30,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10040",1,2018-08-14,"Bays","M-AMBI",0.69,"Reference",1,"Yes"
+"B18-10040",1,2018-08-14,"Bays","BRI",46.7201948071303,"Low Disturbance",2,NA
+"B18-10040",1,2018-08-14,"Bays","RBI",3.28422147145654,"Reference",1,NA
+"B18-10040",1,2018-08-14,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10041",1,2018-07-31,"Bays","M-AMBI",0.864,"Reference",1,"Yes"
+"B18-10041",1,2018-07-31,"Bays","BRI",37.223131353498,"Reference",1,NA
+"B18-10041",1,2018-07-31,"Bays","RBI",4.37865450637873,"Reference",1,NA
+"B18-10041",1,2018-07-31,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10042",1,2018-08-01,"Bays","M-AMBI",0.772,"Reference",1,"Yes"
+"B18-10042",1,2018-08-01,"Bays","BRI",50.5500183877863,"Moderate Disturbance",3,NA
+"B18-10042",1,2018-08-01,"Bays","RBI",4.4202920745363,"Reference",1,NA
+"B18-10042",1,2018-08-01,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10043",1,2018-08-14,"Bays","M-AMBI",0.865,"Reference",1,"Yes"
+"B18-10043",1,2018-08-14,"Bays","BRI",38.7177762523364,"Reference",1,NA
+"B18-10043",1,2018-08-14,"Bays","RBI",3.65031187917422,"Reference",1,NA
+"B18-10043",1,2018-08-14,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10044",1,2018-08-14,"Bays","M-AMBI",0.599,"Reference",1,"Yes"
+"B18-10044",1,2018-08-14,"Bays","BRI",54.8210475996101,"Moderate Disturbance",3,NA
+"B18-10044",1,2018-08-14,"Bays","RBI",1.47254128056658,"Reference",1,NA
+"B18-10044",1,2018-08-14,"Bays","IBI",3,"High Disturbance",4,NA
+"B18-10065",1,2018-07-10,"Marinas","M-AMBI",0.697,"Reference",1,"Yes"
+"B18-10065",1,2018-07-10,"Marinas","BRI",43.2787587236272,"Low Disturbance",2,NA
+"B18-10065",1,2018-07-10,"Marinas","RBI",2.42657842141363,"Reference",1,NA
+"B18-10065",1,2018-07-10,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10066",1,2018-07-10,"Marinas","M-AMBI",0.511,"Low Disturbance",2,"Yes"
+"B18-10066",1,2018-07-10,"Marinas","BRI",60.7999722075072,"Moderate Disturbance",3,NA
+"B18-10066",1,2018-07-10,"Marinas","RBI",2.24328130714553,"Reference",1,NA
+"B18-10066",1,2018-07-10,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10067",1,2018-07-10,"Marinas","M-AMBI",0.525,"Low Disturbance",2,"Yes"
+"B18-10067",1,2018-07-10,"Marinas","BRI",59.6700907046697,"Moderate Disturbance",3,NA
+"B18-10067",1,2018-07-10,"Marinas","RBI",1.72618899165603,"Reference",1,NA
+"B18-10067",1,2018-07-10,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10068",1,2018-07-10,"Marinas","M-AMBI",0.761,"Reference",1,"Yes"
+"B18-10068",1,2018-07-10,"Marinas","BRI",27.9856932381394,"Reference",1,NA
+"B18-10068",1,2018-07-10,"Marinas","RBI",5.29036205464589,"Reference",1,NA
+"B18-10068",1,2018-07-10,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10069",1,2018-07-11,"Marinas","M-AMBI",0.662,"Reference",1,"Yes"
+"B18-10069",1,2018-07-11,"Marinas","BRI",38.1828929302956,"Reference",1,NA
+"B18-10069",1,2018-07-11,"Marinas","RBI",1.89737854055933,"Reference",1,NA
+"B18-10069",1,2018-07-11,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10070",1,2018-07-11,"Marinas","M-AMBI",0.708,"Reference",1,"Yes"
+"B18-10070",1,2018-07-11,"Marinas","BRI",22.5266855254246,"Reference",1,NA
+"B18-10070",1,2018-07-11,"Marinas","RBI",2.46375998175408,"Reference",1,NA
+"B18-10070",1,2018-07-11,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10071",1,2018-07-11,"Marinas","M-AMBI",0.693,"Reference",1,"Yes"
+"B18-10071",1,2018-07-11,"Marinas","BRI",24.0610075347497,"Reference",1,NA
+"B18-10071",1,2018-07-11,"Marinas","RBI",1.8961232122694,"Reference",1,NA
+"B18-10071",1,2018-07-11,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10072",1,2018-07-11,"Marinas","M-AMBI",0.532,"Low Disturbance",2,"Yes"
+"B18-10072",1,2018-07-11,"Marinas","BRI",46.4775872206751,"Low Disturbance",2,NA
+"B18-10072",1,2018-07-11,"Marinas","RBI",2.46874175480959,"Reference",1,NA
+"B18-10072",1,2018-07-11,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10073",1,2018-07-12,"Marinas","M-AMBI",0.806,"Reference",1,"Yes"
+"B18-10073",1,2018-07-12,"Marinas","BRI",36.1182214754813,"Reference",1,NA
+"B18-10073",1,2018-07-12,"Marinas","RBI",4.31969350868915,"Reference",1,NA
+"B18-10073",1,2018-07-12,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10074",1,2018-07-12,"Marinas","M-AMBI",0.819,"Reference",1,"Yes"
+"B18-10074",1,2018-07-12,"Marinas","BRI",31.2262958241944,"Reference",1,NA
+"B18-10074",1,2018-07-12,"Marinas","RBI",4.69723009387065,"Reference",1,NA
+"B18-10074",1,2018-07-12,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10075",1,2018-07-12,"Marinas","M-AMBI",0.982,"Reference",1,"Yes"
+"B18-10075",1,2018-07-12,"Marinas","BRI",29.2311203657742,"Reference",1,NA
+"B18-10075",1,2018-07-12,"Marinas","RBI",5.4936968029353,"Reference",1,NA
+"B18-10075",1,2018-07-12,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10076",1,2018-07-18,"Marinas","M-AMBI",0.826,"Reference",1,"Yes"
+"B18-10076",1,2018-07-18,"Marinas","BRI",35.4804241608586,"Reference",1,NA
+"B18-10076",1,2018-07-18,"Marinas","RBI",6.23515286139137,"Reference",1,NA
+"B18-10076",1,2018-07-18,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10077",1,2018-07-18,"Marinas","M-AMBI",0.808,"Reference",1,"Yes"
+"B18-10077",1,2018-07-18,"Marinas","BRI",35.917481152056,"Reference",1,NA
+"B18-10077",1,2018-07-18,"Marinas","RBI",5.81154239023247,"Reference",1,NA
+"B18-10077",1,2018-07-18,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10078",1,2018-07-16,"Marinas","M-AMBI",0.706,"Reference",1,"Yes"
+"B18-10078",1,2018-07-16,"Marinas","BRI",40.5603711214063,"Low Disturbance",2,NA
+"B18-10078",1,2018-07-16,"Marinas","RBI",5.76653400548568,"Reference",1,NA
+"B18-10078",1,2018-07-16,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10079",1,2018-07-16,"Marinas","M-AMBI",0.738,"Reference",1,"Yes"
+"B18-10079",1,2018-07-16,"Marinas","BRI",38.3797135472056,"Reference",1,NA
+"B18-10079",1,2018-07-16,"Marinas","RBI",4.23837450088508,"Reference",1,NA
+"B18-10079",1,2018-07-16,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10080",1,2018-07-17,"Marinas","M-AMBI",0.567,"Low Disturbance",2,"Yes"
+"B18-10080",1,2018-07-17,"Marinas","BRI",44.2038145948073,"Low Disturbance",2,NA
+"B18-10080",1,2018-07-17,"Marinas","RBI",1.44197592321872,"Reference",1,NA
+"B18-10080",1,2018-07-17,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10081",1,2018-07-17,"Marinas","M-AMBI",0.619,"Reference",1,"Yes"
+"B18-10081",1,2018-07-17,"Marinas","BRI",50.1561056962814,"Moderate Disturbance",3,NA
+"B18-10081",1,2018-07-17,"Marinas","RBI",4.35387985482635,"Reference",1,NA
+"B18-10081",1,2018-07-17,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10082",1,2018-07-17,"Marinas","M-AMBI",0.576,"Low Disturbance",2,"Yes"
+"B18-10082",1,2018-07-17,"Marinas","BRI",52.4167406097591,"Moderate Disturbance",3,NA
+"B18-10082",1,2018-07-17,"Marinas","RBI",4.13831575771611,"Reference",1,NA
+"B18-10082",1,2018-07-17,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10083",1,2018-07-17,"Marinas","M-AMBI",0.68,"Reference",1,"Yes"
+"B18-10083",1,2018-07-17,"Marinas","BRI",47.2115252737274,"Low Disturbance",2,NA
+"B18-10083",1,2018-07-17,"Marinas","RBI",5.28093862428431,"Reference",1,NA
+"B18-10083",1,2018-07-17,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10084",1,2018-07-17,"Marinas","M-AMBI",0.54,"Low Disturbance",2,"Yes"
+"B18-10084",1,2018-07-17,"Marinas","BRI",35.0665043215217,"Reference",1,NA
+"B18-10084",1,2018-07-17,"Marinas","RBI",1.09000133133491,"Reference",1,NA
+"B18-10084",1,2018-07-17,"Marinas","IBI",2,"Moderate Disturbance",3,NA
+"B18-10085",1,2018-08-01,"Marinas","M-AMBI",0.65,"Reference",1,"Yes"
+"B18-10085",1,2018-08-01,"Marinas","BRI",52.0883278005179,"Moderate Disturbance",3,NA
+"B18-10085",1,2018-08-01,"Marinas","RBI",1.95961469815964,"Reference",1,NA
+"B18-10085",1,2018-08-01,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10086",1,2018-08-01,"Marinas","M-AMBI",0.693,"Reference",1,"Yes"
+"B18-10086",1,2018-08-01,"Marinas","BRI",52.6996729257647,"Moderate Disturbance",3,NA
+"B18-10086",1,2018-08-01,"Marinas","RBI",3.3172101009403,"Reference",1,NA
+"B18-10086",1,2018-08-01,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10087",1,2018-08-01,"Marinas","M-AMBI",0.698,"Reference",1,"Yes"
+"B18-10087",1,2018-08-01,"Marinas","BRI",53.338465145142,"Moderate Disturbance",3,NA
+"B18-10087",1,2018-08-01,"Marinas","RBI",2.75147252131724,"Reference",1,NA
+"B18-10087",1,2018-08-01,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10088",1,2018-08-01,"Marinas","M-AMBI",0.773,"Reference",1,"Yes"
+"B18-10088",1,2018-08-01,"Marinas","BRI",42.7083380990173,"Low Disturbance",2,NA
+"B18-10088",1,2018-08-01,"Marinas","RBI",3.81697631072801,"Reference",1,NA
+"B18-10088",1,2018-08-01,"Marinas","IBI",3,"High Disturbance",4,NA
+"B18-10112",1,2018-07-18,"Ports","M-AMBI",0.793,"Reference",1,"Yes"
+"B18-10112",1,2018-07-18,"Ports","BRI",25.0037870046168,"Reference",1,NA
+"B18-10112",1,2018-07-18,"Ports","RBI",2.57004315808412,"Reference",1,NA
+"B18-10112",1,2018-07-18,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10113",1,2018-07-18,"Ports","M-AMBI",0.743,"Reference",1,"Yes"
+"B18-10113",1,2018-07-18,"Ports","BRI",38.0204755861032,"Reference",1,NA
+"B18-10113",1,2018-07-18,"Ports","RBI",4.49555509223727,"Reference",1,NA
+"B18-10113",1,2018-07-18,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10114",1,2018-07-19,"Ports","M-AMBI",0.747,"Reference",1,"Yes"
+"B18-10114",1,2018-07-19,"Ports","BRI",33.1488312617211,"Reference",1,NA
+"B18-10114",1,2018-07-19,"Ports","RBI",5.78531419629684,"Reference",1,NA
+"B18-10114",1,2018-07-19,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10115",1,2018-07-19,"Ports","M-AMBI",0.818,"Reference",1,"Yes"
+"B18-10115",1,2018-07-19,"Ports","BRI",38.3445701042423,"Reference",1,NA
+"B18-10115",1,2018-07-19,"Ports","RBI",6.12871859717671,"Reference",1,NA
+"B18-10115",1,2018-07-19,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10116",1,2018-07-19,"Ports","M-AMBI",0.744,"Reference",1,"Yes"
+"B18-10116",1,2018-07-19,"Ports","BRI",35.1455126476522,"Reference",1,NA
+"B18-10116",1,2018-07-19,"Ports","RBI",3.40237727831157,"Reference",1,NA
+"B18-10116",1,2018-07-19,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10117",1,2018-07-16,"Ports","M-AMBI",0.808,"Reference",1,"Yes"
+"B18-10117",1,2018-07-16,"Ports","BRI",20.2754492507229,"Reference",1,NA
+"B18-10117",1,2018-07-16,"Ports","RBI",2.35189091820412,"Reference",1,NA
+"B18-10117",1,2018-07-16,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10119",1,2018-07-20,"Ports","M-AMBI",0.785,"Reference",1,"Yes"
+"B18-10119",1,2018-07-20,"Ports","BRI",43.1142763399965,"Low Disturbance",2,NA
+"B18-10119",1,2018-07-20,"Ports","RBI",3.84445139023012,"Reference",1,NA
+"B18-10119",1,2018-07-20,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10121",1,2018-07-20,"Ports","M-AMBI",0.695,"Reference",1,"Yes"
+"B18-10121",1,2018-07-20,"Ports","BRI",39.412282702695,"Reference",1,NA
+"B18-10121",1,2018-07-20,"Ports","RBI",4.98566177676089,"Reference",1,NA
+"B18-10121",1,2018-07-20,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10123",1,2018-07-20,"Ports","M-AMBI",0.763,"Reference",1,"Yes"
+"B18-10123",1,2018-07-20,"Ports","BRI",44.3167052734723,"Low Disturbance",2,NA
+"B18-10123",1,2018-07-20,"Ports","RBI",5.90438240064397,"Reference",1,NA
+"B18-10123",1,2018-07-20,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10124",1,2018-07-26,"Ports","M-AMBI",0.513,"Low Disturbance",2,"Yes"
+"B18-10124",1,2018-07-26,"Ports","BRI",57.2708228135299,"Moderate Disturbance",3,NA
+"B18-10124",1,2018-07-26,"Ports","RBI",1.58226111758923,"Reference",1,NA
+"B18-10124",1,2018-07-26,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10126",1,2018-07-26,"Ports","M-AMBI",0.698,"Reference",1,"Yes"
+"B18-10126",1,2018-07-26,"Ports","BRI",41.5308125209915,"Low Disturbance",2,NA
+"B18-10126",1,2018-07-26,"Ports","RBI",4.16363881638571,"Reference",1,NA
+"B18-10126",1,2018-07-26,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10127",1,2018-07-26,"Ports","M-AMBI",0.555,"Low Disturbance",2,"Yes"
+"B18-10127",1,2018-07-26,"Ports","BRI",37.3130667821661,"Reference",1,NA
+"B18-10127",1,2018-07-26,"Ports","RBI",1.20174608355097,"Reference",1,NA
+"B18-10127",1,2018-07-26,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10132",1,2018-07-26,"Ports","M-AMBI",0.857,"Reference",1,"Yes"
+"B18-10132",1,2018-07-26,"Ports","BRI",36.9389571012903,"Reference",1,NA
+"B18-10132",1,2018-07-26,"Ports","RBI",5.68911494344173,"Reference",1,NA
+"B18-10132",1,2018-07-26,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10133",1,2018-07-26,"Ports","M-AMBI",0.802,"Reference",1,"Yes"
+"B18-10133",1,2018-07-26,"Ports","BRI",34.5075848105048,"Reference",1,NA
+"B18-10133",1,2018-07-26,"Ports","RBI",3.58590653909251,"Reference",1,NA
+"B18-10133",1,2018-07-26,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10136",1,2018-07-27,"Ports","M-AMBI",0.666,"Reference",1,"Yes"
+"B18-10136",1,2018-07-27,"Ports","BRI",47.4915102498601,"Low Disturbance",2,NA
+"B18-10136",1,2018-07-27,"Ports","RBI",4.19454469500501,"Reference",1,NA
+"B18-10136",1,2018-07-27,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10137",1,2018-07-27,"Ports","M-AMBI",0.619,"Reference",1,"Yes"
+"B18-10137",1,2018-07-27,"Ports","BRI",51.4356060596054,"Moderate Disturbance",3,NA
+"B18-10137",1,2018-07-27,"Ports","RBI",3.63271560346343,"Reference",1,NA
+"B18-10137",1,2018-07-27,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10139",1,2018-07-27,"Ports","M-AMBI",0.647,"Reference",1,"Yes"
+"B18-10139",1,2018-07-27,"Ports","BRI",50.8353208986551,"Moderate Disturbance",3,NA
+"B18-10139",1,2018-07-27,"Ports","RBI",2.40424483159432,"Reference",1,NA
+"B18-10139",1,2018-07-27,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10140",1,2018-07-27,"Ports","M-AMBI",0.606,"Reference",1,"Yes"
+"B18-10140",1,2018-07-27,"Ports","BRI",39.4785849367531,"Reference",1,NA
+"B18-10140",1,2018-07-27,"Ports","RBI",2.5385554222649,"Reference",1,NA
+"B18-10140",1,2018-07-27,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10141",1,2018-07-27,"Ports","M-AMBI",0.694,"Reference",1,"Yes"
+"B18-10141",1,2018-07-27,"Ports","BRI",42.0238101425752,"Low Disturbance",2,NA
+"B18-10141",1,2018-07-27,"Ports","RBI",3.24221629392443,"Reference",1,NA
+"B18-10141",1,2018-07-27,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10142",1,2018-07-27,"Ports","M-AMBI",0.813,"Reference",1,"Yes"
+"B18-10142",1,2018-07-27,"Ports","BRI",39.566365295717,"Reference",1,NA
+"B18-10142",1,2018-07-27,"Ports","RBI",6.81989585406254,"Reference",1,NA
+"B18-10142",1,2018-07-27,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10143",1,2018-07-30,"Ports","M-AMBI",0.731,"Reference",1,"Yes"
+"B18-10143",1,2018-07-30,"Ports","BRI",43.4240902726368,"Low Disturbance",2,NA
+"B18-10143",1,2018-07-30,"Ports","RBI",4.37253176470723,"Reference",1,NA
+"B18-10143",1,2018-07-30,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10144",1,2018-07-30,"Ports","M-AMBI",0.842,"Reference",1,"Yes"
+"B18-10144",1,2018-07-30,"Ports","BRI",41.9247139921791,"Low Disturbance",2,NA
+"B18-10144",1,2018-07-30,"Ports","RBI",5.89038141519173,"Reference",1,NA
+"B18-10144",1,2018-07-30,"Ports","IBI",3,"High Disturbance",4,NA
+"B18-10178",1,2018-07-20,"Estuaries","M-AMBI",0.545,"Low Disturbance",2,"Yes"
+"B18-10178",1,2018-07-20,"Estuaries","BRI",54.0388739882114,"Moderate Disturbance",3,NA
+"B18-10178",1,2018-07-20,"Estuaries","RBI",1.70356598835595,"Reference",1,NA
+"B18-10178",1,2018-07-20,"Estuaries","IBI",3,"High Disturbance",4,NA
+"B18-10179",1,2018-07-31,"Estuaries","M-AMBI",0.713,"Reference",1,"Yes"
+"B18-10179",1,2018-07-31,"Estuaries","BRI",39.5237581870521,"Reference",1,NA
+"B18-10179",1,2018-07-31,"Estuaries","RBI",4.23762654345123,"Reference",1,NA
+"B18-10179",1,2018-07-31,"Estuaries","IBI",3,"High Disturbance",4,NA
+"B18-10180",1,2018-07-31,"Estuaries","M-AMBI",0.534,"Low Disturbance",2,"Yes"
+"B18-10180",1,2018-07-31,"Estuaries","BRI",56.3526432502379,"Moderate Disturbance",3,NA
+"B18-10180",1,2018-07-31,"Estuaries","RBI",2.13923413477362,"Reference",1,NA
+"B18-10180",1,2018-07-31,"Estuaries","IBI",3,"High Disturbance",4,NA
+"B18-10181",1,2018-07-31,"Estuaries","M-AMBI",0.718,"Reference",1,"Yes"
+"B18-10181",1,2018-07-31,"Estuaries","BRI",45.4843556552781,"Low Disturbance",2,NA
+"B18-10181",1,2018-07-31,"Estuaries","RBI",3.53122002176163,"Reference",1,NA
+"B18-10181",1,2018-07-31,"Estuaries","IBI",3,"High Disturbance",4,NA
+"B18-10200",1,2018-09-12,"Brackish Estuaries","M-AMBI",0.473,"Moderate Disturbance",3,"Yes"
+"B18-10200",1,2018-09-12,"Brackish Estuaries","BRI",66.5048371142826,"Moderate Disturbance",3,NA
+"B18-10200",1,2018-09-12,"Brackish Estuaries","RBI",1.71782516280617,"Reference",1,NA
+"B18-10200",1,2018-09-12,"Brackish Estuaries","IBI",3,"High Disturbance",4,NA
+"B18-10438",1,2018-07-12,"Bays","M-AMBI",0.953,"Reference",1,"Yes"
+"B18-10438",1,2018-07-12,"Bays","BRI",40.0790006111005,"Low Disturbance",2,NA
+"B18-10438",1,2018-07-12,"Bays","RBI",4.83420698560455,"Reference",1,NA
+"B18-10438",1,2018-07-12,"Bays","IBI",3,"High Disturbance",4,NA

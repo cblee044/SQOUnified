@@ -2,4 +2,9 @@
 .RData
 .Rhistory
 .Rproj.user
+<<<<<<< HEAD
 ignore/
+=======
+.Rhistory
+R/RHMP_data.R
+>>>>>>> 66bd5e11743aae1160fb57fed964526b94280040

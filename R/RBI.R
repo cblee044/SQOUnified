@@ -1,13 +1,80 @@
 #' Compute the relative benthic index (RBI) score.
 #'
+#' The RBI is the weighted sum of: (a) four community metrics related to biodiversity (total number of taxa, number of crustacean taxa, abundance
+#' of crustacean individuals, and number of mollusc taxa), (b) abundances of three positive indicator taxa, and (c) the presence of two negative
+#' indicator species.
+#'
+#' The data needed to calculate the RBI are:
+#' (1) Total number of taxa,
+#' (2) Number of mollusc taxa,
+#' (3) Number of crustacean individuals,
+#' (4) Number of individuals of \emph{Monocorophium insidiosum},
+#' (5) Number of individuals of \emph{Asthenothaerus diegensis},
+#' (6) Number of individuals of \emph{Goniada littorea},
+#' (7) Whether the data has the presence of \emph{Capitella capitata} complex, and
+#' (8) Whether the data has the presence of Oligochaeta.
+#'
+#' To compute the RBI, the first step is to normalize the values for the benthic community metrics relative to maxima for the data used to develop
+#' the RBI for the Southern California Marine Bays habitat, to produce values relative to the maxima that are referred to as scaled values. The
+#' scaled value calculations use the following formulae:
+#'
+#' Total Number of Taxa / 99
+#' Number of Mollusc Taxa / 28
+#' Number of Crustacean Taxa / 29
+#'
+#'
+#' The next step is to calculate the Taxa Richness Weighted Value (TWV) from the scaled values by the equation:
+#'
+#' TWV = Scaled Total Number of Taxa + Scaled Number of Mollusc Taxa + Scaled Number of Crustacean Taxa + (0.25 * Scaled Abundance of Crustacea)
+#'
+#' Next, the value for the two negative indicator taxa (NIT) is calculated. The two negative indicator taxa are \emph{Capitella capitata} complex
+#' and Oligochaeta. For each of these taxa that are present, in any abundance, the NIT is decreased by 0.1. Therefore, if neither were found the
+#' NIT = 0, if both are found the NIT = -0.2.
+#'
+#' The next step is to calculate the value for the three positive indicator taxa (PIT). The positive indicator taxa are \emp{Monocorophium insidiosum,
+#' Asthenothaerus diegensis}, and \emph{Goniada littorea}. First, the PIT value is calculated for each species using the following equations:
+#'
+#' \deqn{\frac{\sqrt[4]{Monocorophium~ insidiosum \textrm{abundance}}}{\sqrt[4]{473}}}
+#' \deqn{\frac{\sqrt[4]{Asthenothaerus~ diegensis \textrm{abundance}}}{\sqrt[4]{27}}}
+#' \deqn{\frac{\sqrt[4]{Goniada littorea~ \textrm{abundance}}}{\sqrt[4]{15}}}
+#'
+#' The three species PIT values are then summed to calculate the PIT value for the sample. If none of the three species is present, then the sample
+#' PIT = 0.
+#'
+#' The next step is to calculate the Raw RBI:
+#'
+#' \deqn{\textrm{Raw RBI} = \textrm{TWV + NIT + } (2 \times \textrm{PIT})}
+#'
+#' The final calculation is for the RBI score, normalizing the Raw RBI by the minimum and maximum Raw RBI values in the index development data:
+#'
+#' \deqn{\textrm{RBI Score} = (\textrm{Raw RBI} - 0.03)/4.69}
+#'
+#' The last step in the RBI process is to compare the RBI Score to a set of thresholds to determine the RBI category (Table 4).
+#'
+#' <Insert Table 4>
 #'
 #' @usage data(benthic_data)
 #' @usage data(EG_Ref)
 #' @usage data(Taxonomic_Info)
 #'
+#' @param BenthiCData a data frame stored in the R environment. Note that this data frame MUST contain the following
+#'                    information with these headings:
+#'                         \code{StationID} - an alpha-numeric identifier of the location;
+#'                         \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
+#'                         \code{SampleDate} - the date of sample collection;
+#'                         \code{Latitude} - latitude in decimal degrees;
+#'                         \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
+#'                         \code{Taxon} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
+#'        use sp only or just the Genus. If no animals were present in the sample use
+#'        NoOrganismsPresent with 0 abundance;
+#'                         \code{Abundance} - the number of each Species observed in a sample;
+#'                         \code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling;
+#'                         \code{Stratum} - ;
+#'                         \code{Exclude} - ;
+#'
 #' @examples
-#' MAMBI.DJG.alt(benthic_data, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
-#' MAMBI.DJG.alt(benthic_data, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="US_Gulf")
+#' RBI(benthic_data)
+#' RBI(DB)
 
 ##########################################################################################################################
 ## This is a function to calculate relative benthic index (RBI). The RBI is the weighted sum of: 1) four community metrics
@@ -23,22 +90,13 @@
 ##                                  Latitude - latitude in decimal degrees
 ##                                  Longitude - longitude in decimal degrees make sure there is a negative sign
 ##                                              for the Western coordinates
-##                                  Species - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
+##                                  Taxon - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
 ##                                            use sp only or just the Genus. If no animals were present in the sample
 ##                                            use NoOrganismsPresent with 0 abundance
 ##                                  Abundance - the number of each Species observed in a sample
 ##                                  Salinity - the salinity observed at the location in PSU, ideally at time of sampling
-##                                  NumOfMolluscTaxa -
-##                                  NumOfCrustaceanTaxa -
-##
-##
-##          EG_File_Name - A quoted string with the name of the csv file with the suite of US Ecological Groups
-##                          assigned initially in Gillett et al. 2015. This EG file has multiple versions of the EG
-##                          values and a Yes/No designation if the fauna are Oligochaetes or not. The default file is
-##                          the Ref - EG Values 2018.csv file included with this code. Replace with other files as you
-##                          see fit, but make sure the file you use is in a similar format and uses the same column names.
-##                          Additionally, new taxa can be added at the bottom of the list with the EG values the user
-##                          feels appropriate, THOUGH THIS IS NOT RECOMMENDED
+##                                  Stratum -
+##                                  Exclude -
 ##
 ##
 ##
@@ -52,67 +110,25 @@
 ##########################################################################################################################
 
 
-RBI <- function(BenthicData)
+RBI <- function(DB = benthic_data)
 {
-  require(DBI) # needed to connect to database
-  require(dbplyr) # needed to connect to database
-  require(RPostgreSQL) # needed to connect to our database
-  require(rstudioapi) # just so we can type the password as we run the script, so it is not written in the clear
   require(tidyverse)
-  require(sqldf)
 
-  "benthic_data"
-  "EG_Ref"
   "Taxonomic_Info"
-  # Relevant Queries
-  # SQO RBI -2
-  # Bring in our tables from the database
 
-  # con is short for connection
-  # Create connection to the database
-  con <- DBI::dbConnect(
-    PostgreSQL(),
-    host = "192.168.1.16",
-    dbname = 'bight2018',
-    user = 'b18read',
-    password = '1969$Harbor' # if we post to github, we might want to do rstudioapi::askForPassword()
-  )
-
-  infauna <- tbl(con, "tbl_infaunalabundance_initial") %>%
-    as_tibble %>%
-    dplyr::filter(exclude == 'No')
-  # %>% dplyr::filter(replicate == 1)
-
-  grab <- tbl(con, "tbl_grabevent") %>%
-    as_tibble %>%
-    dplyr::filter(grabeventnumber == 1)
-
-  assignment <- tbl(con, "field_assignment_table") %>%
-    as_tibble %>%
-    dplyr::filter(stratum == "Bays" | stratum == "Ports" | stratum == "Estuaries" | stratum == "Brackish Estuaries")
-
-  station_occupation <- tbl(con, "tbl_stationoccupation") %>%
-    as_tibble %>%
-    inner_join(assignment, by = 'stationid')
-
-
-  rbi_data <- grab %>%
-    dplyr::filter(benthicinfauna == 'Yes') %>%
-    dplyr::inner_join(station_occupation, by = c('stationid','sampledate' = 'occupationdate')) %>%
-    dplyr::inner_join(infauna, by = c('stationid','sampledate')) %>%
-    dplyr::select('stationid','replicate','sampledate','latitude','longitude','taxon','abundance','salinity', 'stratum', 'exclude') %>%
-    dplyr::inner_join(Taxonomic_Info, by = c('taxon' = 'Taxon')) %>%
+  # Prepare the given data frame so that we can compute the RBI score and categories
+  rbi_data <- DB %>%
+    inner_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
     dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
-    dplyr::add_count(taxon) %>%
-    dplyr::select('stationid','replicate','taxon','abundance','stratum', 'Phylum', 'Subphylum', 'n') %>%
-    dplyr::group_by(stratum, stationid, replicate, taxon, abundance, Phylum, Subphylum) %>%
+    dplyr::add_count(Species) %>%
+    dplyr::select('StationID','SampleDate', 'Replicate','Species','Abundance','Stratum', 'Phylum', 'Subphylum', 'n') %>%
+    dplyr::group_by(Stratum, StationID, Replicate, SampleDate, Species, Abundance, Phylum, Subphylum) %>%
     dplyr::rename(NumOfTaxa = n) %>%
-    dplyr::rename(species = taxon) %>%
-    dplyr::rename(StationID = stationid, Replicate = replicate, Species = species, Abundance = abundance, B13_Stratum = stratum)
+    dplyr::rename(B13_Stratum = Stratum)
 
   ibi_data <- rbi_data %>%
-    group_by(B13_Stratum, StationID, Replicate) %>%
-    summarise(NumOfTaxa = sum(NumOfTaxa))
+    dplyr::group_by(B13_Stratum, SampleDate, StationID, Replicate) %>%
+    dplyr::summarise(NumOfTaxa = sum(NumOfTaxa))
 
   # columns needed in RBI: B13_Stratum, StationID, Replicate, Phylum, NumofMolluscTaxa
   rbi2 <- rbi_data %>%
@@ -134,7 +150,7 @@ RBI <- function(BenthicData)
   rbi4 <- rbi_data %>%
     dplyr::filter(Subphylum == "Crustacea") %>%
     dplyr::group_by(B13_Stratum, StationID, Replicate, Subphylum) %>%
-    dplyr::select(B13_Stratum, StationID, Replicate, Subphylum, Abundance) %>%
+    dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, Subphylum, Abundance) %>%
     dplyr::summarise(CrustaceanAbun = sum(Abundance))
 
 
@@ -183,7 +199,16 @@ RBI <- function(BenthicData)
     dplyr::full_join(rbi7, by = c("B13_Stratum", "StationID", "Replicate")) %>%
     dplyr::full_join(rbi8, by = c("B13_Stratum", "StationID", "Replicate")) %>%
     dplyr::full_join(rbi9, by = c("B13_Stratum", "StationID", "Replicate")) %>%
-    dplyr::select(B13_Stratum, StationID, Replicate, NumOfTaxa, NumOfMolluscTaxa, NumOfCrustaceanTaxa, CrustaceanAbun, M_insidiosumAbun, A_diegensisAbun, G_littoreaAbun, CapitellaAbun, OligochaetaAbun)
+    dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa, NumOfMolluscTaxa, NumOfCrustaceanTaxa, CrustaceanAbun, M_insidiosumAbun, A_diegensisAbun, G_littoreaAbun, CapitellaAbun, OligochaetaAbun)
+
+  ### RBI Category Thresholds for Southern California Marine Bays
+  RBI_category_thresholds <- data.frame(ref_low = c(0.27, 0.16, 0.08, 0.08),
+                                        ref_high = c(0.27, 0.27, 0.16, 0.08),
+                                        category = as.factor(c("Reference",
+                                                               "Low Disturbance",
+                                                               "Moderate Disturbance",
+                                                               "High Disturbance")),
+                                        category_score = c(1, 2, 3, 4))
 
   # Compute the RBI scores.
   # This was not included in the queries that D. Gillet listed. We went through the Technical Manual (p. 77-78)
@@ -207,7 +232,18 @@ RBI <- function(BenthicData)
     # PIT = Positive Indicator Taxa
     mutate(PIT = ( (M_insidiosumAbun)^(1/4) / (473)^(1/4) ) + ( (A_diegensisAbun)^(1/4) / (27)^(1/4) ) + ( (G_littoreaAbun)^(1/4) / (15)^(1/4) )) %>%
     mutate(Raw_RBI = TWV + NIT + (2 * PIT)) %>%
-    mutate(RBI_Score = (Raw_RBI - 0.03)/ 4.69)
+    dplyr::mutate(Score = (Raw_RBI - 0.03)/ 4.69) %>%
+    # RBI Categories based on RBI scores
+    dplyr::mutate(Category = case_when( (Score > 0.27) ~ "Reference",
+                                            (Score > 0.16 & Score <= 0.27) ~ "Low Disturbance",
+                                            (Score > 0.08 & Score <= 0.16) ~ "Moderate Disturbance",
+                                            (Score <= 0.08)  ~ "High Disturbance" )) %>%
+    # RBI Category Scores based on RBI scores
+    dplyr::mutate(Category_Score = case_when( (Category == "Reference") ~ 1,
+                                                  (Category == "Low Disturbance") ~ 2,
+                                                  (Category == "Moderate Disturbance") ~ 3,
+                                                  (Category == "High Disturbance") ~ 4)) %>%
+    dplyr::mutate(Index = "RBI")
 
 }
 
