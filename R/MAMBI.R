@@ -83,9 +83,9 @@
 
 
 
-
+load("data/EG_Ref.RData")
 #' @export
-MAMBI<-function(BenthicData, EG_Ref_values = `Ref - EG Values 2018`, EG_Scheme="Hybrid")
+MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
 {
 
   #Saline_Standards <- saline_standards
@@ -120,7 +120,7 @@ MAMBI<-function(BenthicData, EG_Ref_values = `Ref - EG Values 2018`, EG_Scheme="
   #  dplyr::mutate(StationID = case_when(dim(StationID) == dim(NA) ~ NA))
   #  dplyr::mutate(if(dim(azoic.samples)[1] == 0){AMBI_Score = 7  & S=0 & H=0 & Oligo_pct=0 & MAMBI_Score=0 & Orig_MAMBI_Condition="Bad" & New_MAMBI_Condition="High Disturbance" & Use_MAMBI="Yes" & Use_AMBI="Yes - Azoic" & YesEG=NA})
 
-  Input_File<-Input_File.0 %>% dplyr::filter(Taxon!= "No Organisms Present")
+  Input_File<-Input_File.0 %>% dplyr::filter(Taxon != "No Organisms Present")
 
 
   total.abundance<-Input_File %>% dplyr::group_by(StationID, Replicate, SampleDate) %>% dplyr::summarise(Tot_abun=sum(Abundance))
@@ -129,7 +129,7 @@ MAMBI<-function(BenthicData, EG_Ref_values = `Ref - EG Values 2018`, EG_Scheme="
 
   Input_File2<-Input_File %>% dplyr::filter(!is.na(SalZone))
 
-  EG.Assignment<-Input_File %>% left_join(., EG_Ref_values_values, by="Taxon") %>% #filter(Exclude!="Yes") #%>%
+  EG.Assignment<-Input_File %>% left_join(., EG_Ref_values, by="Taxon") %>% #filter(Exclude!="Yes") #%>%
     left_join(.,total.abundance, by=c("StationID", "Replicate", "SampleDate")) %>% mutate(Rel_abun=((Abundance/Tot_abun)*100))
 
   EG.Assignment.cast<-data.frame(NoEG=numeric(),
@@ -146,8 +146,20 @@ MAMBI<-function(BenthicData, EG_Ref_values = `Ref - EG Values 2018`, EG_Scheme="
 
   ######Saline calcs ################
 
-  AMBI.Scores<-EG.Assignment %>% dplyr::group_by(StationID, Replicate, SampleDate,Tot_abun,EG) %>% dplyr::summarise(Sum_Rel=sum(Rel_abun)) %>% replace_na(list(EG="NoEG")) %>%
-    dplyr::mutate(EG_Score= case_when(EG=="I"~Sum_Rel*0, EG=="II"~Sum_Rel*1.5, EG=="III"~Sum_Rel*3, EG=="IV"~Sum_Rel*4.5, EG=="V"~Sum_Rel*6, EG=="NoEG"~0)) %>%
+  AMBI.Scores<-EG.Assignment %>%
+    dplyr::group_by(StationID, Replicate, SampleDate,Tot_abun,EG) %>%
+    dplyr::summarise(Sum_Rel=sum(Rel_abun)) %>%
+    replace_na(list(EG="NoEG")) %>%
+    dplyr::mutate(
+      EG_Score = case_when(
+        EG == "I" ~ Sum_Rel*0,
+        EG == "II" ~ Sum_Rel*1.5,
+        EG == "III" ~ Sum_Rel*3,
+        EG == "IV" ~ Sum_Rel*4.5,
+        EG == "V" ~ Sum_Rel*6,
+        EG == "NoEG" ~ 0
+      )
+    ) %>%
     dplyr::mutate(EG_Score=ifelse(Tot_abun==0,700,EG_Score)) %>%
     dplyr::group_by(StationID, Replicate, SampleDate) %>% dplyr::summarise(AMBI_Score=(sum(EG_Score)/100))
 
