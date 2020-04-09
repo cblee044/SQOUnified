@@ -34,6 +34,7 @@
 #' @import reshape2
 #' @import vegan
 #' @import readxl
+#' @importFrom dplyr mutate
 
 ##########################################################################################################################
 ## This is a function to calculate multivariate AMBI (M-AMBI) index scores following Pelletier et al. 2018
@@ -83,11 +84,10 @@
 
 
 
-
 #' @export
-MAMBI<-function(BenthicData, EG_Ref = EG_Ref, EG_Scheme="Hybrid")
+MAMBI<-function(BenthicData, EG_Ref_values = `Ref - EG Values 2018`, EG_Scheme="Hybrid")
 {
-  "EG_Ref"
+
   #Saline_Standards <- saline_standards
   #TidalFresh_Standards <- tidalFresh_Standards
   #Saline_Standards<-read_xlsx("data/Pelletier2018_Standards.xlsx", sheet = "Saline Sites")# Good-Bad Benchmarks following Pelletier et al. 2018
@@ -102,14 +102,14 @@ MAMBI<-function(BenthicData, EG_Ref = EG_Ref, EG_Scheme="Hybrid")
 
 
 
-  EG_Ref <- EG_Ref %>%
+  EG_Ref_values <- EG_Ref_values %>%
     select(Taxon, Exclude, EG=EG_Scheme) %>%
     mutate(
       EG = ifelse(
         Taxon=="Oligochaeta", "V", EG
       )
     )
-  #EG_Ref <- EG_Ref %>% select(.,Taxon, Exclude, EG=EG_Scheme) %>% mutate(EG=(ifelse(Taxon=="Oligochaeta", "V", EG)))
+  #EG_Ref_values <- EG_Ref_values %>% select(.,Taxon, Exclude, EG=EG_Scheme) %>% mutate(EG=(ifelse(Taxon=="Oligochaeta", "V", EG)))
 
   #TODO: Need to fix these lines!!!
   azoic.samples<-Input_File.0 %>% dplyr::filter(Taxon=="No Organisms Present") %>%
@@ -129,7 +129,7 @@ MAMBI<-function(BenthicData, EG_Ref = EG_Ref, EG_Scheme="Hybrid")
 
   Input_File2<-Input_File %>% dplyr::filter(!is.na(SalZone))
 
-  EG.Assignment<-Input_File %>% left_join(., EG_Ref, by="Taxon") %>% #filter(Exclude!="Yes") #%>%
+  EG.Assignment<-Input_File %>% left_join(., EG_Ref_values_values, by="Taxon") %>% #filter(Exclude!="Yes") #%>%
     left_join(.,total.abundance, by=c("StationID", "Replicate", "SampleDate")) %>% mutate(Rel_abun=((Abundance/Tot_abun)*100))
 
   EG.Assignment.cast<-data.frame(NoEG=numeric(),
@@ -202,14 +202,14 @@ MAMBI<-function(BenthicData, EG_Ref = EG_Ref, EG_Scheme="Hybrid")
   {
 
     TF.EG.Assignment <- EG.Assignment %>% filter(SalZone=="TF")
-    TF.EG_Ref<-EG_Ref<-read.csv(EG_File_Name, stringsAsFactors = F, na.strings = "") %>% select(.,Taxon, Exclude, EG=EG_Scheme, Oligochaeta)
+    TF.EG_Ref_values<-EG_Ref_values<-read.csv(EG_File_Name, stringsAsFactors = F, na.strings = "") %>% select(.,Taxon, Exclude, EG=EG_Scheme, Oligochaeta)
 
     TF.AMBI.Scores<-TF.EG.Assignment %>% dplyr::group_by(StationID, Replicate, SampleDate,Tot_abun,EG) %>% dplyr::summarise(Sum_Rel=sum(Rel_abun)) %>% replace_na(list(EG="NoEG")) %>%
       mutate(EG_Score= case_when(EG=="I"~Sum_Rel*0, EG=="II"~Sum_Rel*1.5, EG=="III"~Sum_Rel*3, EG=="IV"~Sum_Rel*4.5, EG=="V"~Sum_Rel*6, EG=="NoEG"~0)) %>%
       mutate(EG_Score=ifelse(Tot_abun==0,700,EG_Score)) %>%
       dplyr::group_by(StationID, Replicate, SampleDate) %>% dplyr::summarise(AMBI_Score=(sum(EG_Score)/100))
 
-    TF.Oligos <- Input_File %>% left_join(., total.abundance, by =c("StationID", "Replicate", "SampleDate")) %>% left_join(., TF.EG_Ref, by="Taxon" ) %>%
+    TF.Oligos <- Input_File %>% left_join(., total.abundance, by =c("StationID", "Replicate", "SampleDate")) %>% left_join(., TF.EG_Ref_values, by="Taxon" ) %>%
       filter(Oligochaeta=="Yes", SalZone=="TF") %>% dplyr::group_by(StationID, Replicate, SampleDate) %>%
       dplyr::summarise(Oligo_pct=(sum(Abundance/Tot_abun))*100)
 

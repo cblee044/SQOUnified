@@ -17,8 +17,7 @@ The default is \code{"all"}, meaning that all scores will be computed.}
 Compute the SQO index scores.
 }
 \examples{
-SQOUnified(DB = benthic_data, SQO = "all")
-SQOUnified(DB = benthic_data, SQO = "MAMBI")
-SQOUnified(DB = benthic_data, SQO = c("MAMBI", "RBI")) --> To be implemented in
-the future
+SQOUnified(df = benthic_data, LOE = "all")
+SQOUnified(df = benthic_data, LOW = 'tox')
+
 }

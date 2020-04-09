@@ -6,33 +6,41 @@
 #'     The default is \code{"all"}, meaning that all scores will be computed.
 #' @usage data(DB)
 #' @examples
-#' SQOUnified(DB = benthic_data, SQO = "all")
-#' SQOUnified(DB = benthic_data, SQO = "MAMBI")
-#' SQOUnified(DB = benthic_data, SQO = c("MAMBI", "RBI")) --> To be implemented in
-#' the future
+#' SQOUnified(df = benthic_data, LOE = "all")
+#' SQOUnified(df = benthic_data, LOW = 'tox')
+#'
+#' @importFrom dplyr case_when full_join select rename mutate arrange
 
 
+#' @export
+SQOUnified <- function(df = benthic_data, LOE = "all"){
 
-SQOUnified <- function(DB = benthic_data, SQO = "all"){
+  if (!tolower(LOE) %in% c('all','benthic','b', 'chemistry','chem','c', 'toxicity','tox','t')) {
+    stop("
+      LOE argument must be \'all\' for the overall site assessment, \'benthic\' or \'b\' for Benthic LOE,
+      \'chemistry\',\'chem\', or \'c\' for the Chemistry LOE,
+      or \'toxicity\',\'tox\', or \'t\' for Toxicity LOE
+    ")
+  }
 
   # Compute ALL SQO scores
   if (SQO == "all"){
     mambi.score <- MAMBI(DB, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid") %>%
-      dplyr::rename(B13_Stratum = Stratum) %>%
-      dplyr::mutate(Score = MAMBI_Score, Category = New_MAMBI_Condition) %>%
-      dplyr::mutate(Category_Score = case_when(Category == "Reference" ~ 1, Category == "Low Disturbance" ~ 2, Category == "Moderate Disturbance" ~ 3, Category == "High Disturbance" ~ 4))
+      rename(B13_Stratum = Stratum) %>%
+      mutate(Score = MAMBI_Score, Category = New_MAMBI_Condition) %>%
+      mutate(Category_Score = case_when(Category == "Reference" ~ 1, Category == "Low Disturbance" ~ 2, Category == "Moderate Disturbance" ~ 3, Category == "High Disturbance" ~ 4))
     rbi.scores <- RBI(DB)
     ibi.scores <- IBI(DB)
     bri.scores <- BRI(DB)
-    rivpacs.score <- RIVPACS_wrapper(DB) #only SoCal (no SFBay)
+    rivpacs.score <- RIVPACS(DB) #only SoCal (no SFBay)
     final.scores <- mambi.score %>%
-      dplyr::full_join(bri.scores) %>%
-      dplyr::full_join(rbi.scores) %>%
-      dplyr::full_join(ibi.scores) %>% # will add other scores to this data frame as they are computed
-      dplyr::select("StationID", "Replicate", "SampleDate", "B13_Stratum", "Index", "Score",
+      full_join(bri.scores) %>%
+      full_join(rbi.scores) %>%
+      full_join(ibi.scores) %>% # will add other scores to this data frame as they are computed
+      select("StationID", "Replicate", "SampleDate", "B13_Stratum", "Index", "Score",
                     "Category", "Category_Score", "Use_MAMBI") %>%
-      dplyr::full_join(rivpacs.score) %>%
-      dplyr::arrange(StationID, SampleDate, Replicate)
+      full_join(rivpacs.score) %>%
+      arrange(StationID, SampleDate, Replicate)
   }}
 
 # Commented out older code. We will need to update this function to output the final
