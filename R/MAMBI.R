@@ -33,8 +33,9 @@
 #' @import stringr
 #' @import reshape2
 #' @import vegan
-#' @import readxl
-#' @importFrom dplyr mutate
+#' @importFrom dplyr mutate filter select group_by summarise left_join bind_rows bind_cols
+#' @importFrom tidyr replace_na
+#' @importFrom purrr map_dfr
 
 ##########################################################################################################################
 ## This is a function to calculate multivariate AMBI (M-AMBI) index scores following Pelletier et al. 2018
@@ -82,8 +83,9 @@
 ##########################################################################################################################
 
 
+load("data/EG_Ref.Rdata") # The dataframe from Ref - EG Values 2018
+load("data/Saline_Standards.Rdata")
 
-load("data/EG_Ref.RData")
 #' @export
 MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
 {
@@ -93,12 +95,26 @@ MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
   #Saline_Standards<-read_xlsx("data/Pelletier2018_Standards.xlsx", sheet = "Saline Sites")# Good-Bad Benchmarks following Pelletier et al. 2018
   #TidalFresh_Standards<-read_xlsx("data/Pelletier2018_Standards.xlsx", sheet = "Tidal Fresh Sites") #Good-Bad Benchmarks following Pelletier et al. 2018
 
-  Input_File.0<-BenthicData %>%
-    dplyr::mutate(Species_ended_in_sp=(str_detect(Species," sp$")), Taxon=(str_replace(Species, " sp$",""))) %>%
-    dplyr::mutate(Coast=(ifelse(Longitude<=-115,"West","Gulf-East")))%>%
-    dplyr::mutate(SalZone=case_when(Salinity>30&Salinity<=40&Coast=="Gulf-East"~"EH", Salinity>18&Salinity<=30&Coast=="Gulf-East"~"PH", Salinity>5&Salinity<=18~"MH",
-                             Salinity>0.2&Salinity<=5~"OH", Salinity>=0&Salinity<=0.2~"TF", Salinity>40~"HH",
-                             Salinity>30&Salinity<=40&Coast=="West"~"WEH", Salinity>18&Salinity<=30&Coast=="West"~"WPH"))
+  Input_File.0 <- BenthicData %>%
+    mutate(
+      Species_ended_in_sp = (str_detect(Species," sp$")),
+      Taxon=(str_replace(Species, " sp$",""))
+    ) %>%
+    mutate(
+      Coast = (ifelse(Longitude<=-115,"West","Gulf-East"))
+    )%>%
+    mutate(
+      SalZone = case_when(
+        Salinity > 30 & Salinity <= 40 & Coast == "Gulf-East" ~ "EH",
+        Salinity > 18 & Salinity <= 30 & Coast == "Gulf-East" ~ "PH",
+        Salinity > 5 & Salinity <= 18 ~ "MH",
+        Salinity > 0.2 & Salinity <= 5 ~ "OH",
+        Salinity >= 0 & Salinity <= 0.2 ~ "TF",
+        Salinity > 40 ~ "HH",
+        Salinity > 30 & Salinity <= 40 & Coast == "West" ~ "WEH",
+        Salinity > 18 & Salinity <= 30 & Coast == "West" ~ "WPH"
+      )
+    )
 
 
 
@@ -112,33 +128,54 @@ MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
   #EG_Ref_values <- EG_Ref_values %>% select(.,Taxon, Exclude, EG=EG_Scheme) %>% mutate(EG=(ifelse(Taxon=="Oligochaeta", "V", EG)))
 
   #TODO: Need to fix these lines!!!
-  azoic.samples<-Input_File.0 %>% dplyr::filter(Taxon=="No Organisms Present") %>%
-    dplyr::select(StationID, Replicate, SampleDate, Latitude, Longitude, SalZone, Stratum)
+  azoic.samples<-Input_File.0 %>%
+    filter(Taxon=="No Organisms Present") %>%
+    select(StationID, Replicate, SampleDate, Latitude, Longitude, SalZone, Stratum)
 
 
   #azoic.samples <- if(dim(azoic.samples)[1] == 0){StationID = 1 & Replicate = 1}
   #  dplyr::mutate(StationID = case_when(dim(StationID) == dim(NA) ~ NA))
   #  dplyr::mutate(if(dim(azoic.samples)[1] == 0){AMBI_Score = 7  & S=0 & H=0 & Oligo_pct=0 & MAMBI_Score=0 & Orig_MAMBI_Condition="Bad" & New_MAMBI_Condition="High Disturbance" & Use_MAMBI="Yes" & Use_AMBI="Yes - Azoic" & YesEG=NA})
 
-  Input_File<-Input_File.0 %>% dplyr::filter(Taxon != "No Organisms Present")
+  Input_File<-Input_File.0 %>% filter(Taxon != "No Organisms Present")
 
 
-  total.abundance<-Input_File %>% dplyr::group_by(StationID, Replicate, SampleDate) %>% dplyr::summarise(Tot_abun=sum(Abundance))
+  total.abundance<-Input_File %>%
+    group_by(StationID, Replicate, SampleDate) %>%
+    summarise(Tot_abun=sum(Abundance))
 
-  Sample.info<-Input_File %>% dplyr::select(StationID, Replicate, SampleDate, Latitude, Longitude, Salinity, Coast, SalZone, Stratum) %>% unique()
+  Sample.info<-Input_File %>%
+    select(StationID, Replicate, SampleDate, Latitude, Longitude, Salinity, Coast, SalZone, Stratum) %>%
+    unique()
 
-  Input_File2<-Input_File %>% dplyr::filter(!is.na(SalZone))
+  Input_File2<-Input_File %>%
+    filter(!is.na(SalZone))
 
-  EG.Assignment<-Input_File %>% left_join(., EG_Ref_values, by="Taxon") %>% #filter(Exclude!="Yes") #%>%
-    left_join(.,total.abundance, by=c("StationID", "Replicate", "SampleDate")) %>% mutate(Rel_abun=((Abundance/Tot_abun)*100))
+  EG.Assignment<-Input_File %>%
+    left_join(., EG_Ref_values, by="Taxon") %>% #filter(Exclude!="Yes") #%>%
+    left_join(.,total.abundance, by=c("StationID", "Replicate", "SampleDate")) %>%
+    mutate(
+      Rel_abun=((Abundance/Tot_abun)*100)
+    )
 
   EG.Assignment.cast<-data.frame(NoEG=numeric(),
                                  YesEG=numeric())
+
   AMBI.applicability<-EG.Assignment %>% mutate(EG_Test=ifelse(is.na(EG),"NoEG", "YesEG")) %>% dcast(.,StationID+Replicate+SampleDate~EG_Test, value.var = "Rel_abun", fun.aggregate = sum) %>%
     left_join(.,EG.Assignment.cast) %>%
-    mutate(Use_AMBI=case_when(NoEG<=20~"Yes", NoEG>20&NoEG<=50~"With Care", NoEG>50~"Not Recommended", is.na(NoEG)~"Yes"))
+    mutate(
+      Use_AMBI = case_when(
+        NoEG <= 20 ~ "Yes",
+        NoEG > 20 & NoEG <= 50 ~ "With Care",
+        NoEG > 50 ~ "Not Recommended",
+        is.na(NoEG) ~ "Yes"
+      )
+    )
 
-  MAMBI.applicability<-Sample.info %>% mutate (Use_MAMBI=ifelse(is.na(SalZone),"No - No Salinity Value","Yes")) %>%
+  MAMBI.applicability <- Sample.info %>%
+    mutate(
+      Use_MAMBI = ifelse(is.na(SalZone),"No - No Salinity Value","Yes")
+    ) %>%
     select(StationID, Replicate, SampleDate, Stratum, Use_MAMBI)
 
   Sal_range.dataset<-unique(Input_File2$SalZone)
@@ -147,10 +184,10 @@ MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
   ######Saline calcs ################
 
   AMBI.Scores<-EG.Assignment %>%
-    dplyr::group_by(StationID, Replicate, SampleDate,Tot_abun,EG) %>%
-    dplyr::summarise(Sum_Rel=sum(Rel_abun)) %>%
+    group_by(StationID, Replicate, SampleDate,Tot_abun,EG) %>%
+    summarise(Sum_Rel=sum(Rel_abun)) %>%
     replace_na(list(EG="NoEG")) %>%
-    dplyr::mutate(
+    mutate(
       EG_Score = case_when(
         EG == "I" ~ Sum_Rel*0,
         EG == "II" ~ Sum_Rel*1.5,
@@ -160,29 +197,45 @@ MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
         EG == "NoEG" ~ 0
       )
     ) %>%
-    dplyr::mutate(EG_Score=ifelse(Tot_abun==0,700,EG_Score)) %>%
-    dplyr::group_by(StationID, Replicate, SampleDate) %>% dplyr::summarise(AMBI_Score=(sum(EG_Score)/100))
+    mutate(EG_Score=ifelse(Tot_abun==0,700,EG_Score)) %>%
+    group_by(StationID, Replicate, SampleDate) %>%
+    summarise(AMBI_Score=(sum(EG_Score)/100))
 
-  Rich<-Input_File %>% dplyr::group_by(StationID, Replicate, SampleDate) %>% dplyr::summarise(S=length(Taxon))
+  Rich<-Input_File %>%
+    group_by(StationID, Replicate, SampleDate) %>%
+    summarise(S=length(Taxon))
+
   Rich$S<-as.numeric(Rich$S)
-  Divy<-Input_File %>% dcast(StationID+Replicate+SampleDate~Taxon, value.var = "Abundance", fill=0) %>%
-    mutate(H=diversity((select(.,4:(ncol(.)))),index = "shannon", base = 2)) %>% select(.,StationID, Replicate, SampleDate, H)
+
+  Divy<-Input_File %>%
+    dcast(StationID+Replicate+SampleDate~Taxon, value.var = "Abundance", fill=0) %>%
+    mutate(H=diversity((select(.,4:(ncol(.)))),index = "shannon", base = 2)) %>%
+    select(.,StationID, Replicate, SampleDate, H)
 
 
 
-  metrics<-AMBI.Scores %>% dplyr::left_join(.,Rich, by=c("StationID", "Replicate", "SampleDate")) %>% left_join(.,Divy, by=c("StationID", "Replicate", "SampleDate")) %>%
-    mutate(S=(ifelse(AMBI_Score==7,0,S)),H=(ifelse(AMBI_Score==7,0,H)))
-  metrics.1<-Sample.info %>% left_join(., metrics, by=c("StationID", "Replicate", "SampleDate")) %>%
+  metrics<-AMBI.Scores %>%
+    left_join(.,Rich, by=c("StationID", "Replicate", "SampleDate")) %>%
+    left_join(.,Divy, by=c("StationID", "Replicate", "SampleDate")) %>%
+    mutate(
+      S = (ifelse(AMBI_Score==7,0,S)),H=(ifelse(AMBI_Score==7,0,H))
+    )
+
+  metrics.1 <- Sample.info %>%
+    left_join(., metrics, by=c("StationID", "Replicate", "SampleDate")) %>%
     select(StationID, Replicate, SampleDate,AMBI_Score, S, H, SalZone)
 
   no.SalZone.data<-filter(metrics.1, is.na(SalZone)) %>%
-    left_join(.,Sample.info, by=c("StationID", "Replicate", "SalZone", "SampleDate")) %>% select(1:9)
+    left_join(.,Sample.info, by=c("StationID", "Replicate", "SalZone", "SampleDate")) %>%
+    select(1:9)
 
-  metrics.2<-metrics.1 %>% filter(!is.na(SalZone)) %>% bind_rows(.,Saline_Standards)
+  metrics.2<- metrics.1 %>%
+    filter(!is.na(SalZone)) %>%
+    bind_rows(.,Saline_Standards)
 
 
   saline.mambi<-map_dfr(Sal_range.dataset, function(sal){
-    sal.df<- dplyr::filter(metrics.2, SalZone == sal)
+    sal.df<- filter(metrics.2, SalZone == sal)
     METRICS.tot<-sal.df[,c(4:6)]
 
 
@@ -201,10 +254,25 @@ MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
     colnames(eqr)<-c("MAMBI_Score")
     eqr<-data.frame(eqr)
 
-    results<-sal.df %>% dplyr::bind_cols(.,eqr) %>% dplyr::left_join(.,Sample.info, by=c("StationID", "Replicate", "SampleDate", "SalZone")) %>%
-      dplyr::select(1,2,3,9,10,7,4:6,8) %>% dplyr::filter(!StationID%in%Saline_Standards$StationID, SalZone!="TF") %>%
-      dplyr::mutate(Orig_MAMBI_Condition=case_when(MAMBI_Score<0.2~"Bad", MAMBI_Score>=0.2&MAMBI_Score<0.39~"Poor", MAMBI_Score>=0.39&MAMBI_Score<0.53~"Moderate", MAMBI_Score>=0.53&MAMBI_Score<0.77~"Good", MAMBI_Score>=0.77~"High"),
-             New_MAMBI_Condition=case_when(MAMBI_Score<=0.387~"High Disturbance", MAMBI_Score>0.387&MAMBI_Score<0.483~"Moderate Disturbance", MAMBI_Score>=0.483&MAMBI_Score<0.578~"Low Disturbance",MAMBI_Score>=0.578~"Reference"))
+    results<-sal.df %>%
+      bind_cols(.,eqr) %>%
+      left_join(.,Sample.info, by=c("StationID", "Replicate", "SampleDate", "SalZone")) %>%
+      select(1,2,3,9,10,7,4:6,8) %>%
+      filter(!StationID%in%Saline_Standards$StationID, SalZone!="TF") %>%
+      mutate(
+        Orig_MAMBI_Condition = case_when(
+          MAMBI_Score < 0.2 ~ "Bad",
+          MAMBI_Score >= 0.2 & MAMBI_Score < 0.39 ~ "Poor",
+          MAMBI_Score >= 0.39 & MAMBI_Score < 0.53 ~ "Moderate",
+          MAMBI_Score >= 0.53 & MAMBI_Score < 0.77 ~ "Good",
+          MAMBI_Score >= 0.77 ~ "High"
+        ),
+        New_MAMBI_Condition = case_when(
+          MAMBI_Score <= 0.387 ~ "High Disturbance",
+          MAMBI_Score > 0.387 & MAMBI_Score < 0.483 ~ "Moderate Disturbance",
+          MAMBI_Score >= 0.483 & MAMBI_Score < 0.578 ~ "Low Disturbance",
+          MAMBI_Score >= 0.578 ~ "Reference")
+        )
     saline.mambi<-results
   })
 
@@ -214,26 +282,60 @@ MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
   {
 
     TF.EG.Assignment <- EG.Assignment %>% filter(SalZone=="TF")
-    TF.EG_Ref_values<-EG_Ref_values<-read.csv(EG_File_Name, stringsAsFactors = F, na.strings = "") %>% select(.,Taxon, Exclude, EG=EG_Scheme, Oligochaeta)
+    TF.EG_Ref_values <- EG_Ref_values %>% select(.,Taxon, Exclude, EG=EG_Scheme, Oligochaeta)
 
-    TF.AMBI.Scores<-TF.EG.Assignment %>% dplyr::group_by(StationID, Replicate, SampleDate,Tot_abun,EG) %>% dplyr::summarise(Sum_Rel=sum(Rel_abun)) %>% replace_na(list(EG="NoEG")) %>%
-      mutate(EG_Score= case_when(EG=="I"~Sum_Rel*0, EG=="II"~Sum_Rel*1.5, EG=="III"~Sum_Rel*3, EG=="IV"~Sum_Rel*4.5, EG=="V"~Sum_Rel*6, EG=="NoEG"~0)) %>%
-      mutate(EG_Score=ifelse(Tot_abun==0,700,EG_Score)) %>%
-      dplyr::group_by(StationID, Replicate, SampleDate) %>% dplyr::summarise(AMBI_Score=(sum(EG_Score)/100))
+    TF.AMBI.Scores <- TF.EG.Assignment %>%
+      group_by(StationID, Replicate, SampleDate,Tot_abun,EG) %>%
+      summarise(Sum_Rel=sum(Rel_abun)) %>%
+      replace_na(list(EG="NoEG")) %>%
+      mutate(
+        EG_Score = case_when(
+          EG == "I" ~ Sum_Rel*0,
+          EG == "II" ~ Sum_Rel*1.5,
+          EG == "III" ~ Sum_Rel*3,
+          EG == "IV" ~ Sum_Rel*4.5,
+          EG == "V" ~ Sum_Rel*6,
+          EG == "NoEG" ~ 0)
+        ) %>%
+      mutate(
+        EG_Score = ifelse(Tot_abun == 0,700,EG_Score)
+      ) %>%
+      group_by(StationID, Replicate, SampleDate) %>%
+      summarise(
+        AMBI_Score = sum(EG_Score)/100
+      )
 
-    TF.Oligos <- Input_File %>% left_join(., total.abundance, by =c("StationID", "Replicate", "SampleDate")) %>% left_join(., TF.EG_Ref_values, by="Taxon" ) %>%
-      filter(Oligochaeta=="Yes", SalZone=="TF") %>% dplyr::group_by(StationID, Replicate, SampleDate) %>%
-      dplyr::summarise(Oligo_pct=(sum(Abundance/Tot_abun))*100)
+    TF.Oligos <- Input_File %>%
+      left_join(., total.abundance, by =c("StationID", "Replicate", "SampleDate")) %>%
+      left_join(., TF.EG_Ref_values, by="Taxon" ) %>%
+      filter(Oligochaeta=="Yes", SalZone=="TF") %>%
+      group_by(StationID, Replicate, SampleDate) %>%
+      summarise(
+        Oligo_pct = sum(Abundance/Tot_abun) * 100
+      )
 
-    TF.Divy<-Input_File %>% dplyr::filter(SalZone=="TF") %>% dcast(StationID+Replicate+SampleDate~Taxon, value.var = "Abundance", fill=0) %>%
-      dplyr::mutate(H=diversity((select(.,4:(ncol(.)))),index = "shannon", base = 2)) %>% select(.,StationID, Replicate, SampleDate,H)
+    TF.Divy <- Input_File %>%
+      filter(SalZone=="TF") %>%
+      dcast(StationID+Replicate+SampleDate~Taxon, value.var = "Abundance", fill=0) %>%
+      mutate(
+        H = diversity((select(.,4:(ncol(.)))), index = "shannon", base = 2)
+      ) %>%
+      select(.,StationID, Replicate, SampleDate,H)
 
 
-    TF.metrics<-TF.AMBI.Scores %>% left_join(.,TF.Divy, by=c("StationID", "Replicate", "SampleDate")) %>% left_join(.,TF.Oligos, by=c("StationID", "Replicate", "SampleDate")) %>%
-      mutate(Oligo_pct=(ifelse(AMBI_Score==7,0,Oligo_pct)),H=(ifelse(AMBI_Score==7,0,H)), Oligo_pct=(ifelse(is.na(Oligo_pct),0,Oligo_pct)))
+    TF.metrics <- TF.AMBI.Scores %>%
+      left_join(.,TF.Divy, by=c("StationID", "Replicate", "SampleDate")) %>%
+      left_join(.,TF.Oligos, by=c("StationID", "Replicate", "SampleDate")) %>%
+      mutate(
+        Oligo_pct = (ifelse(AMBI_Score==7,0,Oligo_pct)),
+        H=(ifelse(AMBI_Score==7,0,H)),
+        Oligo_pct=(ifelse(is.na(Oligo_pct),0,Oligo_pct))
+      )
 
-    TF.metrics.1<-Sample.info %>% left_join(., TF.metrics, by=c("StationID", "Replicate", "SampleDate")) %>%
-      select(StationID, Replicate, SampleDate,AMBI_Score, H, Oligo_pct, SalZone) %>% filter(SalZone=="TF")
+    TF.metrics.1<-Sample.info %>%
+      left_join(., TF.metrics, by=c("StationID", "Replicate", "SampleDate")) %>%
+      select(StationID, Replicate, SampleDate,AMBI_Score, H, Oligo_pct, SalZone) %>%
+      filter(SalZone=="TF")
 
     TF.metrics.2<-bind_rows(TF.metrics.1,TidalFresh_Standards)
 
@@ -249,18 +351,34 @@ MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
     TF.METRICS.tr <- TF.METRICS.scores2
 
     TF.eqr <-EQR(TF.METRICS.tr)
-    colnames(TF.eqr)<-c("MAMBI_Score")
-    TF.eqr<-data.frame(TF.eqr)
+    colnames(TF.eqr) <- c("MAMBI_Score")
+    TF.eqr <- data.frame(TF.eqr)
 
-    TF.mambi<-TF.metrics.2 %>% bind_cols(.,TF.eqr) %>% left_join(.,Sample.info, by=c("StationID", "Replicate", "SalZone", "SampleDate")) %>%
-      select(1,2,3,9,10,7,4:6,8) %>% filter(!StationID%in%TidalFresh_Standards$StationID) %>%
-      mutate(Orig_MAMBI_Condition=case_when(MAMBI_Score<0.2~"Bad", MAMBI_Score>=0.2&MAMBI_Score<0.39~"Poor", MAMBI_Score>=0.39&MAMBI_Score<0.53~"Moderate", MAMBI_Score>=0.53&MAMBI_Score<0.77~"Good", MAMBI_Score>=0.77~"High"),
-             New_MAMBI_Condition=case_when(MAMBI_Score<=0.387~"High Disturbance", MAMBI_Score>0.387&MAMBI_Score<0.483~"Moderate Disturbance", MAMBI_Score>=0.483&MAMBI_Score<0.578~"Low Disturbance",MAMBI_Score>=0.578~"Reference"))
+    TF.mambi <- TF.metrics.2 %>%
+      bind_cols(.,TF.eqr) %>%
+      left_join(.,Sample.info, by=c("StationID", "Replicate", "SalZone", "SampleDate")) %>%
+      select(1,2,3,9,10,7,4:6,8) %>%
+      filter(!StationID%in%TidalFresh_Standards$StationID) %>%
+      mutate(
+        Orig_MAMBI_Condition = case_when(
+          MAMBI_Score < 0.2 ~ "Bad",
+          MAMBI_Score >= 0.2 & MAMBI_Score < 0.39 ~ "Poor",
+          MAMBI_Score >= 0.39 & MAMBI_Score < 0.53 ~ "Moderate",
+          MAMBI_Score >= 0.53 & MAMBI_Score < 0.77 ~ "Good",
+          MAMBI_Score >= 0.77 ~ "High"
+        ),
+        New_MAMBI_Condition = case_when(
+          MAMBI_Score <= 0.387 ~ "High Disturbance",
+          MAMBI_Score > 0.387 & MAMBI_Score < 0.483 ~ "Moderate Disturbance",
+          MAMBI_Score >= 0.483 & MAMBI_Score < 0.578 ~ "Low Disturbance",
+          MAMBI_Score >= 0.578 ~ "Reference")
+        )
 
     saline.mambi<- saline.mambi %>% mutate(Oligo_pct=NA) %>% select(1:9,13,10,11,12)
     TF.mambi<-TF.mambi %>% mutate(S=NA) %>% select(1:7,13,8:12)
 
-    Overall.Results<-bind_rows(saline.mambi, TF.mambi) %>%  bind_rows(.,no.SalZone.data) %>%
+    Overall.Results <- bind_rows(saline.mambi, TF.mambi) %>%
+      bind_rows(.,no.SalZone.data) %>%
       left_join(.,AMBI.applicability[,c(1,2,3,5,6)], by=c("StationID", "Replicate", "SampleDate")) %>%
       left_join(MAMBI.applicability,.,by=c("StationID", "Replicate", "SampleDate")) %>%
       rename(B13_Stratum = Stratum) %>%
@@ -271,7 +389,8 @@ MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
 
   else
   {
-    Overall.Results<-saline.mambi%>% bind_rows(.,no.SalZone.data) %>%
+    Overall.Results<-saline.mambi %>%
+      bind_rows(.,no.SalZone.data) %>%
       mutate(Oligo_pct=NA) %>%
       left_join(.,AMBI.applicability[,c(1,2,3,5,6)], by=c("StationID", "Replicate", "SampleDate")) %>%
       left_join(MAMBI.applicability,.,by=c("StationID", "Replicate", "SampleDate")) %>%
@@ -281,6 +400,8 @@ MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
       bind_rows(.,azoic.samples) %>%
       mutate(Index = "M-AMBI")
   }
+
+  return(Overall.Results)
 
 }
 
