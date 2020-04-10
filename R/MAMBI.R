@@ -21,10 +21,11 @@
 #'     Hybrid, though one could use US (all coasts), Standard (Values from Angel Borja and colleagues),
 #'     US_East (US East Coast), US_Gulf (US Gulf of Mexico Coast), or US_West (US West Coast).
 #'
-#' @usage data(benthic_data)
-#' @usage data(EG_Ref)
-#' @usage data(Saline_Standards)
-#' @usage data(TidalFresh_Standards)
+#' @usage
+#' data(benthic_data)
+#' data(EG_Ref)
+#' data(Saline_Standards)
+#' data(TidalFresh_Standards)
 #'
 #' @examples
 #' MAMBI.DJG.alt(benthic_data, EG_File_Name="data/Ref - EG Values 2018.csv", EG_Scheme="Hybrid")
@@ -83,12 +84,18 @@
 ##########################################################################################################################
 
 
-load("data/EG_Ref.Rdata") # The dataframe from Ref - EG Values 2018
-load("data/Saline_Standards.Rdata")
+
 
 #' @export
-MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
+MAMBI<-function(BenthicData, EG_Ref_values = NULL, EG_Scheme="Hybrid")
 {
+
+  load("data/EG_Ref.Rdata")
+  load("data/Saline_Standards.Rdata")
+
+  if (is.null(EG_Ref_values)) {
+    EG_Ref_values <- EG_Ref
+  }
 
   #Saline_Standards <- saline_standards
   #TidalFresh_Standards <- tidalFresh_Standards
@@ -161,7 +168,9 @@ MAMBI<-function(BenthicData, EG_Ref_values = EG_Ref, EG_Scheme="Hybrid")
   EG.Assignment.cast<-data.frame(NoEG=numeric(),
                                  YesEG=numeric())
 
-  AMBI.applicability<-EG.Assignment %>% mutate(EG_Test=ifelse(is.na(EG),"NoEG", "YesEG")) %>% dcast(.,StationID+Replicate+SampleDate~EG_Test, value.var = "Rel_abun", fun.aggregate = sum) %>%
+  AMBI.applicability<-EG.Assignment %>%
+    mutate(EG_Test=ifelse(is.na(EG),"NoEG", "YesEG")) %>%
+    dcast(.,StationID+Replicate+SampleDate~EG_Test, value.var = "Rel_abun", fun.aggregate = sum) %>%
     left_join(.,EG.Assignment.cast) %>%
     mutate(
       Use_AMBI = case_when(

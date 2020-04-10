@@ -10,7 +10,6 @@
 #'    \code{sampletypecode} - The sampletype used Grab, CNEG etc. Control samples must be included
 #'    \code{matrix} - Whole Sediment, Sediment Water Interface, etc. Probably useless to include.
 #'                    I Just have it to make sure they dont put Reference Toxicant
-#'    \code{fieldreplicate} - probably a useless field
 #'    \code{labrep} - There should be 5 per station, species pair
 #'    \code{result} - the percentage that survived the test, or had normal development
 #'
@@ -23,6 +22,7 @@
 
 tox.summary <- function(toxresults) {
 
+  "tox_categories"
   # here we seaprate the controls from the rest of the samples
   controls <- toxresults %>%
     filter(
@@ -40,14 +40,14 @@ tox.summary <- function(toxresults) {
   summary <- results %>%
     inner_join(
       controls,
-      by = c('toxbatch','species','fieldreplicate', 'labrep'),
+      by = c('toxbatch','species', 'labrep'),
       suffix = c('','_control')
     ) %>%
     filter(
       sampletypecode != 'QA' # shouild maybe issue a warning if they put this stuff in there
     ) %>%
     group_by(
-      stationid, toxbatch, species, sampletypecode,  fieldreplicate
+      stationid, toxbatch, species, sampletypecode
     ) %>%
     summarize(
       p = tryCatch({
@@ -111,7 +111,7 @@ tox.summary <- function(toxresults) {
         TRUE ~ NA_character_
       )
     ) %>%
-    select(-c(nontox, lowtox, modtox, hightox, fieldreplicate, toxbatch)) %>%
+    select(-c(nontox, lowtox, modtox, hightox, toxbatch)) %>%
     select(
       StationID = stationid,
       Species = species,
@@ -167,12 +167,12 @@ tox.sqo <- function(toxresults) {
         TRUE ~ NA_character_
       ),
       `Category Score` = Score,
-      Index = "SQO-TLOE"
+      Index = "Integrated SQO"
     ) %>%
-    select(StationID, Index, Score, Category) %>%
     mutate(
       `Category Score` = Score # just for purposes of the very final unified output, all three LOE's in one table
-    )
+    ) %>%
+    select(StationID,Index, Score, Category, `Category Score`)
 
   tox_final <- rbind.fill(tox_integrated,tox_nonintegrated) %>%
     arrange(

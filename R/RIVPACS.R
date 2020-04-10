@@ -18,8 +18,8 @@
 #'
 #' I saved the SoCalRivpacs function in an RData file and import it here
 #' @usage
-#' data(SoCalRivpacs)
 #' data(benthic_data)
+#'
 #' @import dplyr
 #' @importFrom tidyr pivot_wider
 #'
@@ -45,6 +45,9 @@ RIVPACS <- function(benthic_data){
   # If data exists for habitat, format data.
 
   #if(nrow(scb.station) > 0) {
+
+
+
 
   scb.predictors <- data.frame(Latitude = benthic_data$Latitude,
                                Longitude = benthic_data$Longitude,
@@ -111,7 +114,7 @@ RIVPACS <- function(benthic_data){
                                              Category == "Low Disturbance" ~ 2,
                                              Category == "Moderate Disturbance" ~ 3,
                                              Category == "High Disturbance" ~ 4)) %>%
-    dplyr::select(StationID, SampleDate, Replicate, B13_Stratum, Score, Category, `Category Score`)
+    dplyr::select(StationID, SampleDate, Replicate, B13_Stratum, Index, Score, Category, `Category Score`)
 
 
   return(rivpacs.score)

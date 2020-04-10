@@ -49,19 +49,19 @@
 #' IBI(BenthicData)
 #'
 #' @import dplyr
-"Taxonomic_Info"
+
 
 
 ##########################################################################################################################
 #
 ##########################################################################################################################
 #' @export
-IBI <- function(DB = benthic_data)
+IBI <- function(BenthicData)
 {
-
+  load("data/Taxonomic_Info.Rdata")
 
   # Prepare the given data frame so that we can compute the RBI score and categories
-  ibi_data <- DB %>%
+  ibi_data <- BenthicData %>%
     inner_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
     mutate_if(is.numeric, list(~na_if(., -88))) %>%
     add_count(Species) %>%

@@ -5,7 +5,6 @@
 \title{This script is going to be a wrapper function for the RIVPACS scripts to be implemented into
 SQOUnified package.}
 \usage{
-data(SoCalRivpacs)
 data(benthic_data)
 }
 \arguments{

@@ -85,5 +85,5 @@ The last step in the RBI process is to compare the RBI Score to a set of thresho
 }
 \examples{
 RBI(benthic_data)
-RBI(DB)
+RBI(BenthicData)
 }

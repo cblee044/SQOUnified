@@ -25,6 +25,8 @@
 LRM <- function(chemdata) {
   "lrm_table"
 
+
+
   # Take the Log10 of the chemistry concentration.
   chemdata <- chemdata %>%
     mutate(
@@ -79,7 +81,7 @@ LRM <- function(chemdata) {
 CSI <- function(chemdata) {
   "csi_weight"
 
-# Combine CSI Weight values with data based on the compound. Exclued compounds not in CSI calculation.
+  # Combine CSI Weight values with data based on the compound. Exclued compounds not in CSI calculation.
   chemdata_csi <- csi_weight %>% left_join(chemdata, by = "AnalyteName")
 
   chemdata_csi <- csi_weight %>%
@@ -163,7 +165,7 @@ chem.sqo <- function(chemdata) {
     ) %>%
     ungroup() %>%
     mutate(
-      Index = "SQO-CLOE",
+      Index = "Integrated SQO",
       Category = case_when(
         Score == 1 ~ "Minimal Exposure",
         Score == 2 ~ "Low Exposure",
@@ -176,6 +178,7 @@ chem.sqo <- function(chemdata) {
       StationID, Index, Score, Category, `Category Score`
     ) %>%
     rbind(chemdata_lrm, chemdata_csi) %>%
+    mutate_if(is.factor,as.character) %>%
     arrange(
       StationID, Index
     )

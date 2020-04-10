@@ -72,7 +72,8 @@
 #'                         \code{Stratum} - ;
 #'                         \code{Exclude} - ;
 #'
-#' @usage data(Taxonomic_Info)
+#' @usage
+#' data(Taxonomic_Info)
 #'
 #' @import dplyr
 #' @importFrom tidyr replace_na
@@ -81,7 +82,7 @@
 #'
 #' @examples
 #' RBI(benthic_data)
-#' RBI(DB)
+#' RBI(BenthicData)
 
 ##########################################################################################################################
 ## This is a function to calculate relative benthic index (RBI). The RBI is the weighted sum of: 1) four community metrics
@@ -117,12 +118,12 @@
 ##########################################################################################################################
 
 
-RBI <- function(DB = benthic_data)
+RBI <- function(BenthicData)
 {
-
+  load("data/Taxonomic_Info.Rdata")
 
   # Prepare the given data frame so that we can compute the RBI score and categories
-  rbi_data <- DB %>%
+  rbi_data <- BenthicData %>%
     inner_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
     dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
     dplyr::add_count(Species) %>%
@@ -248,7 +249,7 @@ RBI <- function(DB = benthic_data)
                                             (Score > 0.08 & Score <= 0.16) ~ "Moderate Disturbance",
                                             (Score <= 0.08)  ~ "High Disturbance" )) %>%
     # RBI Category Scores based on RBI scores
-    dplyr::mutate(Category_Score = case_when( (Category == "Reference") ~ 1,
+    dplyr::mutate(`Category Score` = case_when( (Category == "Reference") ~ 1,
                                                   (Category == "Low Disturbance") ~ 2,
                                                   (Category == "Moderate Disturbance") ~ 3,
                                                   (Category == "High Disturbance") ~ 4)) %>%

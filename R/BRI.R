@@ -56,11 +56,12 @@
 #'
 
 
-BRI <- function(DB = benthic_data)
+BRI <- function(BenthicData)
 {
-  "Taxonomic_Info"
+  load("data/Taxonomic_Info.Rdata")
 
-  out <- DB %>%
+
+  out <- BenthicData %>%
   left_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
   #dplyr::right_join(assignment, by = 'stationid') %>%
   # I assume that the next line is something they had in there as a method of removing duplicates

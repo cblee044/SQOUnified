@@ -4,10 +4,10 @@
 \alias{SQOUnified}
 \title{Compute the SQO index scores.}
 \usage{
-data(DB)
+data(benthic_data)
 }
 \arguments{
-\item{DB}{A data file string name that we want to compute SQO scores for.}
+\item{benthic_data}{A data file string name that we want to compute SQO scores for.}
 
 \item{SQO}{A list of the type of SQO scores that we want to compute
 (e.g., \code{c("MAMBI", "RBI")}).
@@ -17,7 +17,7 @@ The default is \code{"all"}, meaning that all scores will be computed.}
 Compute the SQO index scores.
 }
 \examples{
-SQOUnified(df = benthic_data, LOE = "all")
-SQOUnified(df = benthic_data, LOW = 'tox')
+SQOUnified(benthic_data = benthic_data, LOE = "all")
+SQOUnified(benthic_data = benthic_data, LOW = 'tox')
 
 }
