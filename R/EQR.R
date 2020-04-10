@@ -1,3 +1,4 @@
+# This function is private, only used by MAMBI
 EQR <- function(data) {
   segm <- data[nrow(data),] - data[(nrow(data)-1),]
   vett <- matrix(NA, nrow = nrow(data), ncol = ncol(data))
