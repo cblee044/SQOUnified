@@ -95,7 +95,7 @@ prep_SQO_03_08_df <- function(chem){
       )
     ) %>%
     group_by(stationid,compound) %>%
-    mutate(
+    summarize(
       result = if_else(
         sum(result, na.rm = T) != 0, sum(result, na.rm = T), max(rl)
       )

@@ -25,6 +25,8 @@
 LRM <- function(chemdata) {
   "lrm_table"
 
+  # get it in a usable format
+  chemdata <- chemdata_prep(chemdata)
 
 
   # Take the Log10 of the chemistry concentration.
@@ -80,6 +82,9 @@ LRM <- function(chemdata) {
 #' @export
 CSI <- function(chemdata) {
   "csi_weight"
+
+  # get it in a usable format
+  chemdata <- chemdata_prep(chemdata)
 
   # Combine CSI Weight values with data based on the compound. Exclued compounds not in CSI calculation.
   chemdata_csi <- csi_weight %>% left_join(chemdata, by = "AnalyteName")
