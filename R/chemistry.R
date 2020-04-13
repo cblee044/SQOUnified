@@ -184,3 +184,107 @@ chem.sqo <- function(chemdata) {
     )
 }
 
+
+chemdata_prep <- function(chem){
+  # Here chemdata consists of data in the same format as our database, with the columns
+  # stationid, analytename, result, rl, mdl
+
+  # lowercase column names
+  names(chem) <- names(chem) %>% tolower()
+
+  # result, rl, mdl should be numeric fields
+  chem <- chem %>% mutate(
+    result = as.numeric(result),
+    rl = as.numeric(rl),
+    mdl = as.numeric(mdl),
+  )
+
+  # Analytes that are not grouped in any particular category
+  single_analytes <- c('Cadmium','Copper','Lead','Mercury','Zinc',
+                       'alpha-Chlordane','gamma-Chlordane','trans-Nonachlor',"4,4'-DDT")
+
+  # High PAH
+  hpah <- c('Benz(a)anthracene', 'Benzo(a)pyrene', 'Benzo(e)pyrene',
+            'Chrysene', 'Dibenz(a,h)anthracene', 'Fluoranthene', 'Perylene','Pyrene')
+
+  # Low PAH
+  lpah <- c('1-Methylnaphthalene', '1-Methylphenanthrene', '2,6-Dimethylnaphthalene',
+            '2-Methylnaphthalene', 'Acenaphthene', 'Anthracene',
+            'Biphenyl', 'Fluorene', 'Naphthalene', 'Phenanthrene')
+
+  # The PCB's that we care about
+  relevant_pcbs <- paste(
+    'PCB', c(008, 018, 028, 044, 052, 066, 101, 105, 110, 118, 128, 138, 153, 180, 187, 195), sep = "-"
+  )
+
+  # The other group is the "DD's" DDT, DDE, DDD
+  # Can be done with grepl
+
+  # its hard to think of useful, good variable names. Cut me some slack.
+  chemdata <- chem %>%
+    # create a new column called compound. This is what we will group by,
+    mutate(
+      compound = case_when(
+        analytename %in% single_analytes ~ analytename,
+        analytename %in% relevant_pcbs ~ "PCBs_total",
+        analytename %in% hpah ~ "HPAH",
+        analytename %in% lpah ~ "LPAH",
+        grepl("DDD",analytename) ~ "DDDs_total",
+        grepl("DDE",analytename) ~ "DDEs_total",
+        # The DDT total will be handled separately
+        TRUE ~ NA_character_
+      )
+    ) %>%
+    filter(
+      !is.na(compound)
+    ) %>%
+    mutate(
+      result = case_when(
+        result == -88 & compound %in% single_analytes ~ as.numeric(1/2*mdl),
+        result == -88 & !(compound %in% single_analytes) ~ 0,
+        TRUE ~ result
+      )
+    ) %>%
+    group_by(
+      stationid, compound
+    ) %>%
+    summarize(
+      # if the sum of the results is zero, assign it the max of the RL's
+      result = if_else(
+        sum(result, na.rm = T) != 0, sum(result, na.rm = T), max(rl)
+      )
+    ) %>%
+    ungroup()
+
+
+  ddts_total <- chem %>%
+    filter(grepl("DDT",analytename)) %>%
+    mutate(
+      compound = "DDTs_total",
+      result = if_else(
+        result == -88, 0, result
+      )
+    ) %>%
+    group_by(stationid,compound) %>%
+    summarize(
+      result = if_else(
+        sum(result, na.rm = T) != 0, sum(result, na.rm = T), max(rl)
+      )
+    ) %>% ungroup()
+
+
+  chemdata <- chemdata %>%
+    bind_rows(ddts_total) %>%
+    arrange(stationid, compound) %>%
+    rename(
+      StationID = stationid,
+      AnalyteName = compound,
+      Result = result
+    )
+
+  return(chemdata)
+
+}
+
+
+
