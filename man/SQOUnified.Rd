@@ -5,6 +5,7 @@
 \title{Compute the SQO index scores.}
 \usage{
 data(benthic_data)
+data(site_assessment_criteria)
 }
 \arguments{
 \item{benthic_data}{A data file string name that we want to compute SQO scores for.}

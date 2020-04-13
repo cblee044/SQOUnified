@@ -13,7 +13,9 @@ data(csi_weight)
 \item{chemdata}{a dataframe with the following headings
 \code{StationID} - an alpha-numeric identifier of the location;
 \code{AnalyteName} - Name of the Chemical Compound
-\code{Result} - the concentration of the Analyte at that station}
+\code{Result} - the concentration of the Analyte at that station
+\code{RL} - Reporting Limit
+\code{MDL} Method Detection Limit}
 }
 \description{
 This is done by getting the :

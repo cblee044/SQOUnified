@@ -12,16 +12,18 @@
 #'    \code{StationID} - an alpha-numeric identifier of the location;
 #'    \code{AnalyteName} - Name of the Chemical Compound
 #'    \code{Result} - the concentration of the Analyte at that station
+#'    \code{RL} - Reporting Limit
+#'    \code{MDL} Method Detection Limit
 #'
 #' @usage data(lrm_table)
 #' @usage data(csi_weight)
 #'
 #' @importFrom dplyr mutate group_by ungroup arrange select rename left_join case_when summarize summarise
-#' @export
+
 
 # ------------ LRM --------------
 # uncomment to make it a function again
-
+#' @export
 LRM <- function(chemdata) {
   "lrm_table"
 
@@ -198,11 +200,13 @@ chemdata_prep <- function(chem){
   names(chem) <- names(chem) %>% tolower()
 
   # result, rl, mdl should be numeric fields
-  chem <- chem %>% mutate(
-    result = as.numeric(result),
-    rl = as.numeric(rl),
-    mdl = as.numeric(mdl),
-  )
+  chem <- chem %>%
+     mutate(
+      result = as.numeric(result),
+      rl = as.numeric(rl),
+      mdl = as.numeric(mdl),
+    ) %>%
+    filter(!is.na(stationid))
 
   # Analytes that are not grouped in any particular category
   single_analytes <- c('Cadmium','Copper','Lead','Mercury','Zinc',
