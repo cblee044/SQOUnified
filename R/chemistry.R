@@ -47,7 +47,9 @@ LRM <- function(chemdata) {
     # Page 33 of Technical Manual
     group_by(StationID) %>%
     summarize(
-      Score = max(p, na.rm = T)
+      Score = if_else(
+        all(is.na(p)), NA_real_, suppressWarnings(max(p, na.rm = T))
+      )
     ) %>%
     ungroup() %>%
     mutate(

@@ -136,7 +136,7 @@ SQOUnified <- function(benthic = NULL, chem = NULL, tox = NULL) {
     benthic, chem, tox, integrated
   ) %>%
   arrange(
-    StationID, Index
+    StationID, LOE, Index
   )
 
   return(out)

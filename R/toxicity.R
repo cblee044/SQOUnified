@@ -156,6 +156,8 @@ tox.sqo <- function(toxresults) {
   tox_integrated <- tox_nonintegrated %>%
     group_by(StationID) %>%
     summarize(
+      # For Toxicity, we take the mean
+      # CASQO manual page 59
       Score = ceiling(mean(Score, na.rm = T))
     ) %>%
     mutate(
