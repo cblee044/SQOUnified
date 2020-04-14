@@ -256,6 +256,12 @@ chemdata_prep <- function(chem){
         TRUE ~ result
       )
     ) %>%
+    mutate(
+      result = if_else(
+        # CASQO manual page 30 - PCB result value gets multiplied by 1.72
+        analytename == "PCBs_total", 1.72 * result, result
+      )
+    ) %>%
     group_by(
       stationid, compound
     ) %>%
