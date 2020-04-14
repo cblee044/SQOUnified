@@ -106,10 +106,10 @@ RIVPACS <- function(benthic_data){
     dplyr::rename(StationID = stations, Score = O.over.E) %>%
     dplyr::full_join(benthic_data) %>%
     dplyr::mutate(Index = "RIVPACS") %>%
-    dplyr::mutate(Category = case_when((Score > 0.90 | Score < 1.10) ~ "Reference",
-                                       ((Score > 0.74 & Score <= 0.90) | Score >= 1.10 & Score < 1.26) ~ "Low Disturbance",
+    dplyr::mutate(Category = case_when((Score <= 0.32) ~ "High Disturbance",
                                        ((Score > 0.32 & Score <= 0.74) | (Score >= 1.26)) ~ "Moderate Disturbance",
-                                       (Score <= 0.32) ~ "High Disturbance")) %>%
+                                       ((Score > 0.74 & Score <= 0.90) | Score >= 1.10 & Score < 1.26) ~ "Low Disturbance",
+                                       (Score > 0.90 | Score < 1.10) ~ "Reference")) %>%
     dplyr::mutate(`Category Score` = case_when(Category == "Reference" ~ 1,
                                              Category == "Low Disturbance" ~ 2,
                                              Category == "Moderate Disturbance" ~ 3,
