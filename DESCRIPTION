@@ -1,6 +1,6 @@
 Package: SQOUnified
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Tools for calculating SQO scores based on three Lines of Evidence (Benthic, Tox, Chem)
 Version: 0.1.0
 Author: David Gillett, Joana Perdomo, Robert Butler
 Maintainer: Robert Butler <robertb@sccwrp.org>
@@ -19,3 +19,4 @@ Imports:
   rstudioapi,
   vegan
 RoxygenNote: 7.0.2
+Test
