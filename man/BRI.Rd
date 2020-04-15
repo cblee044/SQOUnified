@@ -4,23 +4,23 @@
 \alias{BRI}
 \title{Compute the benthic response index (BRI) score and BRI condition category.}
 \usage{
-data(benthic_data)
-
-data(EG_Ref)
-
-data(Taxonomic_Info)
-
-data(assignment)
+BRI(benthic_data)
 }
 \arguments{
 \item{BenthicData}{a data frame with the following headings
 
-   \code{StationID} - an alpha-numeric identifier of the location;
-   \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
-   \code{SampleDate} - the date of sample collection;
-   \code{Latitude} - latitude in decimal degrees;
-   \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
-   \code{Species} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
+   \strong{\code{StationID}} - an alpha-numeric identifier of the location;
+
+   \strong{\code{Replicate}} - a numeric identifying the replicate number of samples taken at the location;
+
+   \strong{\code{SampleDate}} - the date of sample collection;
+
+   \strong{\code{Latitude}} - latitude in decimal degrees;
+
+   \strong{\code{Longitude}} - longitude in decimal degrees.
+   Make sure there is a negative sign for the Western coordinates;
+
+   \strong{\code{Species}} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
        use sp only or just the Genus. If no animals were present in the sample use
        NoOrganismsPresent with 0 abundance;}
 }
@@ -54,6 +54,7 @@ category score.
 <Table 5. To be included in R markdown file>
 }
 \examples{
-
+data(benthic_sampledata) # load sample data
+BRI(benthic_sampledata) # see the output
 
 }

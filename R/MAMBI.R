@@ -1,17 +1,53 @@
 #' Compute the multivariate AMBI (M-AMBI) index score.
 #'
-#' This is a function to calculate multivariate AMBI (M-AMBI) index scores following Pelletier et al. 2018
-#' which is in turn built upon the work of Sigovini et al. 2013 and Muxica et al. 2007.  This is an alternate version that
-#' allows for manipulation of the data within R before submitting it to the function in lieu of directly reading
-#' in an excel file to the function. The function is designed for use in US estuarine waters and requires three arguments:
+#' @description
+#'     This is a function to calculate multivariate AMBI (M-AMBI) index scores following Pelletier et al. 2018
+#'     which is in turn built upon the work of Sigovini et al. 2013 and Muxica et al. 2007.
+#'     This is an alternate version that allows for manipulation of the data within R before
+#'     submitting it to the function in lieu of directly reading in an excel file to the function.
 #'
-#' @param BenthicData a data frame with the following columns:
-#'     StationID, Replicate, SampleDate, Latitude, Longitude, Species, Abundance, Salinity
-#'     More details are in the details section
-#' @param EG_File_Name A data frame with the suite of US Ecological Groups assigned
-#'     initially in Gillett et al. 2015. See details.
-#' @param EG_Scheme A quoted string with the name of the EG Scheme to be used in the AMBI scoring. The default is
-#'     Hybrid, though one could use US (all coasts), Standard (Values from Angel Borja and colleagues),
+#'     The function is designed for use in US estuarine waters and requires three arguments:
+#'     BenthicData, EG_Ref_values, and EG_Scheme. More details are given below.
+#'
+#'     Two additional dataframes are also needed to run the script: Saline and Tidal freshwater
+#'     good-bad standards for the M-AMBI that are in TidalFresh_Standards.RData and Saline_Standards.RData
+#'
+#'     For the function to run, the following packages NEED to be installed:  tidyverse, reshape2, vegan,
+#'     and readxl. Additionally the EQR.R function must also be installed and is included with this code.
+#'
+#' @param \strong{BenthicData} a data frame with the following columns:
+#'
+#'    \strong{\code{StationID}} - an alpha-numeric identifier of the location;
+#'
+#'    \strong{\code{Replicate}} - a numeric identifying the replicate number of samples taken at the location;
+#'
+#'    \strong{\code{SampleDate}} - the date of sample collection;
+#'
+#'    \strong{\code{Latitude}} - latitude in decimal degrees;
+#'
+#'    \strong{\code{Longitude}} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
+#'
+#'    \strong{\code{Species}} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
+#'        use sp only or just the Genus. If no animals were present in the sample use
+#'        NoOrganismsPresent with 0 abundance;
+#'
+#'    \strong{\code{Abundance}} - the number of each Species observed in a sample;
+#'
+#'    \strong{\code{Salinity}} - the salinity observed at the location in PSU, ideally at time of sampling.
+#'
+#' @param
+#'     \strong{EG_Ref_values} -  A data frame with the suite of US Ecological Groups assigned
+#'     initially in Gillett et al. 2015. This EG Ref values has multiple versions of the EG values and a Yes/No designation
+#'     if the fauna are Oligochaetes or not. The default dataframe is one called EG_Ref which was originally
+#'     read in from a csv called "Ref - EG Values 2018.csv."
+#'
+#'     Replace with other data as you see fit, but make sure the data you use is in a similar format and uses
+#'     the same column names. Additionally, new taxa can be added at the bottom of the list with the EG values the user
+#'     feels appropriate, THOUGH THIS IS NOT RECOMMENDED
+#' @param
+#'     \strong{EG_Scheme} A quoted string with the name of the EG Scheme to be used in the AMBI scoring.
+#'     The default is Hybrid, though one could use US (all coasts),
+#'     Standard (Values from Angel Borja and colleagues),
 #'     US_East (US East Coast), US_Gulf (US Gulf of Mexico Coast), or US_West (US West Coast).
 #'
 #' @usage MAMBI(benthic_data, EG_Ref_values = EG_Ref, EG_Scheme = "Hybrid")
@@ -22,57 +58,31 @@
 #' data(Saline_Standards) # Load Saline standards if you want to look at them
 #' data(EG_Ref) # load the default EG_Ref values
 #' MAMBI(benthic_sampledata, EG_Ref, "Hybrid")
-#' #' MAMBI(benthic_sampledata, EG_Ref, "US Gulf")
+#' MAMBI(benthic_sampledata, EG_Ref, "US Gulf")
 #' MAMBI(benthic_sampledata) # uses default values for the last two args
 #'
-#' @details
-#' This is a function to calculate multivariate AMBI (M-AMBI) index scores following Pelletier et al. 2018
-#' which is in turn built upon the work of Sigovini et al. 2013 and Muxica et al. 2007.  This is an alternate version that
-#' allows for manipulation of the data within R before submitting it to the function in lieu of directly reading
-#' in an excel file to the function. The function is designed for use in US estuarine waters and requires three arguments:
+#' @return
+#'     The output of the function will be a dataframe with
 #'
-#' \strong{BenthicData}  - a data frame with the following information with these headings:
+#'     \code{StationID}, \code{Replicate}, \code{SampleDate},
 #'
-#'    \code{StationID} - an alpha-numeric identifier of the location;
+#'     \code{Latitude}, \code{Longitude},
 #'
-#'    \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
+#'     \code{SalZone} (The Salinity Zone assigned by M-AMBI),
 #'
-#'    \code{SampleDate} - the date of sample collection;
+#'     \code{AMBI_Score},
 #'
-#'    \code{Latitude} - latitude in decimal degrees;
+#'     \code{S} (Species Richness),
 #'
-#'    \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
+#'     \code{H} (Species Diversity),
 #'
-#'    \code{Species} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
-#'        use sp only or just the Genus. If no animals were present in the sample use
-#'        NoOrganismsPresent with 0 abundance;
+#'     \code{Oligo_pct} (Relative Abundance of Oligochaetes),
 #'
-#'    \code{Abundance} - the number of each Species observed in a sample;
+#'     \code{MAMBI_Score}, \code{Orig_MAMBI_Condition}, \code{New_MAMBI_Condition},
 #'
-#'    \code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling.
+#'     \code{Use_MAMBI} (Can M-AMBI be applied?), \code{Use_AMBI} (Can AMBI be applied?),
 #'
-#' \strong{EG_Ref_values} -  A data frame with the suite of US Ecological Groups assigned
-#'     initially in Gillett et al. 2015. This EG Ref values has multiple versions of the EG values and a Yes/No designation
-#'     if the fauna are Oligochaetes or not. The default dataframe is one called EG_Ref which was originally
-#'     read in from a csv called "Ref - EG Values 2018.csv."
-#'     Replace with other data as you see fit, but make sure the data you use is in a similar format and uses
-#'     the same column names. Additionally, new taxa can be added at the bottom of the list with the EG values the user
-#'     feels appropriate, THOUGH THIS IS NOT RECOMMENDED
-#'
-#' \strong{EG_Scheme} A quoted string with the name of the EG Scheme to be used in the AMBI scoring. The default is
-#'     Hybrid, though one could use US (all coasts), Standard (Values from Angel Borja and colleagues),
-#'     US_East (US East Coast), US_Gulf (US Gulf of Mexico Coast), or US_West (US West Coast).
-#'
-#' Two additional dataframes are also needed to run the script: Saline and Tidal freshwater good-bad standards for the M-AMBI
-#' that are in TidalFresh_Standards.RData and Saline_Standards.RData
-#'
-#' For the function to run, the following packages NEED to be installed:  tidyverse, reshape2, vegan, and readxl.
-#' Additionally the EQR.R function must also be installed and is included with this code.
-#'
-#' The output of the function will be a dataframe with StationID, Replicate, SampleDate, Latitude, Longitude,
-#' SalZone (The Salinity Zone assigned by M-AMBI), AMBI_Score, S (Species Richness), H (Species Diversity),
-#' Oligo_pct (Relative Abundance of Oligochaetes), MAMBI_Score, Orig_MAMBI_Condition, New_MAMBI_Condition,
-#' Use_MAMBI (Can M-AMBI be applied?), Use_AMBI (Can AMBI be applied?), and YesEG (% of Abundance with a EG value)
+#'     \code{YesEG} (percentage of Abundance with a EG value)
 #'
 #' @author David Gillett \email{davidg@@sccwrp.org}
 #'
