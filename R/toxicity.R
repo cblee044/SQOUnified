@@ -1,23 +1,47 @@
+#---- tox summary ----
+#' Get the Statistical Summary for Tox Results Data
+#'
+#' @description
+#' This function will calculate the tox summary,
+#'
+#' given an argument which is a dataframe of tox results data
+#'
+#' @param toxresults a dataframe with the following columns: stationid, toxbatch, species, sampletypecode
+#'    matrix, labrep, result. This data must also include the control samples
+#'    (stationcode 0000, sampletypecode CNEG etc)
+#'
+#'
+#' @details
+#' The input data here is called toxresults, and it is structured as follows:
+#'
+#' \strong{toxresults} -  a dataframe that contains the toxicity results
+#'
+#'    \code{stationid} - an alpha-numeric identifier of the location;
+#'
+#'    \code{toxbatch} - the toxbatch id - used to join with the control sample
+#'
+#'    \code{species} - The Genus and species of the animale that was tested
+#'
+#'    \code{sampletypecode} - The sampletype used Grab, CNEG etc. Control samples must be included
+#'
+#'    \code{matrix} - Whole Sediment, Sediment Water Interface, etc. Probably useless to include.
+#'                    I Just have it to make sure they dont put Reference Toxicant
+#'
+#'    \code{labrep} - There should be 5 per station, species pair
+#'
+#'    \code{result} - the percentage that survived the test, or had normal development
+#'
+#'
+#' @usage tox.summary(toxresults)
+#'
+#' @examples
+#' data(tox_sampledata)
+#' tox.summary(tox_sampledata)
+#'
 #' @importFrom plyr rbind.fill
 #' @importFrom stats t.test
 #' @importFrom tidyr separate
 #' @import dplyr
-#'
-#' @param toxresults a dataframe that contains the toxicity results
-#'    \code{stationid} - an alpha-numeric identifier of the location;
-#'    \code{toxbatch} - the toxbatch id - used to join with the control sample
-#'    \code{species} - The Genus and species of the animale that was tested
-#'    \code{sampletypecode} - The sampletype used Grab, CNEG etc. Control samples must be included
-#'    \code{matrix} - Whole Sediment, Sediment Water Interface, etc. Probably useless to include.
-#'                    I Just have it to make sure they dont put Reference Toxicant
-#'    \code{labrep} - There should be 5 per station, species pair
-#'    \code{result} - the percentage that survived the test, or had normal development
-#'
-#'
-#' @usage data(tox_categories)
-#'
-#' @examples tox.sqo(toxresults,controls)
-#'
 #' @export
 
 tox.summary <- function(toxresults) {
@@ -127,6 +151,47 @@ tox.summary <- function(toxresults) {
   return(summary)
 }
 
+
+# ---- Tox SQO ----
+#' Get Tox SQO Scores and Categories
+#'
+#' @description
+#' This function will calculate the tox SQO scores for stations given a dataframe structured as described
+#' in the details or the Arguments section. The funtion will get SQO scores for each individual test
+#' conducted for a station, as well as the integrated Toxicity LOE SQO score and category
+#'
+#' @param toxresults a dataframe with the following columns: stationid, toxbatch, species, sampletypecode
+#'    matrix, labrep, result. This data must also include the control samples
+#'    (stationcode 0000, sampletypecode CNEG etc)
+#'
+#'
+#' @details
+#' The input data here is called toxresults, and it is structured as follows:
+#'
+#' \strong{toxresults} -  a dataframe that contains the toxicity results
+#'
+#'    \code{stationid} - an alpha-numeric identifier of the location;
+#'
+#'    \code{toxbatch} - the toxbatch id - used to join with the control sample
+#'
+#'    \code{species} - The Genus and species of the animale that was tested
+#'
+#'    \code{sampletypecode} - The sampletype used Grab, CNEG etc. Control samples must be included
+#'
+#'    \code{matrix} - Whole Sediment, Sediment Water Interface, etc. Probably useless to include.
+#'                    I Just have it to make sure they dont put Reference Toxicant
+#'
+#'    \code{labrep} - There should be 5 per station, species pair
+#'
+#'    \code{result} - the percentage that survived the test, or had normal development
+#'
+#'
+#' @usage tox.sqo(toxresults)
+#'
+#' @examples
+#' data(tox_sampledata)
+#' tox.sqo(tox_sampledata)
+#'
 #' @export
 tox.sqo <- function(toxresults) {
 

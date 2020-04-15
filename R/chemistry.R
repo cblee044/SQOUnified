@@ -1,28 +1,25 @@
-#' Calulate the Indices for Chemistry Line of Evidence to determine Station Assessment
-#' in other words, how impacted a site is
-#'
-#' This is done by getting the :
-#'   LRM (Logistic Regression Model) Score
-#'   CSI (Chemical Score Index)
-#'   The Average of the Above two Scores, which is hard to come up with a name for
-#'
-#' The ultimate guide for this thing is the CASQO Technical Manual Chapter 3 (page 18 to 36)
-#'
-#' @param chemdata a dataframe with the following headings
-#'    \code{StationID} - an alpha-numeric identifier of the location;
-#'    \code{AnalyteName} - Name of the Chemical Compound
-#'    \code{Result} - the concentration of the Analyte at that station
-#'    \code{RL} - Reporting Limit
-#'    \code{MDL} Method Detection Limit
-#'
-#' @usage data(lrm_table)
-#' @usage data(csi_weight)
-#'
-#' @importFrom dplyr mutate group_by ungroup arrange select rename left_join case_when summarize summarise
-
-
 # ------------ LRM --------------
-# uncomment to make it a function again
+#' Logistic Regression Model Score
+#'
+#' This function calculates the Logistic Regression Model score
+#' in order to calculate the Chemistry SQO scores for the given sites.
+#' The ultimate guide for this function is the CASQO Technical Manual Chapter 3
+#' (end of page 31 to beginning of page 34)
+#'
+#' @usage LRM(chemdata)
+#'
+#' @param chemdata a dataframe with the following headings:
+#'    \code{StationID},
+#'    \code{AnalyteName},
+#'    \code{Result},
+#'    \code{RL},
+#'    \code{MDL}
+#'
+#' @examples
+#' data(chem_sampledata) # load sample data to your environment
+#' LRM(chem_sampledata) # get scores and see output
+#'
+#' @import dplyr
 #' @export
 LRM <- function(chemdata) {
   "lrm_table"
@@ -83,6 +80,25 @@ LRM <- function(chemdata) {
 
 
 # ------------ CSI (Chemical Score Index) --------------
+#' Chemical Score Index
+#'
+#' This function calculates the Chemical Score Index for the given sites.
+#' The ultimate guide for this function is the CASQO Technical Manual Chapter 3
+#' (beginning of page 34 to the beginning of page 36)
+#'
+#' @usage CSI(chemdata)
+#'
+#' @param chemdata a dataframe with the following headings:
+#'    \code{StationID},
+#'    \code{AnalyteName},
+#'    \code{Result},
+#'    \code{RL},
+#'    \code{MDL}
+#'
+#' @examples
+#' data(chem_sampledata) # load sample data to your environment
+#' CSI(chem_sampledata) # get scores and see output
+#'
 #' @export
 CSI <- function(chemdata) {
   "csi_weight"
@@ -154,6 +170,25 @@ CSI <- function(chemdata) {
 }
 
 # ------------ Integrated Score --------------
+#' Get Integrated Chem SQO Scores and Categories
+#'
+#' This function will not only calculate CSI and LRM, but it
+#' will also get the overall integrated SQO Category and Score
+#' for the stations that are given to it.
+#'
+#' @usage chem.sqo(chemdata)
+#'
+#' @param chemdata a dataframe with the following columns:
+#'    \code{StationID},
+#'    \code{AnalyteName},
+#'    \code{Result},
+#'    \code{RL},
+#'    \code{MDL}
+#'
+#' @examples
+#' data(chem_sampledata) # load sample data to your environment
+#' chem.sqo(chem_sampledata) # get scores and see output
+#'
 #' @export
 chem.sqo <- function(chemdata) {
 
@@ -194,6 +229,7 @@ chem.sqo <- function(chemdata) {
 }
 
 
+# ---- Utility function ----
 chemdata_prep <- function(chem){
   # Here chemdata consists of data in the same format as our database, with the columns
   # stationid, analytename, result, rl, mdl

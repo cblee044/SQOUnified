@@ -1,25 +1,46 @@
-#' @param benthic_data a data frame stored in the R environment. Note that this data frame MUST contain the following
-#'                    information with these headings:
-#'                         \code{StationID} - an alpha-numeric identifier of the location;
-#'                         \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
-#'                         \code{SampleDate} - the date of sample collection;
-#'                         \code{Latitude} - latitude in decimal degrees;
-#'                         \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
-#'                         \code{Taxon} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
-#'        use sp only or just the Genus. If no animals were present in the sample use
-#'        NoOrganismsPresent with 0 abundance;
-#'                         \code{Abundance} - the number of each Species observed in a sample;
-#'                         \code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling;
-#'                         \code{Stratum} - ;
-#'                         \code{Exclude} - ;
+# ---- benthic sqo function ----
+#' Get Benthic Related Indices, and the Integrated Benthic SQO Score
+#'
+#' This function will calculate, RBI, IBI, BRI, RIVPACS, MAMBI,
+#' as well as the Integrated Benthic SQO score / category.
+#' The ultimate guide for these indices (EXCEPT MAMBI) is the CASQO Technical Manual
+#' pages 64 to 94
 #'
 #' @usage
-#' data(benthic_sampledata)
-#' data(Taxonomic_Info)
-#' data(EG_Ref)
+#' benthic.sqo(benthic_data)
+#'
+#' @param benthic_data a dataframe with the columns StationID, Replicate, SampleDate,
+#'   Latitude, Longitude, Taxon, Abundance, Salinity, Stratum, Exclude. see details
 #'
 #' @examples
-#' benthic.sqo(benthic_sampledata)
+#' data(benthic_sampledata) # load the sample data
+#' benthic.sqo(benthic_sampledata) # get scores and see output
+#'
+#' @details
+#'  The argument for the function, is a data frame. Note that this data frame MUST contain the following
+#'  information with these headings:
+#'
+#'    \code{StationID} - an alpha-numeric identifier of the location;
+#'
+#'    \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
+#'
+#'    \code{SampleDate} - the date of sample collection;
+#'
+#'    \code{Latitude} - latitude in decimal degrees;
+#'
+#'    \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
+#'
+#'    \code{Taxon} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
+#'        use sp only or just the Genus. If no animals were present in the sample use
+#'        NoOrganismsPresent with 0 abundance;
+#'
+#'    \code{Abundance} - the number of each Species observed in a sample;
+#'
+#'    \code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling;
+#'
+#'    \code{Stratum} - ;
+#'
+#'    \code{Exclude} - ;
 #'
 #' @importFrom dplyr bind_rows
 #'
