@@ -1,0 +1,8 @@
+.gitignore
+.RData
+.Rhistory
+.Rproj.user
+ignore/
+.Rhistory
+R/RHMP_data.R
+
