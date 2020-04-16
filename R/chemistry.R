@@ -100,6 +100,19 @@ LRM <- function(chemdata) {
 #' CSI(chem_sampledata) # get scores and see output
 #'
 #' @export
+
+# Conversation with Darrin on April 16th 2020
+# We need to fix the rounding in this thing.
+# The fixes may also need to be implemented in the chemdata_prep function
+# Certain analytes result values need to be rounded to different numbers of decimal places
+# going off memory here. Darrin is the one to consult, and he can show the latest greatest version of the excel tool
+# Copper - 1
+# Lead  - 1
+# Mercury - 2
+# Zinc - 1
+# HPAH - 1
+# LPAH - 1
+# All the rest - 2
 CSI <- function(chemdata) {
   "csi_weight"
 

@@ -7,7 +7,7 @@
 MAMBI(benthic_data, EG_Ref_values = EG_Ref, EG_Scheme = "Hybrid")
 }
 \arguments{
-\item{BenthicData}{a data frame with the following columns:
+\item{\strong{BenthicData}}{a data frame with the following columns:
 
    \strong{\code{StationID}} - an alpha-numeric identifier of the location;
 
@@ -62,7 +62,7 @@ The output of the function will be a dataframe with
 
     \code{Use_MAMBI} (Can M-AMBI be applied?), \code{Use_AMBI} (Can AMBI be applied?),
 
-    \code{YesEG} (% of Abundance with a EG value)
+    \code{YesEG} (percentage of Abundance with a EG value)
 }
 \description{
 This is a function to calculate multivariate AMBI (M-AMBI) index scores following Pelletier et al. 2018

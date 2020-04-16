@@ -97,9 +97,6 @@
 MAMBI<-function(BenthicData, EG_Ref_values = NULL, EG_Scheme="Hybrid")
 {
 
-  load("data/EG_Ref.Rdata")
-  load("data/Saline_Standards.Rdata")
-
   if (is.null(EG_Ref_values)) {
     EG_Ref_values <- EG_Ref
   }

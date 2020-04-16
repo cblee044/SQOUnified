@@ -62,8 +62,6 @@
 
 BRI <- function(BenthicData)
 {
-  load("data/Taxonomic_Info.Rdata")
-
 
   out <- BenthicData %>%
   left_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
