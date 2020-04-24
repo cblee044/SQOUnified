@@ -1,123 +1,144 @@
 #' Compute the relative benthic index (RBI) score.
 #'
-#' The RBI is the weighted sum of: (a) four community metrics related to biodiversity (total number of taxa, number of crustacean taxa, abundance
-#' of crustacean individuals, and number of mollusc taxa), (b) abundances of three positive indicator taxa, and (c) the presence of two negative
-#' indicator species.
+#' @description
+#'   The RBI is the weighted sum of: (a) four community metrics related to biodiversity (total number of taxa, number of crustacean taxa, abundance
+#'   of crustacean individuals, and number of mollusc taxa), (b) abundances of three positive indicator taxa, and (c) the presence of two negative
+#'   indicator species.
 #'
-#' The data needed to calculate the RBI are:
-#' (1) Total number of taxa,
-#' (2) Number of mollusc taxa,
-#' (3) Number of crustacean individuals,
-#' (4) Number of individuals of \emph{Monocorophium insidiosum},
-#' (5) Number of individuals of \emph{Asthenothaerus diegensis},
-#' (6) Number of individuals of \emph{Goniada littorea},
-#' (7) Whether the data has the presence of \emph{Capitella capitata} complex, and
-#' (8) Whether the data has the presence of Oligochaeta.
+#' @details
+#'   The RBI is the weighted sum of: (a) four community metrics related to biodiversity (total number of taxa, number of crustacean taxa, abundance
+#'   of crustacean individuals, and number of mollusc taxa), (b) abundances of three positive indicator taxa, and (c) the presence of two negative
+#'   indicator species.
 #'
-#' To compute the RBI, the first step is to normalize the values for the benthic community metrics relative to maxima for the data used to develop
-#' the RBI for the Southern California Marine Bays habitat, to produce values relative to the maxima that are referred to as scaled values. The
-#' scaled value calculations use the following formulae:
+#'   The data needed to calculate the RBI are:
+#'   (1) Total number of taxa,
+#'   (2) Number of mollusc taxa,
+#'   (3) Number of crustacean individuals,
+#'   (4) Number of individuals of \emph{Monocorophium insidiosum},
+#'   (5) Number of individuals of \emph{Asthenothaerus diegensis},
+#'   (6) Number of individuals of \emph{Goniada littorea},
+#'   (7) Whether the data has the presence of \emph{Capitella capitata} complex, and
+#'   (8) Whether the data has the presence of Oligochaeta.
 #'
-#' Total Number of Taxa / 99
-#' Number of Mollusc Taxa / 28
-#' Number of Crustacean Taxa / 29
+#'   To compute the RBI, the first step is to normalize the values for the benthic community metrics relative to maxima for the data used to develop
+#'   the RBI for the Southern California Marine Bays habitat, to produce values relative to the maxima that are referred to as scaled values. The
+#'   scaled value calculations use the following formulae:
+#'
+#'   Total Number of Taxa / 99
+#'   Number of Mollusc Taxa / 28
+#'   Number of Crustacean Taxa / 29
 #'
 #'
-#' The next step is to calculate the Taxa Richness Weighted Value (TWV) from the scaled values by the equation:
+#'   The next step is to calculate the Taxa Richness Weighted Value (TWV) from the scaled values by the equation:
 #'
-#' TWV = Scaled Total Number of Taxa + Scaled Number of Mollusc Taxa + Scaled Number of Crustacean Taxa + (0.25 * Scaled Abundance of Crustacea)
+#'   TWV = Scaled Total Number of Taxa + Scaled Number of Mollusc Taxa + Scaled Number of Crustacean Taxa + (0.25 * Scaled Abundance of Crustacea)
 #'
-#' Next, the value for the two negative indicator taxa (NIT) is calculated. The two negative indicator taxa are \emph{Capitella capitata} complex
-#' and Oligochaeta. For each of these taxa that are present, in any abundance, the NIT is decreased by 0.1. Therefore, if neither were found the
-#' NIT = 0, if both are found the NIT = -0.2.
+#'   Next, the value for the two negative indicator taxa (NIT) is calculated. The two negative indicator taxa are \emph{Capitella capitata} complex
+#'   and Oligochaeta. For each of these taxa that are present, in any abundance, the NIT is decreased by 0.1. Therefore, if neither were found the
+#'   NIT = 0, if both are found the NIT = -0.2.
 #'
-#' The next step is to calculate the value for the three positive indicator taxa (PIT). The positive indicator taxa are \emph{Monocorophium insidiosum,
-#' Asthenothaerus diegensis}, and \emph{Goniada littorea}. First, the PIT value is calculated for each species using the following equations:
+#'   The next step is to calculate the value for the three positive indicator taxa (PIT). The positive indicator taxa are \emph{Monocorophium insidiosum,
+#'   Asthenothaerus diegensis}, and \emph{Goniada littorea}. First, the PIT value is calculated for each species using the following equations:
 #'
-#' \deqn{\frac{\sqrt[4]{Monocorophium~ insidiosum \textrm{abundance}}}{\sqrt[4]{473}}}
-#' \deqn{\frac{\sqrt[4]{Asthenothaerus~ diegensis \textrm{abundance}}}{\sqrt[4]{27}}}
-#' \deqn{\frac{\sqrt[4]{Goniada littorea~ \textrm{abundance}}}{\sqrt[4]{15}}}
+#'   \deqn{\frac{\sqrt[4]{Monocorophium~ insidiosum \textrm{abundance}}}{\sqrt[4]{473}}}
+#'   \deqn{\frac{\sqrt[4]{Asthenothaerus~ diegensis \textrm{abundance}}}{\sqrt[4]{27}}}
+#'   \deqn{\frac{\sqrt[4]{Goniada littorea~ \textrm{abundance}}}{\sqrt[4]{15}}}
 #'
-#' The three species PIT values are then summed to calculate the PIT value for the sample. If none of the three species is present, then the sample
-#' PIT = 0.
+#'   The three species PIT values are then summed to calculate the PIT value for the sample. If none of the three species is present, then the sample
+#'   PIT = 0.
 #'
-#' The next step is to calculate the Raw RBI:
+#'   The next step is to calculate the Raw RBI:
 #'
-#' \deqn{\textrm{Raw RBI} = \textrm{TWV + NIT + } (2 \times \textrm{PIT})}
+#'   \deqn{\textrm{Raw RBI} = \textrm{TWV + NIT + } (2 \times \textrm{PIT})}
 #'
-#' The final calculation is for the RBI score, normalizing the Raw RBI by the minimum and maximum Raw RBI values in the index development data:
+#'   The final calculation is for the RBI score, normalizing the Raw RBI by the minimum and maximum Raw RBI values in the index development data:
 #'
-#' \deqn{\textrm{RBI Score} = (\textrm{Raw RBI} - 0.03)/4.69}
+#'   \deqn{\textrm{RBI Score} = (\textrm{Raw RBI} - 0.03)/4.69}
 #'
-#' The last step in the RBI process is to compare the RBI Score to a set of thresholds to determine the RBI category (Table 4).
+#'   The last step in the RBI process is to compare the RBI Score to a set of thresholds to determine the RBI category (Table 4).
 #'
-#' <Insert Table 4>
+#'   <Insert Table 4>
 #'
-#' @usage data(benthic_data)
-#' @usage data(EG_Ref)
-#' @usage data(Taxonomic_Info)
+#'   For the function to run, the following packages NEED to be installed:  tidyverse, reshape2, vegan, and readxl.
+#'   Additionally the EQR.R function must also be installed and is included with this code.
+#'
+#'   The output of the function will be a dataframe with StationID, Replicate, SampleDate, Latitude, Longitude,
+#'   SalZone (The Salinity Zone assigned by M-AMBI), AMBI_Score, S (Species Richness), H (Species Diversity),
+#'   Oligo_pct (Relative Abundance of Oligochaetes), MAMBI_Score, Orig_MAMBI_Condition, New_MAMBI_Condition,
+#'   Use_MAMBI (Can M-AMBI be applied?), Use_AMBI (Can AMBI be applied?), and YesEG (% of Abundance with a EG value)
+#'
+#' @usage BRI(benthic_data)
 #'
 #' @param BenthiCData a data frame stored in the R environment. Note that this data frame MUST contain the following
 #'                    information with these headings:
+#'
 #'                         \code{StationID} - an alpha-numeric identifier of the location;
+#'
 #'                         \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
+#'
 #'                         \code{SampleDate} - the date of sample collection;
+#'
 #'                         \code{Latitude} - latitude in decimal degrees;
+#'
 #'                         \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
+#'
 #'                         \code{Taxon} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
 #'        use sp only or just the Genus. If no animals were present in the sample use
 #'        NoOrganismsPresent with 0 abundance;
+#'
 #'                         \code{Abundance} - the number of each Species observed in a sample;
+#'
 #'                         \code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling;
+#'
 #'                         \code{Stratum} - ;
+#'
 #'                         \code{Exclude} - ;
 #'
-#' @usage
-#' data(Taxonomic_Info)
+#' @return The output of the function will be a dataframe with
+#'
+#'    StationID,
+#'
+#'    Replicate,
+#'
+#'    SampleDate,
+#'
+#'    Latitude,
+#'
+#'    Longitude,
+#'
+#'   SalZone (The Salinity Zone assigned by M-AMBI),
+#'
+#'   AMBI_Score,
+#'
+#'   S (Species Richness),
+#'
+#'   H (Species Diversity),
+#'
+#'   Oligo_pct (Relative Abundance of Oligochaetes),
+#'
+#'   MAMBI_Score,
+#'
+#'   Orig_MAMBI_Condition,
+#'
+#'   New_MAMBI_Condition,
+#'
+#'   Use_MAMBI (Can M-AMBI be applied?),
+#'
+#'   Use_AMBI (Can AMBI be applied?),
+#'
+#'   YesEG (% of Abundance with a EG value)
+#'
+#' @examples
+#'   RBI(benthic_data)
+#'   RBI(BenthicData)
+#'
 #'
 #' @import dplyr
 #' @importFrom tidyr replace_na
 #'
 #' @export
-#'
-#' @examples
-#' RBI(benthic_data)
-#' RBI(BenthicData)
 
-##########################################################################################################################
-## This is a function to calculate relative benthic index (RBI). The RBI is the weighted sum of: 1) four community metrics
-## related to biodiversity (total number of taxa, number of crustacean taxa, abundance of crustacean individuals, and
-## number of mollusc taxa); 2) abundance of three positive indicator taxa; and 3) the presence of two negative indicator
-## species.
-##                        The data MUST contain the following information with these headings:
-##
-##                                  StationID - an alpha-numeric identifier of the location
-##                                  Replicate - a numeric identifying the replicate number of samples taken at the
-##                                              location
-##                                  SampleDate - the date of sample collection
-##                                  Latitude - latitude in decimal degrees
-##                                  Longitude - longitude in decimal degrees make sure there is a negative sign
-##                                              for the Western coordinates
-##                                  Taxon - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
-##                                            use sp only or just the Genus. If no animals were present in the sample
-##                                            use NoOrganismsPresent with 0 abundance
-##                                  Abundance - the number of each Species observed in a sample
-##                                  Salinity - the salinity observed at the location in PSU, ideally at time of sampling
-##                                  Stratum -
-##                                  Exclude -
-##
-##
-##
-## For the function to run, the following packages NEED to be installed:  tidyverse, reshape2, vegan, and readxl.
-## Additionally the EQR.R function must also be installed and is included with this code.
-##
-## The output of the function will be a dataframe with StationID, Replicate, SampleDate, Latitude, Longitude,
-## SalZone (The Salinity Zone assigned by M-AMBI), AMBI_Score, S (Species Richness), H (Species Diversity),
-## Oligo_pct (Relative Abundance of Oligochaetes), MAMBI_Score, Orig_MAMBI_Condition, New_MAMBI_Condition,
-## Use_MAMBI (Can M-AMBI be applied?), Use_AMBI (Can AMBI be applied?), and YesEG (% of Abundance with a EG value)
-##########################################################################################################################
-
-
+# RBI ----
 RBI <- function(BenthicData)
 {
   load("data/Taxonomic_Info.Rdata")

@@ -8,11 +8,16 @@ chem.sqo(chemdata)
 }
 \arguments{
 \item{chemdata}{a dataframe with the following columns:
-\code{StationID},
-\code{AnalyteName},
-\code{Result},
-\code{RL},
-\code{MDL}}
+
+   \code{StationID},
+
+   \code{AnalyteName},
+
+   \code{Result},
+
+   \code{RL},
+
+   \code{MDL}}
 }
 \description{
 This function will not only calculate CSI and LRM, but it

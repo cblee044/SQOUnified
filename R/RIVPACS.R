@@ -1,35 +1,48 @@
-#' This script is going to be a wrapper function for the RIVPACS scripts to be implemented into
-#' SQOUnified package.
+#' CRiver Invertebrate Prediction and Classification System (RIVPACS) Index and RIVPACS Condition Category
+#' (SoCal only)
+#'
+#' @description
+#'   For more information concerning RIVPACS, consult the CASQO Technical Manual page 80
 #'
 #' @param benthic_data data frame stored in the R environment. Note that this data frame MUST contain the following
 #'                    information with these headings:
+#'
 #'                         \code{StationID} - an alpha-numeric identifier of the location;
+#'
 #'                         \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
+#'
 #'                         \code{SampleDate} - the date of sample collection;
+#'
 #'                         \code{Latitude} - latitude in decimal degrees;
+#'
 #'                         \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
+#'
 #'                         \code{Taxon} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
 #'        use sp only or just the Genus. If no animals were present in the sample use
 #'        NoOrganismsPresent with 0 abundance;
+#'
 #'                         \code{Abundance} - the number of each Species observed in a sample;
+#'
 #'                         \code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling;
+#'
 #'                         \code{Stratum} - ;
+#'
 #'                         \code{Exclude} - ;
 #'
-#' I saved the SoCalRivpacs function in an RData file and import it here
 #' @usage
-#' data(benthic_data)
+#' RIVPACS(benthic_data)
 #'
 #' @import dplyr
 #' @importFrom tidyr pivot_wider
 #'
 #' @examples
-#' RIVPACS(benthic_data)
+#' data(benthic_sampledata)
+#' RIVPACS(benthic_sampledata)
 #'
 #' @export
 #'
 
-#---- RIVPACS WRAPPER FUNCTOON ----
+#---- RIVPACS WRAPPER FUNCTION ----
 # This is what we will use for RIVPACS
 RIVPACS <- function(benthic_data){
 

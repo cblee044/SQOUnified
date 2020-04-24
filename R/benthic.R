@@ -9,15 +9,11 @@
 #' @usage
 #' benthic.sqo(benthic_data)
 #'
-#' @param benthic_data a dataframe with the columns StationID, Replicate, SampleDate,
-#'   Latitude, Longitude, Taxon, Abundance, Salinity, Stratum, Exclude. see details
-#'
 #' @examples
 #' data(benthic_sampledata) # load the sample data
 #' benthic.sqo(benthic_sampledata) # get scores and see output
 #'
-#' @details
-#'  The argument for the function, is a data frame. Note that this data frame MUST contain the following
+#' @param benthic_data a data frame. This data frame must contain the following
 #'  information with these headings:
 #'
 #'    \code{StationID} - an alpha-numeric identifier of the location;

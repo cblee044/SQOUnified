@@ -26,32 +26,35 @@ BRI(benthic_data)
 }
 \description{
 The BRI is the abundance weighted pollution tolerance score of the organisms present in a benthic sample. The higher
-the BRI score, the more degraded the benthic community represented by the sample.
+  the BRI score, the more degraded the benthic community represented by the sample.
 }
 \details{
-Two types of data are needed to calculate the BRI:
+The BRI is the abundance weighted pollution tolerance score of the organisms present in a benthic sample. The higher
+  the BRI score, the more degraded the benthic community represented by the sample.
 
-(1) the abundance of each species and
-(2) its pollution tolerance score, P.
+  Two types of data are needed to calculate the BRI:
 
-The P values are available for most species present in the assemblage. Only species for which P values are avialable
-are used in the BRI calculations. P values showld be obtained for the appropriate habitat and from the most
-up-to-date list available.
+  (1) the abundance of each species and
+  (2) its pollution tolerance score, P.
 
-The first step in the BRI calculation is to compute the 4th root of the abundance of each taxon in the sample for
-which P values are available. The next step is to multiply the 4th root abundance value by the P value, for each
-taxon.
+  The P values are available for most species present in the assemblage. Only species for which P values are avialable
+  are used in the BRI calculations. P values showld be obtained for the appropriate habitat and from the most
+  up-to-date list available.
 
-Next, separately sum all of the 4th roots of the abundances and all of the products of the 4th roots of abundance
-and P values. Taxa that lack P values are not included in either sum. The next step is to calculate the BRI score
-as:
+  The first step in the BRI calculation is to compute the 4th root of the abundance of each taxon in the sample for
+  which P values are available. The next step is to multiply the 4th root abundance value by the P value, for each
+  taxon.
 
-\deqn{ \frac{\sum \left(\sqrt[p]{\textrm{Abundance}} \right) \times P}{\sum \sqrt[p]{\textrm{Abundance}}} }
+  Next, separately sum all of the 4th roots of the abundances and all of the products of the 4th roots of abundance
+  and P values. Taxa that lack P values are not included in either sum. The next step is to calculate the BRI score
+  as:
 
-The last step is to compare the BRI score to the BRI threshold values in Table 5 to determine the BRI category and
-category score.
+  \deqn{ \frac{\sum \left(\sqrt[p]{\textrm{Abundance}} \right) \times P}{\sum \sqrt[p]{\textrm{Abundance}}} }
 
-<Table 5. To be included in R markdown file>
+  The last step is to compare the BRI score to the BRI threshold values in Table 5 to determine the BRI category and
+  category score.
+
+  <Table 5. To be included in R markdown file>
 }
 \examples{
 data(benthic_sampledata) # load sample data

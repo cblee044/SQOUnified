@@ -4,53 +4,66 @@
 \alias{IBI}
 \title{Compute the Index of Biotic Integrity (IBI) and IBI condition category.}
 \usage{
-data(benthic_data)
-data(Taxonomic_Info)
+IBI(benthic_data)
 }
 \arguments{
 \item{BenthicData}{a data frame with AT LEAST the following information with these headings:
-\code{StationID} - an alpha-numeric identifier of the location;
-\code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
-\code{SampleDate} - the date of sample collection;
-\code{Latitude} - latitude in decimal degrees;
-\code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
-\code{Species} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
-    use sp only or just the Genus. If no animals were present in the sample use
-    NoOrganismsPresent with 0 abundance;
-\code{Abundance} - the number of each Species observed in a sample;
-\code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling.}
+
+   \code{StationID} - an alpha-numeric identifier of the location;
+
+   \code{Replicate} - a numeric identifying the replicate number of samples taken at the location;
+
+   \code{SampleDate} - the date of sample collection;
+
+   \code{Latitude} - latitude in decimal degrees;
+
+   \code{Longitude} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
+
+   \code{Species} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
+       use sp only or just the Genus. If no animals were present in the sample use
+       NoOrganismsPresent with 0 abundance;
+
+   \code{Abundance} - the number of each Species observed in a sample;
+
+   \code{Salinity} - the salinity observed at the location in PSU, ideally at time of sampling.}
 }
 \description{
 The IBI compares the values of four different metrics to the ranges expected under reference conditions. Each metric
-that is outside of the reference range increases the IBI score by one. Therefore, if all four metrics were inside
-the reference range, the score would be 0. Conversely, if all four metrics were outside the reference range, the
-value would be 4.
+  that is outside of the reference range increases the IBI score by one. Therefore, if all four metrics were inside
+  the reference range, the score would be 0. Conversely, if all four metrics were outside the reference range, the
+  value would be 4.
 }
 \details{
-The data needed to calculate the IBI are:
-(1) the total number of taxa,
-(2) the total number of mollusc taxa,
-(3) the abundance of \emph{Notomastus} sp., and
-(4) the number of sensitive taxa.
+The IBI compares the values of four different metrics to the ranges expected under reference conditions. Each metric
+  that is outside of the reference range increases the IBI score by one. Therefore, if all four metrics were inside
+  the reference range, the score would be 0. Conversely, if all four metrics were outside the reference range, the
+  value would be 4.
 
-The total numnber of taxa, number of mollusc taxa, and abundance of \emph{Notomastus} sp. can be obtained directly
-from the data. The list of sensitive species should be based on the species list for Southern California Marine Bays
-and the percentage of sensitive taxa present is calulated as:
+  The data needed to calculate the IBI are:
+  (1) the total number of taxa,
+  (2) the total number of mollusc taxa,
+  (3) the abundance of \emph{Notomastus} sp., and
+  (4) the number of sensitive taxa.
 
-\deqn{\% \textrm{sensitive taxa} = (\textrm{number of sensistive taxa} / \textrm{total number of taxa}) \times 100}
+  The total numnber of taxa, number of mollusc taxa, and abundance of \emph{Notomastus} sp. can be obtained directly
+  from the data. The list of sensitive species should be based on the species list for Southern California Marine Bays
+  and the percentage of sensitive taxa present is calulated as:
 
-The value for each metric is then compared to a reference range for that metric (Table 2).
-The IBI score is set to zero before comparison to the reference range. For each metric that is out of the reference
-range (above or below), the IBI score goes up by one.
+  \deqn{\% \textrm{sensitive taxa} = (\textrm{number of sensistive taxa} / \textrm{total number of taxa}) \times 100}
 
-<Include Table 2>
+  The value for each metric is then compared to a reference range for that metric (Table 2).
+  The IBI score is set to zero before comparison to the reference range. For each metric that is out of the reference
+  range (above or below), the IBI score goes up by one.
 
-The IBI score is then compared to condition category thresholds (Table 3) in order to determine the IBI category and
-score.
+  <Include Table 2>
 
-<Include Table 3>
+  The IBI score is then compared to condition category thresholds (Table 3) in order to determine the IBI category and
+  score.
+
+  <Include Table 3>
 }
 \examples{
+data(benthic_sampledata)
 IBI(BenthicData)
 
 }

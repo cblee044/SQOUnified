@@ -7,17 +7,7 @@
 benthic.sqo(benthic_data)
 }
 \arguments{
-\item{benthic_data}{a dataframe with the columns StationID, Replicate, SampleDate,
-Latitude, Longitude, Taxon, Abundance, Salinity, Stratum, Exclude. see details}
-}
-\description{
-This function will calculate, RBI, IBI, BRI, RIVPACS, MAMBI,
-as well as the Integrated Benthic SQO score / category.
-The ultimate guide for these indices (EXCEPT MAMBI) is the CASQO Technical Manual
-pages 64 to 94
-}
-\details{
-The argument for the function, is a data frame. Note that this data frame MUST contain the following
+\item{benthic_data}{a data frame. This data frame must contain the following
  information with these headings:
 
    \code{StationID} - an alpha-numeric identifier of the location;
@@ -40,7 +30,13 @@ The argument for the function, is a data frame. Note that this data frame MUST c
 
    \code{Stratum} - ;
 
-   \code{Exclude} - ;
+   \code{Exclude} - ;}
+}
+\description{
+This function will calculate, RBI, IBI, BRI, RIVPACS, MAMBI,
+as well as the Integrated Benthic SQO score / category.
+The ultimate guide for these indices (EXCEPT MAMBI) is the CASQO Technical Manual
+pages 64 to 94
 }
 \examples{
 data(benthic_sampledata) # load the sample data

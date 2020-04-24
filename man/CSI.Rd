@@ -8,11 +8,16 @@ CSI(chemdata)
 }
 \arguments{
 \item{chemdata}{a dataframe with the following headings:
-\code{StationID},
-\code{AnalyteName},
-\code{Result},
-\code{RL},
-\code{MDL}}
+
+   \code{StationID},
+
+   \code{AnalyteName},
+
+   \code{Result},
+
+   \code{RL},
+
+   \code{MDL}}
 }
 \description{
 This function calculates the Chemical Score Index for the given sites.

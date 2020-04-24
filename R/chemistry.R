@@ -9,10 +9,15 @@
 #' @usage LRM(chemdata)
 #'
 #' @param chemdata a dataframe with the following headings:
+#'
 #'    \code{StationID},
+#'
 #'    \code{AnalyteName},
+#'
 #'    \code{Result},
+#'
 #'    \code{RL},
+#'
 #'    \code{MDL}
 #'
 #' @examples
@@ -89,10 +94,15 @@ LRM <- function(chemdata) {
 #' @usage CSI(chemdata)
 #'
 #' @param chemdata a dataframe with the following headings:
+#'
 #'    \code{StationID},
+#'
 #'    \code{AnalyteName},
+#'
 #'    \code{Result},
+#'
 #'    \code{RL},
+#'
 #'    \code{MDL}
 #'
 #' @examples
@@ -192,10 +202,15 @@ CSI <- function(chemdata) {
 #' @usage chem.sqo(chemdata)
 #'
 #' @param chemdata a dataframe with the following columns:
+#'
 #'    \code{StationID},
+#'
 #'    \code{AnalyteName},
+#'
 #'    \code{Result},
+#'
 #'    \code{RL},
+#'
 #'    \code{MDL}
 #'
 #' @examples
