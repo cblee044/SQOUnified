@@ -69,7 +69,7 @@ BRI <- function(BenthicData)
 {
 
   out <- BenthicData %>%
-  left_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
+  left_join(sqo.list.new, by = c('Taxon' = 'TaxonName')) %>%
   #dplyr::right_join(assignment, by = 'stationid') %>%
   # I assume that the next line is something they had in there as a method of removing duplicates
   # for this reason, this next line will likely be eliminated.
@@ -78,13 +78,13 @@ BRI <- function(BenthicData)
   # I actually found that it didn't appear to make a difference
   #dplyr::group_by(stratum, stationid, replicate, taxon, abundance, `B-CodeScore`) %>%
   #dplyr::filter(B13_Stratum %in% c("Estuaries", "Marinas", "Bays", "Ports")) %>%
-  filter(!is.na(B.Code)) %>%
+  filter(!is.na(ToleranceScore)) %>%
   rename(B13_Stratum = Stratum) %>%
-  select(B13_Stratum, StationID, SampleDate, Replicate, Species, Abundance, B.Code)  %>%
+  select(B13_Stratum, StationID, SampleDate, Replicate, Taxon, Abundance, ToleranceScore)  %>%
   # End of BRI - 1 query. Begin BRI - 2 query
   mutate(
     fourthroot_abun = Abundance ** 0.25,
-    tolerance_score = fourthroot_abun * B.Code
+    tolerance_score = fourthroot_abun * ToleranceScore
   ) %>%
   # End of BRI - 2. Begin BRI - 3
   group_by(

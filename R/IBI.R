@@ -73,63 +73,51 @@
 #' @export
 IBI <- function(BenthicData)
 {
-  load("data/Taxonomic_Info.Rdata")
+  load("data/SoCal_SQO_Infauna_LU_updated_4.7.20.RData")
 
-  # Prepare the given data frame so that we can compute the RBI score and categories
+  # Prepare the given data frame so that we can compute the IBI score and categories
   ibi_data <- BenthicData %>%
-    inner_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
+    filter(Exclude!="Yes") %>%
+    left_join(sqo.list.new, by = c('Taxon'='TaxonName')) %>%
     mutate_if(is.numeric, list(~na_if(., -88))) %>%
-    add_count(Species) %>%
-    select('StationID','SampleDate', 'Replicate','Species','Abundance','Stratum', 'Phylum', 'Subphylum', 'IBI.Sensitive.Taxa', 'n') %>%
-    group_by(Stratum, StationID, SampleDate, Replicate, Species, Abundance, Phylum, Subphylum) %>%
-    rename(NumOfTaxa = n) %>%
-    rename(B13_Stratum = Stratum)
+    select('StationID','SampleDate', 'Replicate','Taxon','Abundance','Stratum', 'Phylum', 'IBISensitive', "Mollusc", "Crustacean") %>%
+    rename(B13_Stratum = Stratum) %>%
+    mutate(n=if_else(Taxon=="NoOrganismsPresent", 0,1))
 
   ### SQO IBI - 1
   # columns needed in RBI: B13_Stratum, StationID, Replicate, Phylum, NumofTaxa
   ibi1 <- ibi_data %>%
     group_by(B13_Stratum, StationID, SampleDate, Replicate) %>%
-    summarise(NumOfTaxa = sum(NumOfTaxa))
+    summarise(NumOfTaxa =sum(n))
 
 
   ### SQO IBI - 2
   ibi2 <- ibi_data %>%
-    filter(Phylum == "MOLLUSCA") %>%
-    group_by(B13_Stratum, StationID, Replicate, Phylum, NumOfTaxa) %>%
-    select(B13_Stratum, SampleDate, StationID, Replicate, Phylum, NumOfTaxa) %>%
-    group_by(B13_Stratum, StationID, SampleDate, Replicate, Phylum) %>%
-    summarise(NumOfMolluscTaxa = sum(NumOfTaxa))
+    filter(Mollusc == "Mollusc") %>%
+    group_by(B13_Stratum, StationID, SampleDate,Replicate) %>%
+    summarise(NumOfMolluscTaxa = length(Taxon))
 
 
-  ### SQO RBI - 3 - 1
-  ibi3_1 <- ibi_data %>%
-    filter(grepl("Notomastus", Species)) %>%
-    group_by(B13_Stratum, StationID, SampleDate, Replicate, Species, Abundance) %>%
-    select(B13_Stratum, StationID, SampleDate, Replicate, Species, Abundance)
 
 
-  ### SQO IBI - 3 - 2
-  ibi3_2 <- ibi3_1 %>%
+  ### SQO RBI - 3 - 2
+  ibi3_2 <- ibi_data %>%
+    filter(str_detect(Taxon,"Notomastus")) %>%
     group_by(B13_Stratum, StationID, SampleDate, Replicate) %>%
     summarise(NotomastusAbun = sum(Abundance))
 
 
-  ### SQO IBI - 4 - 1
-  ibi4_1 <- ibi_data %>%
-    filter(IBI.Sensitive.Taxa != 0) %>%
-    group_by(B13_Stratum, StationID, SampleDate, Replicate, IBI.Sensitive.Taxa, Abundance) %>%
-    add_count(Abundance) %>%
-    rename(SensTaxa = n) %>%
-    group_by(B13_Stratum, StationID, SampleDate, Replicate, IBI.Sensitive.Taxa) %>%
-    summarise(SensTaxa = sum(SensTaxa))
-
 
   ### SQO IBI - 4 - 2
-  ibi4_2 <- ibi1 %>%
-    inner_join(ibi4_1, by = c("B13_Stratum", "StationID", "SampleDate", "Replicate")) %>%
-    mutate(PctSensTaxa = (SensTaxa/NumOfTaxa)*100) %>%
-    mutate(PctSensTaxa = replace_na(PctSensTaxa, 0))%>%
+  ibi4_2 <- ibi_data %>%
+    filter(IBISensitive=="S") %>%
+    left_join(ibi1, by=c("B13_Stratum", "StationID", "SampleDate", "Replicate")) %>%
+    group_by(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa) %>%
+    summarise(SensTaxa = length(Taxon)) %>%
+    mutate(PctSensTaxa=(SensTaxa/NumOfTaxa)*100) %>%
     select(B13_Stratum, StationID, SampleDate, Replicate, PctSensTaxa)
+
+
 
   ### Reference ranges for IBI metrics in Southern California Marine Bays
   ### [ Table 5.4 (p. 77, Technical Manual, 2014) ]
@@ -154,14 +142,11 @@ IBI <- function(BenthicData)
   # the IBI Category, and IBI Category Score
   ibi_metrics <- ibi1 %>%
     full_join(ibi2, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
-    full_join(ibi3_1, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
     full_join(ibi3_2, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
-    full_join(ibi4_1, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
     full_join(ibi4_2, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
-    select(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa, NumOfMolluscTaxa, NotomastusAbun, PctSensTaxa) %>%
+    replace(.,is.na(.),0) %>%
+    #select(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa, NumOfMolluscTaxa, NotomastusAbun, PctSensTaxa) %>%
     # We replace any NAs with 0 so that we can compare the values to the tables listed above
-    mutate(NotomastusAbun = replace_na(NotomastusAbun, 0)) %>%
-    mutate(PctSensTaxa = replace_na(PctSensTaxa, 0))%>%
     # The IBI score is set to zero before comparison the reference range.
     mutate(Score = 0) %>%
     # For each metric that is out of the reference range (above or below), the IBI score goes up by one.
