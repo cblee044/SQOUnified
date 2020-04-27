@@ -141,92 +141,81 @@
 # RBI ----
 RBI <- function(BenthicData)
 {
-  load("data/Taxonomic_Info.Rdata")
+  load("data/SoCal_SQO_Infauna_LU_updated_4.7.20.RData")
 
   # Prepare the given data frame so that we can compute the RBI score and categories
   rbi_data <- BenthicData %>%
-    inner_join(Taxonomic_Info, by = c('Species' = 'Taxon')) %>%
+    dplyr::filter(Exclude!="Yes") %>%
+    dplyr::left_join(sqo.list.new, by = c("Taxon"="TaxonName")) %>%
     dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
-    dplyr::add_count(Species) %>%
-    dplyr::select('StationID','SampleDate', 'Replicate','Species','Abundance','Stratum', 'Phylum', 'Subphylum', 'n') %>%
-    dplyr::group_by(Stratum, StationID, Replicate, SampleDate, Species, Abundance, Phylum, Subphylum) %>%
-    dplyr::rename(NumOfTaxa = n) %>%
-    dplyr::rename(B13_Stratum = Stratum)
+    dplyr::select('StationID','SampleDate', 'Replicate','Taxon','Abundance','Stratum', 'Phylum', "Mollusc", "Crustacean") %>%
+    dplyr::rename(B13_Stratum = Stratum) %>%
+    dplyr::mutate(n=if_else(Taxon=="NoOrganismsPresent", 0,1))
 
   ibi_data <- rbi_data %>%
     dplyr::group_by(B13_Stratum, SampleDate, StationID, Replicate) %>%
-    dplyr::summarise(NumOfTaxa = sum(NumOfTaxa))
+    dplyr::summarise(NumOfTaxa = sum(n))
 
   # columns needed in RBI: B13_Stratum, StationID, Replicate, Phylum, NumofMolluscTaxa
   rbi2 <- rbi_data %>%
-    dplyr::filter(Phylum == "MOLLUSCA") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, Phylum, NumOfTaxa) %>%
-    dplyr::select(B13_Stratum, StationID, Replicate, Phylum, NumOfTaxa) %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, Phylum) %>%
-    dplyr::summarise(NumOfMolluscTaxa = sum(NumOfTaxa))
+    dplyr::filter(Mollusc=="Mollusc") %>%
+    dplyr::group_by(B13_Stratum, StationID, SampleDate, Replicate) %>%
+    dplyr::summarise(NumOfMolluscTaxa = sum(n))
 
 
   ### SQO RBI -3
   rbi3 <- rbi_data %>%
-    dplyr::filter(Subphylum == "Crustacea") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, Subphylum) %>%
-    dplyr::select(B13_Stratum, StationID, Replicate, Subphylum, NumOfTaxa) %>%
-    dplyr::summarise(NumOfCrustaceanTaxa = sum(NumOfTaxa))
+    dplyr::filter(Crustacean=="Crustacean") %>%
+    dplyr::group_by(B13_Stratum, StationID, Replicate, SampleDate) %>%
+    dplyr::summarise(NumOfCrustaceanTaxa = sum(n))
 
   ### SQO RBI -4
   rbi4 <- rbi_data %>%
-    dplyr::filter(Subphylum == "Crustacea") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, Subphylum) %>%
-    dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, Subphylum, Abundance) %>%
+    dplyr::filter(Crustacean=="Crustacean") %>%
+    dplyr::group_by(B13_Stratum, StationID, Replicate, SampleDate) %>%
     dplyr::summarise(CrustaceanAbun = sum(Abundance))
 
 
   ### SQO RBI -5
   rbi5 <- rbi_data %>%
-    dplyr::filter(Species == "Monocorophium insidiosum") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, Species) %>%
+    dplyr::filter(Taxon == "Monocorophium insidiosum") %>%
+    dplyr::group_by(B13_Stratum, StationID, Replicate, SampleDate) %>%
     dplyr::summarise(M_insidiosumAbun = sum(Abundance))
 
 
   ### SQO RBI -6
   rbi6 <- rbi_data %>%
-    dplyr::filter(Species == "Asthenothaerus diegensis") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, Species) %>%
+    dplyr::filter(Taxon == "Asthenothaerus diegensis") %>%
+    dplyr::group_by(B13_Stratum, StationID, Replicate, SampleDate) %>%
     dplyr::summarise(A_diegensisAbun = sum(Abundance))
 
 
   ### SQO RBI -7
   rbi7 <- rbi_data %>%
-    dplyr::filter(Species == "Goniada littorea") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, Species) %>%
+    dplyr::filter(Taxon == "Goniada littorea") %>%
+    dplyr::group_by(B13_Stratum, StationID, Replicate, SampleDate) %>%
     dplyr::summarise(G_littoreaAbun = sum(Abundance))
 
 
   ### SQO RBI -8
   rbi8 <- rbi_data %>%
-    dplyr::filter(Species == "Capitella capitata Cmplx") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, Species) %>%
-    dplyr::summarise(CapitellaAbun = sum(Abundance))
+    dplyr::filter(Taxon %in% c( "Capitella capitata Cmplx","Oligochaeta")) %>%
+    dplyr::mutate(badness=-0.1) %>%
+    dplyr::group_by(B13_Stratum, StationID, Replicate, SampleDate) %>%
+    dplyr::summarise(NIT = sum(badness))
 
 
-  ### SQO RBI -9
-  rbi9 <- rbi_data %>%
-    dplyr::filter(Species == "Oligochaeta") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, Species) %>%
-    dplyr::summarise(OligochaetaAbun = sum(Abundance))
-
-  ### B13 RBI Metrics
+    ### B13 RBI Metrics
   # We are using a full join because if there are missing values, we might just get an empty data frame.
   rbi_metrics <- ibi_data %>%
-    dplyr::full_join(rbi2, by = c("B13_Stratum", "StationID", "Replicate")) %>%
-    dplyr::full_join(rbi3, by = c("B13_Stratum", "StationID", "Replicate")) %>%
-    dplyr::full_join(rbi4, by = c("B13_Stratum", "StationID", "Replicate")) %>%
-    dplyr::full_join(rbi5, by = c("B13_Stratum", "StationID", "Replicate")) %>%
-    dplyr::full_join(rbi6, by = c("B13_Stratum", "StationID", "Replicate")) %>%
-    dplyr::full_join(rbi7, by = c("B13_Stratum", "StationID", "Replicate")) %>%
-    dplyr::full_join(rbi8, by = c("B13_Stratum", "StationID", "Replicate")) %>%
-    dplyr::full_join(rbi9, by = c("B13_Stratum", "StationID", "Replicate")) %>%
-    dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa, NumOfMolluscTaxa, NumOfCrustaceanTaxa, CrustaceanAbun, M_insidiosumAbun, A_diegensisAbun, G_littoreaAbun, CapitellaAbun, OligochaetaAbun)
+    dplyr::full_join(rbi2, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::full_join(rbi3, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::full_join(rbi4, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::full_join(rbi5, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::full_join(rbi6, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::full_join(rbi7, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::full_join(rbi8, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa, NumOfMolluscTaxa, NumOfCrustaceanTaxa, CrustaceanAbun, M_insidiosumAbun, A_diegensisAbun, G_littoreaAbun, NIT)
 
   ### RBI Category Thresholds for Southern California Marine Bays
   RBI_category_thresholds <- data.frame(ref_low = c(0.27, 0.16, 0.08, 0.08),
@@ -241,25 +230,26 @@ RBI <- function(BenthicData)
   # This was not included in the queries that D. Gillet listed. We went through the Technical Manual (p. 77-78)
   # to find the appropriate calculations.
   rbi_scores <- rbi_metrics %>%
+    replace(.,is.na(.),0) %>%
     mutate(scaled_NumTaxa = NumOfTaxa/99) %>%
     mutate(scaled_NumMolluscTaxa = NumOfMolluscTaxa/28) %>%
     mutate(scaled_NumCrustaceanTaxa = NumOfCrustaceanTaxa/29) %>%
     mutate(scaled_CrustaceanAbun = CrustaceanAbun/1693) %>%
-    mutate(
-      scaled_NumTaxa = replace_na(scaled_NumTaxa, 0),
-      scaled_NumMolluscTaxa = replace_na(scaled_NumMolluscTaxa, 0),
-      scaled_NumCrustaceanTaxa = replace_na(scaled_NumCrustaceanTaxa, 0),
-      scaled_CrustaceanAbun = replace_na(scaled_CrustaceanAbun, 0)) %>%
+    # mutate(
+    #   scaled_NumTaxa = replace_na(scaled_NumTaxa, 0),
+    #   scaled_NumMolluscTaxa = replace_na(scaled_NumMolluscTaxa, 0),
+    #   scaled_NumCrustaceanTaxa = replace_na(scaled_NumCrustaceanTaxa, 0),
+    #   scaled_CrustaceanAbun = replace_na(scaled_CrustaceanAbun, 0)) %>%
     # TWV = Taxa Richness Weighted Value
     mutate(TWV = scaled_NumTaxa + scaled_NumMolluscTaxa + scaled_NumCrustaceanTaxa + (0.25 * scaled_CrustaceanAbun)) %>%
     # NIT = Negative Indicator Taxa
-    mutate(
-      NIT = case_when(
-               !is.na(CapitellaAbun) & !is.na(OligochaetaAbun) ~ -0.2,
-               !is.na(CapitellaAbun) | !is.na(OligochaetaAbun) ~ -0.1,
-               is.na(CapitellaAbun) & is.na(OligochaetaAbun) ~ 0
-             )) %>%
-    mutate(M_insidiosumAbun = replace_na(M_insidiosumAbun, 0), A_diegensisAbun = replace_na(A_diegensisAbun, 0), G_littoreaAbun = replace_na(G_littoreaAbun, 0)) %>%
+    # mutate(
+    #   NIT = case_when(
+    #            !is.na(CapitellaAbun) & !is.na(OligochaetaAbun) ~ -0.2,
+    #            !is.na(CapitellaAbun) | !is.na(OligochaetaAbun) ~ -0.1,
+    #            is.na(CapitellaAbun) & is.na(OligochaetaAbun) ~ 0
+    #          )) %>%
+   # mutate(M_insidiosumAbun = replace_na(M_insidiosumAbun, 0), A_diegensisAbun = replace_na(A_diegensisAbun, 0), G_littoreaAbun = replace_na(G_littoreaAbun, 0)) %>%
     # PIT = Positive Indicator Taxa
     mutate(PIT = ( (M_insidiosumAbun)^(1/4) / (473)^(1/4) ) + ( (A_diegensisAbun)^(1/4) / (27)^(1/4) ) + ( (G_littoreaAbun)^(1/4) / (15)^(1/4) )) %>%
     mutate(Raw_RBI = TWV + NIT + (2 * PIT)) %>%
