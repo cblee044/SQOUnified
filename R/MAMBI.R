@@ -27,7 +27,7 @@
 #'
 #'    \strong{\code{Longitude}} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
 #'
-#'    \strong{\code{Species}} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
+#'    \strong{\code{Taxon}} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
 #'        use sp only or just the Genus. If no animals were present in the sample use
 #'        NoOrganismsPresent with 0 abundance;
 #'
@@ -108,8 +108,8 @@ MAMBI<-function(BenthicData, EG_Ref_values = NULL, EG_Scheme="Hybrid")
 
   Input_File.0 <- BenthicData %>%
     mutate(
-      Species_ended_in_sp = (str_detect(Species," sp$")),
-      Taxon=(str_replace(Species, " sp$",""))
+      Species_ended_in_sp = (str_detect(Taxon," sp$")),
+      Taxon=(str_replace(Taxon, " sp$",""))
     ) %>%
     mutate(
       Coast = (ifelse(Longitude<=-115,"West","Gulf-East"))

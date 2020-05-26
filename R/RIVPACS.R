@@ -67,7 +67,7 @@ RIVPACS <- function(benthic_data){
                                SampleDepth = benthic_data$SampleDepth) %>%
     dplyr::distinct()
 
-  benthic_data <- benthic_data %>% dplyr::rename(Taxa = Species)
+  benthic_data <- benthic_data %>% dplyr::rename(Taxa = Taxon)
 
   scb.taxa <- benthic_data %>% dplyr::select(StationID, Latitude, Longitude, SampleDepth) %>%
     dplyr::distinct()
