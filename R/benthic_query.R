@@ -95,8 +95,19 @@ benthic_query <- function(db_connection = NULL) {
       'stationid','replicate','sampledate','latitude','longitude', 'stationwaterdepth', 'taxon','abundance','salinity', 'stratum', 'exclude'
     ) %>%
     mutate_if(is.numeric, list(~na_if(., -88))) %>%
-    rename(species = taxon) %>%
-    rename(StationID = stationid, Replicate = replicate, SampleDate = sampledate, Latitude = latitude, Longitude = longitude, SampleDepth = stationwaterdepth, Species = species, Abundance = abundance, Salinity = salinity, Stratum = stratum, Exclude = exclude)
+    rename(
+      StationID = stationid,
+      Replicate = replicate,
+      SampleDate = sampledate,
+      Latitude = latitude,
+      Longitude = longitude,
+      SampleDepth = stationwaterdepth,
+      Taxon = taxon,
+      Abundance = abundance,
+      Salinity = salinity,
+      Stratum = stratum,
+      Exclude = exclude
+    )
 
   #mutate(EG_Test=ifelse(is.na(EG),"NoEG", "YesEG"))
 
