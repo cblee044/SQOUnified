@@ -79,8 +79,8 @@ BRI <- function(BenthicData)
   #dplyr::group_by(stratum, stationid, replicate, taxon, abundance, `B-CodeScore`) %>%
   #dplyr::filter(B13_Stratum %in% c("Estuaries", "Marinas", "Bays", "Ports")) %>%
   filter(!is.na(ToleranceScore)) %>%
-  rename(B13_Stratum = Stratum) %>%
-  select(B13_Stratum, StationID, SampleDate, Replicate, Taxon, Abundance, ToleranceScore)  %>%
+  #rename(Stratum) %>%
+  select(Stratum, StationID, SampleDate, Replicate, Taxon, Abundance, ToleranceScore)  %>%
   # End of BRI - 1 query. Begin BRI - 2 query
   mutate(
     fourthroot_abun = Abundance ** 0.25,
@@ -88,7 +88,7 @@ BRI <- function(BenthicData)
   ) %>%
   # End of BRI - 2. Begin BRI - 3
   group_by(
-    B13_Stratum, StationID, SampleDate, Replicate
+    Stratum, StationID, SampleDate, Replicate
   ) %>%
   summarize(
     Score = sum(tolerance_score, na.rm = T) / sum(fourthroot_abun, na.rm = T)
