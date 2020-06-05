@@ -174,7 +174,7 @@ MAMBI<-function(BenthicData, EG_Ref_values = NULL, EG_Scheme="Hybrid")
 
   AMBI.applicability<-EG.Assignment %>%
     mutate(EG_Test=ifelse(is.na(EG),"NoEG", "YesEG")) %>%
-    dcast(.,StationID+Replicate+SampleDate~EG_Test, value.var = "Rel_abun", fun.aggregate = sum) %>%
+    reshape2::dcast(.,StationID+Replicate+SampleDate~EG_Test, value.var = "Rel_abun", fun.aggregate = sum) %>%
     left_join(.,EG.Assignment.cast) %>%
     mutate(
       Use_AMBI = case_when(
@@ -221,8 +221,8 @@ MAMBI<-function(BenthicData, EG_Ref_values = NULL, EG_Scheme="Hybrid")
   Rich$S<-as.numeric(Rich$S)
 
   Divy<-Input_File %>%
-    dcast(StationID+Replicate+SampleDate~Taxon, value.var = "Abundance", fill=0) %>%
-    mutate(H=diversity((select(.,4:(ncol(.)))),index = "shannon", base = 2)) %>%
+    reshape2::dcast(StationID+Replicate+SampleDate~Taxon, value.var = "Abundance", fill=0) %>%
+    mutate(H=vegan::diversity((select(.,4:(ncol(.)))),index = "shannon", base = 2)) %>%
     select(.,StationID, Replicate, SampleDate, H)
 
 
@@ -295,7 +295,7 @@ MAMBI<-function(BenthicData, EG_Ref_values = NULL, EG_Scheme="Hybrid")
   {
 
     TF.EG.Assignment <- EG.Assignment %>% filter(SalZone=="TF")
-    TF.EG_Ref_values <- EG_Ref_values %>% select(.,Taxon, Exclude, EG=EG_Scheme, Oligochaeta)
+    TF.EG_Ref_values <- EG_Ref %>% select(.,Taxon, Exclude, EG=EG_Scheme, Oligochaeta)
 
     TF.AMBI.Scores <- TF.EG.Assignment %>%
       group_by(StationID, Replicate, SampleDate,Tot_abun,EG) %>%
@@ -329,7 +329,7 @@ MAMBI<-function(BenthicData, EG_Ref_values = NULL, EG_Scheme="Hybrid")
 
     TF.Divy <- Input_File %>%
       filter(SalZone=="TF") %>%
-      dcast(StationID+Replicate+SampleDate~Taxon, value.var = "Abundance", fill=0) %>%
+      reshape2::dcast(StationID+Replicate+SampleDate~Taxon, value.var = "Abundance", fill=0) %>%
       mutate(
         H = diversity((select(.,4:(ncol(.)))), index = "shannon", base = 2)
       ) %>%
@@ -394,9 +394,10 @@ MAMBI<-function(BenthicData, EG_Ref_values = NULL, EG_Scheme="Hybrid")
       bind_rows(.,no.SalZone.data) %>%
       left_join(.,AMBI.applicability[,c(1,2,3,5,6)], by=c("StationID", "Replicate", "SampleDate")) %>%
       left_join(MAMBI.applicability,.,by=c("StationID", "Replicate", "SampleDate")) %>%
-      rename(B13_Stratum = Stratum) %>%
+      #rename(B13_Stratum = Stratum) %>%
       select(1:3,5:14,4,16,15) %>%
-      bind_rows(.,azoic.samples)
+      bind_rows(.,azoic.samples) %>%
+      mutate(Index = "M-AMBI")
   }
 
 
