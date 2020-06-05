@@ -46,9 +46,9 @@ benthic.sqo <- function(benthic_data){
 
 
   mambi.score <- MAMBI(benthic_data) %>%
-    rename(
-      B13_Stratum = Stratum
-    ) %>%
+    # rename(
+    #   Stratum = Stratum
+    # ) %>%
     mutate(
       Score = MAMBI_Score,
       Category = New_MAMBI_Condition
@@ -75,10 +75,10 @@ benthic.sqo <- function(benthic_data){
     # David says take only where replicate = 1, although other scientists have different opinions
     filter(Replicate == 1) %>%
     select(
-      StationID, Replicate, SampleDate, B13_Stratum, Index, `Category Score`
+      StationID, Replicate, SampleDate, Stratum, Index, `Category Score`
     ) %>%
     group_by(
-      StationID, Replicate, SampleDate, B13_Stratum
+      StationID, Replicate, SampleDate, Stratum
     ) %>%
     summarize(
       `Category Score` = ceiling(median(`Category Score`, na.rm = T))
@@ -105,7 +105,7 @@ benthic.sqo <- function(benthic_data){
       integrated.score
     ) %>%
     select(
-      StationID, Replicate, SampleDate, B13_Stratum, Index, Score, Category, `Category Score`, Use_MAMBI
+      StationID, Replicate, SampleDate, Stratum, Index, Score, Category, `Category Score`, Use_MAMBI
     ) %>%
     arrange(StationID, SampleDate, Replicate)
 
