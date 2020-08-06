@@ -110,8 +110,8 @@ RIVPACS <- function(benthic_data){
     mutate_if(is.factor,as.character)
 
   benthic_data <- benthic_data %>%
-    dplyr::rename(B13_Stratum = Stratum) %>%
-    dplyr::select(StationID, Replicate, SampleDate, B13_Stratum) %>%
+    #dplyr::rename(B13_Stratum = Stratum) %>%
+    dplyr::select(StationID, Replicate, SampleDate, Stratum) %>%
     dplyr::distinct()
 
   rivpacs.score <- socal$oe.table %>%
@@ -127,7 +127,7 @@ RIVPACS <- function(benthic_data){
                                              Category == "Low Disturbance" ~ 2,
                                              Category == "Moderate Disturbance" ~ 3,
                                              Category == "High Disturbance" ~ 4)) %>%
-    dplyr::select(StationID, SampleDate, Replicate, B13_Stratum, Index, Score, Category, `Category Score`)
+    dplyr::select(StationID, SampleDate, Replicate, Stratum, Index, Score, Category, `Category Score`)
 
 
   return(rivpacs.score)

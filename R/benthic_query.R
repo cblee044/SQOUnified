@@ -72,8 +72,11 @@ benthic_query <- function(db_connection = NULL) {
 
 
   grab <- tbl(con, "tbl_grabevent") %>%
-    as_tibble %>%
-    filter(grabeventnumber == 1)
+    as_tibble() %>%
+    filter(benthicinfauna == 'Yes') %>%
+    group_by(stationid, sampledate) %>%
+    summarise(latitude=mean(latitude), longitude=mean(longitude), stationwaterdepth=mean(stationwaterdepth)) %>%
+    ungroup()
 
 
   assignment <- tbl(con, "field_assignment_table") %>%
@@ -83,12 +86,12 @@ benthic_query <- function(db_connection = NULL) {
 
   station_occupation <- tbl(con, "tbl_stationoccupation") %>%
     as_tibble %>%
-    inner_join(assignment, by = 'stationid')
+    inner_join(assignment, by = 'stationid') %>%
+    filter(collectiontype=="Grab")
 
 
   # Create the dataset needed to compute all the SQO benthic indices ----
-  benthic_data <- grab %>%
-    filter(benthicinfauna == 'Yes') %>%
+  benthic_data <- grab  %>%
     inner_join(station_occupation, by = c('stationid','sampledate' = 'occupationdate')) %>%
     inner_join(infauna, by = c('stationid','sampledate')) %>%
     select(
