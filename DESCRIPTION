@@ -31,7 +31,12 @@ Imports:
   reshape2,
   RPostgreSQL,
   rstudioapi,
-  vegan
+  vegan,
+  dplyr,
+  plyr,
+  purrr,
+  stringr,
+  tidyr
 Depends: 
   R (>= 3.5.0)
 RoxygenNote: 7.1.0
