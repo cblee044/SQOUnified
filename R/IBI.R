@@ -81,20 +81,20 @@ IBI <- function(BenthicData)
     left_join(sqo.list.new, by = c('Taxon'='TaxonName')) %>%
     mutate_if(is.numeric, list(~na_if(., -88))) %>%
     select('StationID','SampleDate', 'Replicate','Taxon','Abundance','Stratum', 'Phylum', 'IBISensitive', "Mollusc", "Crustacean") %>%
-    rename(B13_Stratum = Stratum) %>%
+    #rename(B13_Stratum = Stratum) %>%
     mutate(n=if_else(Taxon=="NoOrganismsPresent", 0,1))
 
   ### SQO IBI - 1
   # columns needed in RBI: B13_Stratum, StationID, Replicate, Phylum, NumofTaxa
   ibi1 <- ibi_data %>%
-    group_by(B13_Stratum, StationID, SampleDate, Replicate) %>%
+    group_by(Stratum, StationID, SampleDate, Replicate) %>%
     summarise(NumOfTaxa =sum(n))
 
 
   ### SQO IBI - 2
   ibi2 <- ibi_data %>%
     filter(Mollusc == "Mollusc") %>%
-    group_by(B13_Stratum, StationID, SampleDate,Replicate) %>%
+    group_by(Stratum, StationID, SampleDate,Replicate) %>%
     summarise(NumOfMolluscTaxa = length(Taxon))
 
 
@@ -103,7 +103,7 @@ IBI <- function(BenthicData)
   ### SQO RBI - 3 - 2
   ibi3_2 <- ibi_data %>%
     filter(str_detect(Taxon,"Notomastus")) %>%
-    group_by(B13_Stratum, StationID, SampleDate, Replicate) %>%
+    group_by(Stratum, StationID, SampleDate, Replicate) %>%
     summarise(NotomastusAbun = sum(Abundance))
 
 
@@ -111,11 +111,11 @@ IBI <- function(BenthicData)
   ### SQO IBI - 4 - 2
   ibi4_2 <- ibi_data %>%
     filter(IBISensitive=="S") %>%
-    left_join(ibi1, by=c("B13_Stratum", "StationID", "SampleDate", "Replicate")) %>%
-    group_by(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa) %>%
+    left_join(ibi1, by=c("Stratum", "StationID", "SampleDate", "Replicate")) %>%
+    group_by(Stratum, StationID, SampleDate, Replicate, NumOfTaxa) %>%
     summarise(SensTaxa = length(Taxon)) %>%
     mutate(PctSensTaxa=(SensTaxa/NumOfTaxa)*100) %>%
-    select(B13_Stratum, StationID, SampleDate, Replicate, PctSensTaxa)
+    select(Stratum, StationID, SampleDate, Replicate, PctSensTaxa)
 
 
 
@@ -141,9 +141,9 @@ IBI <- function(BenthicData)
   # Each of the metrics is then compared to the tables listed above (Table 5.4 and Table 5.5) to determine the IBI score,
   # the IBI Category, and IBI Category Score
   ibi_metrics <- ibi1 %>%
-    full_join(ibi2, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
-    full_join(ibi3_2, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
-    full_join(ibi4_2, by = c("B13_Stratum", "SampleDate", "StationID", "Replicate")) %>%
+    full_join(ibi2, by = c("Stratum", "SampleDate", "StationID", "Replicate")) %>%
+    full_join(ibi3_2, by = c("Stratum", "SampleDate", "StationID", "Replicate")) %>%
+    full_join(ibi4_2, by = c("Stratum", "SampleDate", "StationID", "Replicate")) %>%
     replace(.,is.na(.),0) %>%
     #select(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa, NumOfMolluscTaxa, NotomastusAbun, PctSensTaxa) %>%
     # We replace any NAs with 0 so that we can compare the values to the tables listed above

@@ -149,51 +149,51 @@ RBI <- function(BenthicData)
     dplyr::left_join(sqo.list.new, by = c("Taxon"="TaxonName")) %>%
     dplyr::mutate_if(is.numeric, list(~na_if(., -88))) %>%
     dplyr::select('StationID','SampleDate', 'Replicate','Taxon','Abundance','Stratum', 'Phylum', "Mollusc", "Crustacean") %>%
-    dplyr::rename(B13_Stratum = Stratum) %>%
+    #dplyr::rename(B13_Stratum = Stratum) %>%
     dplyr::mutate(n=if_else(Taxon=="NoOrganismsPresent", 0,1))
 
   ibi_data <- rbi_data %>%
-    dplyr::group_by(B13_Stratum, SampleDate, StationID, Replicate) %>%
+    dplyr::group_by(Stratum, SampleDate, StationID, Replicate) %>%
     dplyr::summarise(NumOfTaxa = sum(n))
 
   # columns needed in RBI: B13_Stratum, StationID, Replicate, Phylum, NumofMolluscTaxa
   rbi2 <- rbi_data %>%
     dplyr::filter(Mollusc=="Mollusc") %>%
-    dplyr::group_by(B13_Stratum, StationID, SampleDate, Replicate) %>%
+    dplyr::group_by(Stratum, StationID, SampleDate, Replicate) %>%
     dplyr::summarise(NumOfMolluscTaxa = sum(n))
 
 
   ### SQO RBI -3
   rbi3 <- rbi_data %>%
     dplyr::filter(Crustacean=="Crustacean") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, SampleDate) %>%
+    dplyr::group_by(Stratum, StationID, Replicate, SampleDate) %>%
     dplyr::summarise(NumOfCrustaceanTaxa = sum(n))
 
   ### SQO RBI -4
   rbi4 <- rbi_data %>%
     dplyr::filter(Crustacean=="Crustacean") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, SampleDate) %>%
+    dplyr::group_by(Stratum, StationID, Replicate, SampleDate) %>%
     dplyr::summarise(CrustaceanAbun = sum(Abundance))
 
 
   ### SQO RBI -5
   rbi5 <- rbi_data %>%
     dplyr::filter(Taxon == "Monocorophium insidiosum") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, SampleDate) %>%
+    dplyr::group_by(Stratum, StationID, Replicate, SampleDate) %>%
     dplyr::summarise(M_insidiosumAbun = sum(Abundance))
 
 
   ### SQO RBI -6
   rbi6 <- rbi_data %>%
     dplyr::filter(Taxon == "Asthenothaerus diegensis") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, SampleDate) %>%
+    dplyr::group_by(Stratum, StationID, Replicate, SampleDate) %>%
     dplyr::summarise(A_diegensisAbun = sum(Abundance))
 
 
   ### SQO RBI -7
   rbi7 <- rbi_data %>%
     dplyr::filter(Taxon == "Goniada littorea") %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, SampleDate) %>%
+    dplyr::group_by(Stratum, StationID, Replicate, SampleDate) %>%
     dplyr::summarise(G_littoreaAbun = sum(Abundance))
 
 
@@ -201,21 +201,21 @@ RBI <- function(BenthicData)
   rbi8 <- rbi_data %>%
     dplyr::filter(Taxon %in% c( "Capitella capitata Cmplx","Oligochaeta")) %>%
     dplyr::mutate(badness=-0.1) %>%
-    dplyr::group_by(B13_Stratum, StationID, Replicate, SampleDate) %>%
+    dplyr::group_by(Stratum, StationID, Replicate, SampleDate) %>%
     dplyr::summarise(NIT = sum(badness))
 
 
     ### B13 RBI Metrics
   # We are using a full join because if there are missing values, we might just get an empty data frame.
   rbi_metrics <- ibi_data %>%
-    dplyr::full_join(rbi2, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
-    dplyr::full_join(rbi3, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
-    dplyr::full_join(rbi4, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
-    dplyr::full_join(rbi5, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
-    dplyr::full_join(rbi6, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
-    dplyr::full_join(rbi7, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
-    dplyr::full_join(rbi8, by = c("B13_Stratum", "StationID", "Replicate", "SampleDate")) %>%
-    dplyr::select(B13_Stratum, StationID, SampleDate, Replicate, NumOfTaxa, NumOfMolluscTaxa, NumOfCrustaceanTaxa, CrustaceanAbun, M_insidiosumAbun, A_diegensisAbun, G_littoreaAbun, NIT)
+    dplyr::full_join(rbi2, by = c("Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::full_join(rbi3, by = c("Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::full_join(rbi4, by = c("Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::full_join(rbi5, by = c("Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::full_join(rbi6, by = c("Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::full_join(rbi7, by = c("Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::full_join(rbi8, by = c("Stratum", "StationID", "Replicate", "SampleDate")) %>%
+    dplyr::select(Stratum, StationID, SampleDate, Replicate, NumOfTaxa, NumOfMolluscTaxa, NumOfCrustaceanTaxa, CrustaceanAbun, M_insidiosumAbun, A_diegensisAbun, G_littoreaAbun, NIT)
 
   ### RBI Category Thresholds for Southern California Marine Bays
   RBI_category_thresholds <- data.frame(ref_low = c(0.27, 0.16, 0.08, 0.08),
