@@ -1,6 +1,7 @@
 .gitignore
 .RData
 .Rhistory
+.Rbuildignore
 .Rproj.user
 ignore/
 .Rhistory

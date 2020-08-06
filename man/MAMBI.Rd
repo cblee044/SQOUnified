@@ -19,7 +19,7 @@ MAMBI(benthic_data, EG_Ref_values = EG_Ref, EG_Scheme = "Hybrid")
 
    \strong{\code{Longitude}} - longitude in decimal degrees. Make sure there is a negative sign for the Western coordinates;
 
-   \strong{\code{Species}} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
+   \strong{\code{Taxon}} - name of the fauna, ideally in SCAMIT ed12 format, do not use sp. or spp.,
        use sp only or just the Genus. If no animals were present in the sample use
        NoOrganismsPresent with 0 abundance;
 

@@ -2,11 +2,25 @@ Package: SQOUnified
 Type: Package
 Title: Tools for calculating SQO scores based on three Lines of Evidence (Benthic, Tox, Chem)
 Version: 0.1.0
-Author: David Gillett, Joana Perdomo, Robert Butler
-Maintainer: Robert Butler <robertb@sccwrp.org>
+Date: 2020-08-06
 Description: Calculates Site Assessments based on the three lines of evidence as outlined in the CASQO Manual
             Benthic, Toxicity, and Chemistry
-License: What license is it under?
+Authors@R: c(
+  person(given = "David", family = "Gillett",
+    role = c("aut","cre"),
+    email = "davidg@sccwrp.org"
+    ),
+  person(given = "Robert", family = "Butler",
+    role = "aut", 
+    email = "robertb@sccwrp.org"
+    ),
+  person(given = "Perdomo", family = "Joana", 
+    role = "aut", 
+    email = "jlperdomo@csu.fullerton.edu"
+    )
+  )
+Maintainer: Robert Butler <robertb@sccwrp.org>
+License: CCO
 Encoding: UTF-8
 LazyData: true
 Imports: 
@@ -18,4 +32,6 @@ Imports:
   RPostgreSQL,
   rstudioapi,
   vegan
+Depends: 
+  R (>= 3.5.0)
 RoxygenNote: 7.1.0

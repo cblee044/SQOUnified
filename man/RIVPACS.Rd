@@ -2,7 +2,7 @@
 % Please edit documentation in R/RIVPACS.R
 \name{RIVPACS}
 \alias{RIVPACS}
-\title{Calculate River Invertebrate Prediction and Classification System (RIVPACS) Index and RIVPACS Condition Category
+\title{CRiver Invertebrate Prediction and Classification System (RIVPACS) Index and RIVPACS Condition Category
 (SoCal only)}
 \usage{
 RIVPACS(benthic_data)
@@ -34,8 +34,7 @@ RIVPACS(benthic_data)
                         \code{Exclude} - ;}
 }
 \description{
-Calculate River Invertebrate Prediction and Classification System (RIVPACS) Index and RIVPACS Condition Category
-(SoCal only)
+For more information concerning RIVPACS, consult the CASQO Technical Manual page 80
 }
 \examples{
 data(benthic_sampledata)
