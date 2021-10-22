@@ -46,7 +46,7 @@
 #'
 #'     \strong{\code{Exclude}} - To be completely honest, I don't know what this means. You'd have to ask Joana or David Gillett.
 #'
-#' @importFrom DBI dbConnect
+#' @importFrom DBI dbConnect dbGetQuery
 #' @importFrom RPostgreSQL PostgreSQL
 #' @importFrom rstudioapi showPrompt askForPassword
 #' @import dplyr
@@ -68,34 +68,27 @@ benthic_query <- function(db_connection = NULL) {
     con <- db_connection
   }
   # Bring in our tables from the database ----
-  infauna <- tbl(con, "tbl_infaunalabundance_initial") %>% as_tibble
+  infauna <- dbGetQuery(con, "SELECT * FROM tbl_infaunalabundance_final") %>% as_tibble
 
 
-  grab <- tbl(con, "tbl_grabevent") %>%
-    as_tibble() %>%
-    filter(benthicinfauna == 'Yes') %>%
-    group_by(stationid, sampledate) %>%
-    summarise(latitude=mean(latitude), longitude=mean(longitude), stationwaterdepth=mean(stationwaterdepth)) %>%
-    ungroup()
-
-
-  assignment <- tbl(con, "field_assignment_table") %>%
-    as_tibble %>%
-    filter(stratum == "Bays" | stratum == "Ports" | stratum == "Estuaries" | stratum == "Brackish Estuaries" | stratum == "Marinas")
-
-
-  station_occupation <- tbl(con, "tbl_stationoccupation") %>%
-    as_tibble %>%
-    inner_join(assignment, by = 'stationid') %>%
-    filter(collectiontype=="Grab")
+  grab <- dbGetQuery(
+      con,
+      'SELECT
+        stationid, latitude, longitude, depth AS sampledepth, salinity, finalstratum AS stratum
+      FROM
+        stations_grab_final
+      WHERE
+        finalstratum IN (\'Bays\', \'Marinas\', \'Ports\', \'Estuaries\', \'Brackish Estuaries\')
+      '
+    ) %>%
+    as_tibble()
 
 
   # Create the dataset needed to compute all the SQO benthic indices ----
-  benthic_data <- grab  %>%
-    inner_join(station_occupation, by = c('stationid','sampledate' = 'occupationdate')) %>%
-    inner_join(infauna, by = c('stationid','sampledate')) %>%
+  benthic_data <- infauna  %>%
+    inner_join(grab, by = c('stationid')) %>%
     select(
-      'stationid','replicate','sampledate','latitude','longitude', 'stationwaterdepth', 'taxon','abundance','salinity', 'stratum', 'exclude'
+      'stationid','replicate','sampledate','latitude','longitude', 'sampledepth', 'taxon','abundance','salinity', 'stratum', 'exclude'
     ) %>%
     mutate_if(is.numeric, list(~na_if(., -88))) %>%
     rename(
@@ -104,7 +97,7 @@ benthic_query <- function(db_connection = NULL) {
       SampleDate = sampledate,
       Latitude = latitude,
       Longitude = longitude,
-      SampleDepth = stationwaterdepth,
+      SampleDepth = sampledepth,
       Taxon = taxon,
       Abundance = abundance,
       Salinity = salinity,
