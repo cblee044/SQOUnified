@@ -53,7 +53,7 @@
 #'
 #' @export
 
-benthic_query <- function(db_connection = NULL) {
+benthic_query <- function(db_connection = NULL, shelves = T) {
   # con is short for connection
   # Create connection to the database
   if (is.null(db_connection)) {
@@ -70,18 +70,16 @@ benthic_query <- function(db_connection = NULL) {
   # Bring in our tables from the database ----
   infauna <- dbGetQuery(con, "SELECT * FROM tbl_infaunalabundance_final") %>% as_tibble
 
-
-  grab <- dbGetQuery(
-      con,
-      'SELECT
+  grabqry <- 'SELECT
         stationid, latitude, longitude, depth AS sampledepth, salinity, finalstratum AS stratum
       FROM
         stations_grab_final
-      WHERE
-        finalstratum IN (\'Bays\', \'Marinas\', \'Ports\', \'Estuaries\', \'Brackish Estuaries\')
       '
-    ) %>%
-    as_tibble()
+  if (!shelves) {
+    grabqry <- paste(grabqry, 'WHERE finalstratum IN (\'Bays\', \'Marinas\', \'Ports\', \'Estuaries\', \'Brackish Estuaries\', \'Inner\')')
+  }
+
+  grab <- dbGetQuery(con, grabqry) %>% as_tibble()
 
 
   # Create the dataset needed to compute all the SQO benthic indices ----

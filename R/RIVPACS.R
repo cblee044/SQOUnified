@@ -270,19 +270,28 @@ SoCalRivpacs <- function(Pcutoff = 0.5,
 
 
     for(i in 1:expected.data$n) {
+      tryCatch(
+        {
+          predicted.prob <- expected.data$predicted[i, ] # predicted probabilities for current sample
 
-      predicted.prob <- expected.data$predicted[i, ] # predicted probabilities for current sample
+          taxa.subset <- names(predicted.prob)[predicted.prob >= Pcutoff]  # subset of taxa with probabilities >= Pcutoff
 
-      taxa.subset <- names(predicted.prob)[predicted.prob >= Pcutoff]  # subset of taxa with probabilities >= Pcutoff
+          expected.prob <- predicted.prob[taxa.subset] # probabilites for subset of included taxa
 
-      expected.prob <- predicted.prob[taxa.subset] # probabilites for subset of included taxa
+          observed.pa <- observed.data[i, taxa.subset] # observed presence/absence for those taxa
 
-      observed.pa <- observed.data[i, taxa.subset] # observed presence/absence for those taxa
+          observed.score[i] <- sum(observed.pa) # observed richness (O)
+          expected.score[i] <- sum(expected.prob) # expected richness (E)
+          BC[i] <- sum(abs(observed.pa - expected.prob)) /
+            (observed.score[i] + expected.score[i]) # BC value
+        },
+        error = function(e) {
+          observed.score[i] <- NA_real_ # observed richness (O)
+          expected.score[i] <- NA_real_ # expected richness (E)
+          BC[i] <- NA_real_ # BC value
+        }
+      )
 
-      observed.score[i] <- sum(observed.pa) # observed richness (O)
-      expected.score[i] <- sum(expected.prob) # expected richness (E)
-      BC[i] <- sum(abs(observed.pa - expected.prob)) /
-        (observed.score[i] + expected.score[i]) # BC value
 
     }
 
@@ -310,6 +319,7 @@ SoCalRivpacs <- function(Pcutoff = 0.5,
 
     #   mean.O.over.E <- mean(OE.stats$O.over.E)
     #   stdev.O.over.E <- sqrt(var(OE.stats$O.over.E))
+
 
     return(stats)
 
