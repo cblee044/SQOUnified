@@ -94,7 +94,9 @@ tox.summary <- function(toxresults) {
       ),
       pct_result = mean(result, na.rm = T),
       pct_control = mean(result_control, na.rm = T),
-      pct_result_adj = (pct_result / pct_control) * 100
+      pct_result_adj = (pct_result / pct_control) * 100,
+      stddev = sd(result, na.rm = T),
+      cv = stddev / pct_result
     ) %>%
     ungroup() %>%
     mutate(
