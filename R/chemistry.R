@@ -258,6 +258,35 @@ chem.sqo <- function(chemdata) {
 
 
 # ---- Utility function ----
+#' Prepare raw chemistry data for analysis, per specifications in the
+#'
+#' This function will not only calculate CSI and LRM, but it
+#' will also get the overall integrated SQO Category and Score
+#' for the stations that are given to it.
+#'
+#' We make the assumption that Non-detects are marked with -88 in the result column. We also assume that
+#' all constituents are expressed on a sediment dry-weight basis.
+#' Specifically, all metals should be in mg/dry kg and all organic constituents should be in ug/dry kg.
+#'
+#' @usage chemdata_prep(chemdata)
+#'
+#' @param chemdata a dataframe with the following columns:
+#'
+#'    \code{StationID},
+#'
+#'    \code{AnalyteName},
+#'
+#'    \code{Result},
+#'
+#'    \code{RL},
+#'
+#'    \code{MDL}
+#'
+#' @examples
+#' data(chem_sampledata) # load sample data to your environment
+#' chemdata_prep(chem_sampledata) # get scores and see output
+#'
+#' @export
 chemdata_prep <- function(chem){
   # Here chemdata consists of data in the same format as our database, with the columns
   # stationid, analytename, result, rl, mdl
@@ -279,15 +308,18 @@ chemdata_prep <- function(chem){
                        'alpha-Chlordane','gamma-Chlordane','trans-Nonachlor',"4,4'-DDT")
 
   # High PAH
+  # Table 3.1 in the SQO Manual (page 19)
   hpah <- c('Benz(a)anthracene', 'Benzo(a)pyrene', 'Benzo(e)pyrene',
             'Chrysene', 'Dibenz(a,h)anthracene', 'Fluoranthene', 'Perylene','Pyrene')
 
   # Low PAH
+  # Table 3.1 in the SQO Manual (page 19)
   lpah <- c('1-Methylnaphthalene', '1-Methylphenanthrene', '2,6-Dimethylnaphthalene',
             '2-Methylnaphthalene', 'Acenaphthene', 'Anthracene',
             'Biphenyl', 'Fluorene', 'Naphthalene', 'Phenanthrene')
 
   # The PCB's that we care about
+  # Table 3.1 in the SQO Manual (page 20)
   relevant_pcbs <- paste(
     'PCB', c(008, 018, 028, 044, 052, 066, 101, 105, 110, 118, 128, 138, 153, 180, 187, 195), sep = "-"
   )
@@ -315,14 +347,22 @@ chemdata_prep <- function(chem){
     ) %>%
     mutate(
       result = case_when(
+        # This is for dealing with Non detects (Page 31 of SQO Manual, Paragraph titled Data Preparation)
+        # Note that if calculations using non-detected(ND) analytes are necessary, an estimated value must be used.
+        # One estimation approach is to use 50% of the MDL for any samples with ND results for that analyte;
+        # however, the previous section should be consulted for addressing ND values within summed groups of constituents.
         result == -88 & compound %in% single_analytes ~ as.numeric(1/2*mdl),
+
+        # For the summed group of constituents, we get the directions of how to deal with them in page 30 of the SQO Manual
+        # First paragraph below table 3.4
+        # "Compounds qualified as non-detected are treated as having a concentration of zero for the purpose of summing"
         result == -88 & !(compound %in% single_analytes) ~ 0,
         TRUE ~ result
       )
     ) %>%
     mutate(
       result = if_else(
-        # CASQO manual page 30 - PCB result value gets multiplied by 1.72
+        # CASQO manual page 30, below table 3.4 - PCB result value gets multiplied by 1.72
         analytename == "PCBs_total", 1.72 * result, result
       )
     ) %>%
@@ -331,6 +371,8 @@ chemdata_prep <- function(chem){
     ) %>%
     summarize(
       # if the sum of the results is zero, assign it the max of the RL's
+      # Page 30 of SQO Plan, first paragraph below table 3.4
+      # "If all components of a sum are non-detected, then the highest reporting limit of any one compound in the group should be used to represent the sum value."
       result = if_else(
         sum(result, na.rm = T) != 0, sum(result, na.rm = T), max(rl)
       )
@@ -343,12 +385,18 @@ chemdata_prep <- function(chem){
     mutate(
       compound = "DDTs_total",
       result = if_else(
+        # For the summed group of constituents, we get the directions of how to deal with them in page 30 of the SQO Manual
+        # First paragraph below table 3.4
+        # "Compounds qualified as non-detected are treated as having a concentration of zero for the purpose of summing"
         result == -88, 0, result
       )
     ) %>%
     group_by(stationid,compound) %>%
     summarize(
       result = if_else(
+        # if the sum of the results is zero, assign it the max of the RL's
+        # Page 30 of SQO Plan, first paragraph below table 3.4
+        # "If all components of a sum are non-detected, then the highest reporting limit of any one compound in the group should be used to represent the sum value."
         sum(result, na.rm = T) != 0, sum(result, na.rm = T), max(rl)
       )
     ) %>% ungroup()
