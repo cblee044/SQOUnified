@@ -45,7 +45,12 @@
 tox.summary <- function(toxresults) {
 
   "tox_categories"
-  # here we seaprate the controls from the rest of the samples
+
+  toxresults <- toxresults %>%
+    mutate(lab = ifelse('lab' %in% names(toxresults) %>% tolower, lab, 'Not Recorded'))
+
+
+  # here we separate the controls from the rest of the samples
   controls <- toxresults %>%
     filter(
       stationid == '0000',
@@ -69,7 +74,7 @@ tox.summary <- function(toxresults) {
       sampletypecode != 'QA' # shouild maybe issue a warning if they put this stuff in there
     ) %>%
     group_by(
-      stationid, toxbatch, species, sampletypecode
+      lab, stationid, toxbatch, species, sampletypecode
     ) %>%
     summarize(
       p = tryCatch({
@@ -94,7 +99,9 @@ tox.summary <- function(toxresults) {
       ),
       pct_result = mean(result, na.rm = T),
       pct_control = mean(result_control, na.rm = T),
-      pct_result_adj = (pct_result / pct_control) * 100
+      pct_result_adj = (pct_result / pct_control) * 100,
+      stddev = sd(result, na.rm = T),
+      cv = stddev / pct_result
     ) %>%
     ungroup() %>%
     mutate(
@@ -133,15 +140,19 @@ tox.summary <- function(toxresults) {
         TRUE ~ NA_character_
       )
     ) %>%
-    select(-c(nontox, lowtox, modtox, hightox, toxbatch)) %>%
+    select(-c(nontox, lowtox, modtox, hightox)) %>%
     select(
-      StationID = stationid,
-      Species = species,
-      SampleTypeCode = sampletypecode,
+      lab = lab,
+      stationid = stationid,
+      species = species,
+      toxbatch = toxbatch,
+      sampletypecode = sampletypecode,
       `P Value` = p,
       `Mean` = pct_result,
       `Control Adjusted Mean` = pct_result_adj,
       `Endpoint Method` = endpoint_method,
+      `Standard Deviation` = stddev,
+      `Coefficient of Variance` = cv,
       Score = sqo_category_value,
       Category = sqo_category
     )
