@@ -19,7 +19,7 @@
 #' @export
 SQOUnified <- function(benthic = NULL, chem = NULL, tox = NULL) {
 
-  load("data/site_assessment_criteria.Rdata")
+  load("data/site_assessment_criteria.RData")
 
   if (all(is.null(c(benthic,chem,tox)))){
     stop("
